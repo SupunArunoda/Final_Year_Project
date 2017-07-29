@@ -3,6 +3,7 @@ from os import path
 import numpy as np
 from datetime import timedelta
 from enum import Enum
+import sys
 
 class OrderEvent(Enum):
     SUBMISSION = 1
@@ -37,7 +38,7 @@ def get_orderDirection(eventid):
 class LobsterData:
     def __init__(self):
         self.messages = DataFrame()
-        self.processed_message= DataFrame();
+        self.processed_message= DataFrame([]);
         self.level = 0
 
     def read_single_day_data(self, message_file, append=True, convert_time=False):
@@ -50,24 +51,28 @@ class LobsterData:
         mymessages.columns = ['Time', 'Event', 'Order_ID', 'Size', 'Price', 'Direction']
         mymessages.Event = mymessages['Event'].map(get_orderEvent)
         mymessages.Direction=mymessages['Direction'].map(get_orderDirection)
-        #mymessages['Date'] = mydate
-
-        #mymessages.set_index(['Order_ID'], inplace=True)
 
         self.messages = mymessages
 
     def get_type(self):
-        return self.messages['Size'];
+        return type(self.messages['Size']);
 
     def get_time_calculation(self):
-        order_list=self.messages['Order_ID'];
-        for i in order_list:
-            x=i+1;
-            for x in order_list:
-                if(order_list.get_value(x)==order_list.get_value(i)):
-                    self.messages['Event'].
+        group=self.messages.groupby('Order_ID')['Time'].unique()
+        group=group[group.apply(lambda x: len(x)>1)]
+        for index, order_row in group.iteritems():
 
-        return order_list;
+
+            if(index>0):
+                min=float(order_row[0])
+                max=float(order_row[-1])
+                diff=max-min
+
+                self.processed_message=self.processed_message.append(DataFrame({'Order_ID': index, 'Execution_Time': diff}, index=[0]), ignore_index=True);
+
+
+        return self.processed_message;
+
     def get_number_of_record(self):
-        return self.messages;
+        return type(self.messages['Event']);
 
