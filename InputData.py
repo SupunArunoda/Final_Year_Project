@@ -57,22 +57,27 @@ class LobsterData:
     def get_type(self):
         return type(self.messages['Size']);
 
+    """
+    Calculatate the execuation time limit order
+    """
     def get_time_calculation(self):
         group=self.messages.groupby('Order_ID')['Time'].unique()
         group=group[group.apply(lambda x: len(x)>1)]
         for index, order_row in group.iteritems():
 
-
             if(index>0):
                 min=float(order_row[0])
                 max=float(order_row[-1])
                 diff=max-min
-
-                self.processed_message=self.processed_message.append(DataFrame({'Order_ID': index, 'Execution_Time': diff}, index=[0]), ignore_index=True);
-
+                volume=self.messages.loc[self.messages['Order_ID'] == index, 'Size'].iloc[0]#add size attribute
+                price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  # add price attribute
+                direction = self.messages.loc[self.messages['Order_ID'] == index, 'Direction'].iloc[0]  # add direction attribute
+                self.processed_message=self.processed_message.append(DataFrame({'Order_ID': index, 'Execution_Time': diff, 'Volume': volume,'Price': price,'Direction': direction}, index=[0]), ignore_index=True);
 
         return self.processed_message;
 
+    def get_volume_weighted_average(self):
+        print(self.processed_message['Order_ID'])
     def get_number_of_record(self):
         return type(self.messages['Event']);
 
