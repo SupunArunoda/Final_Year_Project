@@ -118,9 +118,12 @@ class LobsterData:
 
     def get_volume_vector(self):
         vol_sum = self.processed_message['Volume'].sum()
-        vol_day=vol_sum/self.processed_message['Order_ID'].value_counts();
+        vol_day=vol_sum/self.processed_message['Order_ID'].count();
         self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
         return self.processed_message;
+
+    def write_csv(self):
+        self.processed_message.to_csv("vecotrozed_data.csv", index=False, encoding='utf-8')
 
     def get_price_vector(self):
         self.processed_message['price_vector'] = (np.log(self.processed_message.Price/self.processed_message.Best_Bid_Ask));

@@ -11,6 +11,7 @@ def test_read_single_date_files():
     lob.get_time_vector()
     lob.get_volume_vector()
     print(lob.get_price_vector())
+    lob.write_csv()
     #print(lob.get_type())
     #print(lob.get_number_of_record())
     #print(lob.get_volume_weighted_average())
