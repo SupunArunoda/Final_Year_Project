@@ -57,12 +57,44 @@ class LobsterData:
     def get_type(self):
         return type(self.messages['Size']);
 
+    def get_moving_avg_price(self,price1,price2):
+        temp=price1/price2
+        return np.log(temp)
+
+    def append_values(self,direction,index,diff,price,volume,bestBid,bestAsk):
+        if (direction == OrderDirection.BUYORDER):
+            if (bestBid == 0):
+                self.processed_message = self.processed_message.append(DataFrame(
+                    {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                     'Direction': direction, 'Best Bid/ask': price}, index=[0]), ignore_index=True);
+            elif (bestBid > 0):
+                self.processed_message = self.processed_message.append(DataFrame(
+                    {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                     'Direction': direction, 'Best Bid/ask': bestBid }, index=[0]), ignore_index=True)
+            if (bestBid < price):
+                bestBid = price
+
+        else:
+            if (bestAsk == sys.maxsize):
+                self.processed_message = self.processed_message.append(DataFrame(
+                    {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                     'Direction': direction, 'Best Bid/ask': price }, index=[0]), ignore_index=True);
+            elif (bestBid > 0):
+                self.processed_message = self.processed_message.append(DataFrame(
+                    {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                     'Direction': direction, 'Best Bid/ask': bestAsk}, index=[0]), ignore_index=True);
+            if (bestAsk > price):
+                bestAsk = price
+
     """
     Calculatate the execuation time limit order
     """
+    @property
     def get_time_calculation(self):
         group=self.messages.groupby('Order_ID')['Time'].unique()
         group=group[group.apply(lambda x: len(x)>1)]
+        bestBid = 0
+        bestAsk = sys.maxsize
         for index, order_row in group.iteritems():
 
             if(index>0):
@@ -72,8 +104,8 @@ class LobsterData:
                 volume=self.messages.loc[self.messages['Order_ID'] == index, 'Size'].iloc[0]#add size attribute
                 price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  # add price attribute
                 direction = self.messages.loc[self.messages['Order_ID'] == index, 'Direction'].iloc[0]  # add direction attribute
-                self.processed_message=self.processed_message.append(DataFrame({'Order_ID': index, 'Execution_Time': diff, 'Volume': volume,'Price': price,'Direction': direction}, index=[0]), ignore_index=True);
 
+                self.append_values(direction, index, diff, price, volume, bestBid, bestAsk)
         return self.processed_message;
 
     def get_volume_weighted_average(self):
