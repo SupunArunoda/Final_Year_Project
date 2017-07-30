@@ -3,7 +3,7 @@ from InputData import LobsterData
 
 
 def test_read_single_date_files():
-    message_file = 'AAPL_2012-06-21_34200000_37800000_message_50.csv'
+    message_file = 'AMZN_2012-06-21_34200000_57600000_message_10.csv'
 
     lob = LobsterData()
     lob.read_single_day_data(message_file=message_file)
