@@ -5,6 +5,9 @@ from datetime import timedelta
 from enum import Enum
 import sys
 
+"""
+Enum for Check Order Event Types
+"""
 class OrderEvent(Enum):
     SUBMISSION = 1
     CANCELLATION = 2
@@ -15,6 +18,9 @@ class OrderEvent(Enum):
     TRADING_HALT  = 7
     OTHER = 8
 
+"""
+Enum for Check Order Direction
+"""
 class OrderDirection(Enum):
     SELLORDER=-1
     BUYORDER=1
@@ -35,12 +41,19 @@ for f in OrderDirection:
 def get_orderDirection(eventid):
     return __DirectionMap[eventid]
 
+"""
+Handling class for Lobster Data
+"""
 class LobsterData:
     def __init__(self):
         self.messages = DataFrame()
         self.processed_message= DataFrame([]);
         self.level = 0
 
+    """
+    Read single csv limit order file
+    @return message dataframe
+    """
     def read_single_day_data(self, message_file, append=True, convert_time=False):
         file_name = path.basename(message_file)
         file_base = path.splitext(file_name)[0]
@@ -54,13 +67,10 @@ class LobsterData:
 
         self.messages = mymessages
 
-    def get_type(self):
-        return type(self.messages['Size']);
 
-    def get_moving_avg_price(self,price1,price2):
-        temp=price1/price2
-        return np.log(temp)
-
+    """
+    Append Best bid_ask and Execution_Time to Data Frame
+    """
     def append_values(self,direction,index,diff,price,volume,bestBid,bestAsk):
         if (direction == OrderDirection.BUYORDER):
             if (bestBid == 0):
@@ -87,7 +97,7 @@ class LobsterData:
                 bestAsk = price
 
     """
-    Calculatate the execuation time limit order
+    Calculate execution time, add size, add price, direction to data frame
     """
     @property
     def get_time_calculation(self):
@@ -108,6 +118,10 @@ class LobsterData:
                 self.append_values(direction, index, diff, price, volume, bestBid, bestAsk)
         return self.processed_message;
 
+
+    """
+    Calculate the Time Vector Component
+    """
     def get_time_vector(self):
         self.processed_message['mult']=(self.processed_message.Execution_Time*self.processed_message.Volume);
         vol_sum=self.processed_message['Volume'].sum()
@@ -116,20 +130,27 @@ class LobsterData:
         self.processed_message['time_vector'] = (np.log(self.processed_message.Execution_Time/weighted_avrge));
         return self.processed_message;
 
+    """
+    Calculate The Volume Vector Component
+    """
     def get_volume_vector(self):
         vol_sum = self.processed_message['Volume'].sum()
         vol_day=vol_sum/self.processed_message['Order_ID'].count();
         self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
         return self.processed_message;
 
-    def write_csv(self):
-        self.processed_message.to_csv("vecotrozed_data.csv", index=False, encoding='utf-8')
-
+    """
+    Calcuate Price Vector Component
+    """
     def get_price_vector(self):
         self.processed_message['price_vector'] = (np.log(self.processed_message.Price/self.processed_message.Best_Bid_Ask));
         return self.processed_message;
 
+    """
+    Write Vectorized data to CSV
+    """
+    def write_csv(self):
+        self.processed_message.to_csv("vecotrozed_data.csv", index=False, encoding='utf-8')
 
-    def get_number_of_record(self):
-        return type(self.messages['Event']);
+
 
