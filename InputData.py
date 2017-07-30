@@ -108,13 +108,19 @@ class LobsterData:
                 self.append_values(direction, index, diff, price, volume, bestBid, bestAsk)
         return self.processed_message;
 
-    def get_volume_weighted_average(self):
+    def get_time_vector(self):
         self.processed_message['mult']=(self.processed_message.Execution_Time*self.processed_message.Volume);
-        vol_sum=self.processed_message.groupby('Volume').sum()
-        mul_sum=self.processed_message.groupby('mult').sum()
-        print(vol_sum)
-        print(mul_sum)
-        #weighted_avrge=mul_sum/vol_sum;
+        vol_sum=self.processed_message['Volume'].sum()
+        mul_sum=self.processed_message['mult'].sum()
+        weighted_avrge=mul_sum/vol_sum;
+        self.processed_message['time_vector'] = (np.log(self.processed_message.Execution_Time/weighted_avrge));
+        return self.processed_message;
+
+    def get_volume_vector(self):
+        vol_sum = self.processed_message['Volume'].sum()
+        vol_day=vol_sum/self.processed_message['Order_ID'].value_counts();
+        self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
+        return self.processed_message
 
 
     def get_number_of_record(self):
