@@ -77,7 +77,14 @@ class LobsterData:
         return self.processed_message;
 
     def get_volume_weighted_average(self):
-        print(self.processed_message['Order_ID'])
+        self.processed_message['mult']=(self.processed_message.Execution_Time*self.processed_message.Volume);
+        vol_sum=self.processed_message.groupby('Volume').sum()
+        mul_sum=self.processed_message.groupby('mult').sum()
+        print(vol_sum)
+        print(mul_sum)
+        #weighted_avrge=mul_sum/vol_sum;
+
+
     def get_number_of_record(self):
         return type(self.messages['Event']);
 

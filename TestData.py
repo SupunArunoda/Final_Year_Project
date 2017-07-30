@@ -7,10 +7,11 @@ def test_read_single_date_files():
 
     lob = LobsterData()
     lob.read_single_day_data(message_file=message_file)
-    print(lob.get_time_calculation())
+    lob.get_time_calculation()
+   # print(lob.get_time_calculation())
     #print(lob.get_type())
     #print(lob.get_number_of_record())
-    print(lob.get_volume_weighted_average())
+    lob.get_volume_weighted_average()
 
 
 test_read_single_date_files()
