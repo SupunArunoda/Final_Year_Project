@@ -66,11 +66,11 @@ class LobsterData:
             if (bestBid == 0):
                 self.processed_message = self.processed_message.append(DataFrame(
                     {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                     'Direction': direction, 'Best Bid/ask': price}, index=[0]), ignore_index=True);
+                     'Direction': direction, 'Best_Bid_Ask': price}, index=[0]), ignore_index=True);
             elif (bestBid > 0):
                 self.processed_message = self.processed_message.append(DataFrame(
                     {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                     'Direction': direction, 'Best Bid/ask': bestBid }, index=[0]), ignore_index=True)
+                     'Direction': direction, 'Best_Bid_Ask': bestBid }, index=[0]), ignore_index=True)
             if (bestBid < price):
                 bestBid = price
 
@@ -78,11 +78,11 @@ class LobsterData:
             if (bestAsk == sys.maxsize):
                 self.processed_message = self.processed_message.append(DataFrame(
                     {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                     'Direction': direction, 'Best Bid/ask': price }, index=[0]), ignore_index=True);
+                     'Direction': direction, 'Best_Bid_Ask': price }, index=[0]), ignore_index=True);
             elif (bestBid > 0):
                 self.processed_message = self.processed_message.append(DataFrame(
                     {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                     'Direction': direction, 'Best Bid/ask': bestAsk}, index=[0]), ignore_index=True);
+                     'Direction': direction, 'Best_Bid_Ask': bestAsk}, index=[0]), ignore_index=True);
             if (bestAsk > price):
                 bestAsk = price
 
@@ -120,7 +120,11 @@ class LobsterData:
         vol_sum = self.processed_message['Volume'].sum()
         vol_day=vol_sum/self.processed_message['Order_ID'].value_counts();
         self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
-        return self.processed_message
+        return self.processed_message;
+
+    def get_price_vector(self):
+        self.processed_message['price_vector'] = (np.log(self.processed_message.Price/self.processed_message.Best_Bid_Ask));
+        return self.processed_message;
 
 
     def get_number_of_record(self):
