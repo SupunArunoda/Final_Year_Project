@@ -118,7 +118,7 @@ class LobsterData:
 
     def get_volume_vector(self):
         vol_sum = self.processed_message['Volume'].sum()
-        vol_day=vol_sum/self.processed_message['Order_ID'].value_counts();
+        vol_day=vol_sum/self.processed_message['Order_ID'].count()
         self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
         return self.processed_message
 
