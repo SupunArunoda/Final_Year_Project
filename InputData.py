@@ -105,7 +105,29 @@ class LobsterData:
                 price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  # add price attribute
                 direction = self.messages.loc[self.messages['Order_ID'] == index, 'Direction'].iloc[0]  # add direction attribute
 
-                self.append_values(direction, index, diff, price, volume, bestBid, bestAsk)
+                if (direction == OrderDirection.BUYORDER):
+                    if (bestBid == 0):
+                        self.processed_message = self.processed_message.append(DataFrame(
+                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                             'Direction': direction, 'Best_Bid_Ask': price}, index=[0]), ignore_index=True);
+                    elif (bestBid > 0):
+                        self.processed_message = self.processed_message.append(DataFrame(
+                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                             'Direction': direction, 'Best_Bid_Ask': bestBid}, index=[0]), ignore_index=True)
+                    if (bestBid < price):
+                        bestBid = price
+
+                else:
+                    if (bestAsk == sys.maxsize):
+                        self.processed_message = self.processed_message.append(DataFrame(
+                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                             'Direction': direction, 'Best_Bid_Ask': price}, index=[0]), ignore_index=True);
+                    elif (bestBid > 0):
+                        self.processed_message = self.processed_message.append(DataFrame(
+                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
+                             'Direction': direction, 'Best_Bid_Ask': bestAsk}, index=[0]), ignore_index=True);
+                    if (bestAsk > price):
+                        bestAsk = price
         return self.processed_message;
 
     def get_time_vector(self):
@@ -114,19 +136,22 @@ class LobsterData:
         mul_sum=self.processed_message['mult'].sum()
         weighted_avrge=mul_sum/vol_sum;
         self.processed_message['time_vector'] = (np.log(self.processed_message.Execution_Time/weighted_avrge));
+        #self.processed_message['time_vector'] = (self.processed_message.Execution_Time / weighted_avrge);
         return self.processed_message;
 
     def get_volume_vector(self):
         vol_sum = self.processed_message['Volume'].sum()
         vol_day=vol_sum/self.processed_message['Order_ID'].count();
         self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
+        #self.processed_message['volume_vector'] = (self.processed_message.Volume / vol_day);
         return self.processed_message;
 
     def write_csv(self):
-        self.processed_message.to_csv("vecotrozed_data.csv", index=False, encoding='utf-8')
+        self.processed_message.to_csv("vecotrozed_AMZN_level_50_data.csv", index=False, encoding='utf-8')
 
     def get_price_vector(self):
         self.processed_message['price_vector'] = (np.log(self.processed_message.Price/self.processed_message.Best_Bid_Ask));
+        #self.processed_message['price_vector'] = (self.processed_message.Price / self.processed_message.Best_Bid_Ask);
         return self.processed_message;
 
 
