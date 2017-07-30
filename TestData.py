@@ -9,7 +9,9 @@ def test_read_single_date_files():
     lob.read_single_day_data(message_file=message_file)
     lob.get_time_calculation
     lob.get_time_vector()
-    print(lob.get_volume_vector())
+    lob.get_volume_vector()
+    print(lob.get_price_vector())
+    lob.write_csv()
     #print(lob.get_type())
     #print(lob.get_number_of_record())
     #print(lob.get_volume_weighted_average())
