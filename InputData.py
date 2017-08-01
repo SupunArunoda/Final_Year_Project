@@ -1,4 +1,4 @@
-from pandas import DataFrame, read_csv, concat
+from pandas import DataFrame, read_csv
 from os import path
 import numpy as np
 from enum import Enum
@@ -65,7 +65,7 @@ class LobsterData:
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['Time', 'Event', 'Order_ID', 'Size', 'Price', 'Direction']
         read_messages.Event = read_messages['Event'].map(get_orderEvent)
-        read_messages.Direction=read_messages['Direction'].map(get_orderDirection)
+       # read_messages.Direction=read_messages['Direction'].map(get_orderDirection)
         self.messages = read_messages
 
     """
@@ -88,7 +88,7 @@ class LobsterData:
                 price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  #set price attribute
                 direction = self.messages.loc[self.messages['Order_ID'] == index, 'Direction'].iloc[0]  #set direction attribute
 
-                if (direction == OrderDirection.BUYORDER):
+                if (direction == 1):
                     if (bestBid == 0):
                         self.processed_message = self.processed_message.append(DataFrame(
                             {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
