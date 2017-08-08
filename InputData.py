@@ -64,9 +64,11 @@ class LobsterData:
     def read_single_day_data(self, message_file):
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['Time', 'Event', 'Order_ID', 'Size', 'Price', 'Direction']
-        read_messages.Event = read_messages['Event'].map(get_orderEvent)
+        #read_messages.Event = read_messages['Event'].map(get_orderEvent)
        # read_messages.Direction=read_messages['Direction'].map(get_orderDirection)
         self.messages = read_messages
+        return self.messages
+
 
     """
     Name: get_calculation

@@ -1,4 +1,4 @@
-import findspark
+"""import findspark
 findspark.init()
 from pyspark import SparkContext
 from pyspark.sql.session import SparkSession
@@ -8,4 +8,4 @@ class Spark:
         sc = SparkContext('local')
         spark = SparkSession(sc)
         rdd = spark.read.csv(message_file)
-        print(rdd)
+        print(rdd)"""
