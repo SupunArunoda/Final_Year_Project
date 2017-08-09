@@ -73,8 +73,8 @@ class OrderBook:
         if order.direction == 1:  # if buy order
             if order.price in self.buyOrdersDetails.keys():
                 tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
-                volume = tempOrder['Size']
-                diff = volume - order.volume
+                volume = tempOrder['Size'].iloc[0]
+                diff = (volume - order.volume)
                 self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)), 'Size'] = diff
 
                 if diff == 0:
@@ -85,29 +85,19 @@ class OrderBook:
                 if order.price in self.sellOrdersDetails.keys():
                     tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
                     volume = tempOrder['Size'].iloc[0]
-                    diff = volume - order.volume
+                    diff = (volume - order.volume)
                     self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)),'Size'] = diff
 
                     if diff == 0:
                         self.cancelOrder(order=order)
 
 
-def printOrderBook(self):
-    print("Count\t\tVolume\t\t@ Price")
-    for buyOrder in self.buyOrders:
-        volume = 0;
-        for orderId in self.buyOrdersDetails[buyOrder]:
-            order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-            volume += order.volume
+    def printOrderBook(self):
+        print("Count\t\t@ Price")
+        for buyOrder in self.buyOrders:
+            print(len(self.buyOrdersDetails[buyOrder]), "\t\t@ ", buyOrder)
 
-        print(len(self.buyOrdersDetails[buyOrder]), "\t\t", volume, "\t\t @", buyOrder)
-
-    print("\n\n\n")
-    print("Count\t\tVolume\t\t@ Price")
-    for sellOrder in self.sellOrders:
-        volume = 0;
-        for orderId in self.sellOrdersDetails[sellOrder]:
-            order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-            volume += order.volume
-
-        print(len(self.sellOrdersDetails[sellOrder]), "\t\t", volume, "\t\t @", sellOrder)
+        print("\n\n\n")
+        print("Count\t\t@ Price")
+        for sellOrder in self.sellOrders:
+            print(len(self.sellOrdersDetails[sellOrder]), "\t\t@ ", sellOrder)
