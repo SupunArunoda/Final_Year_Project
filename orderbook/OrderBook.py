@@ -93,21 +93,21 @@ class OrderBook:
                         self.cancelOrder(order=order)
 
     def printOrderBook(self):
-        print("Count\t\tVolume\t\t@ Price")
+        print("Count\t\tVolume\t\t\t@ Price")
         for buyOrder in self.buyOrders:
-            volume = 0;
+            volume = 0
             for orderId in self.buyOrdersDetails[buyOrder]:
                 order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
                 volume += order['Size'].iloc[0]
 
-            print(len(self.buyOrdersDetails[buyOrder]), "\t\t", volume, "\t\t @", buyOrder)
+            print(len(self.buyOrdersDetails[buyOrder]), "\t\t\t", volume, "\t\t\t @", buyOrder)
 
         print("\n\n\n")
-        print("Count\t\tVolume\t\t@ Price")
+        print("Count\t\tVolume\t\t\t@ Price")
         for sellOrder in self.sellOrders:
-            volume = 0;
+            volume = 0
             for orderId in self.sellOrdersDetails[sellOrder]:
                 order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
                 volume += order['Size'].iloc[0]
 
-            print(len(self.sellOrdersDetails[sellOrder]), "\t\t", volume, "\t\t @", sellOrder)
+            print(len(self.sellOrdersDetails[sellOrder]), "\t\t\t", volume, "\t\t\t @", sellOrder)
