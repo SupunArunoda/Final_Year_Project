@@ -47,7 +47,7 @@ def get_orderDirection(eventid):
 Name: LobsterData
 Returns : Create time, volume & price vectors
 """
-class LobsterData:
+class InputData:
 
     """
     Name: Initiate method
@@ -63,7 +63,7 @@ class LobsterData:
     """
     def read_single_day_data(self, message_file):
         read_messages = read_csv(message_file, header=None)
-        read_messages.columns = ['Time', 'Event', 'Order_ID', 'Size', 'Price', 'Direction']
+        read_messages.columns = ['instrument_id', 'broker_id', 'executed_value','value','transact_time', 'execution_type', 'order_qty','executed_qty','total_qty','side','visible_size','order_id']
         #read_messages.Event = read_messages['Event'].map(get_orderEvent)
        # read_messages.Direction=read_messages['Direction'].map(get_orderDirection)
         self.messages = read_messages
