@@ -86,27 +86,30 @@ class OrderBook:
                     tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
                     volume = tempOrder['Size'].iloc[0]
                     diff = (volume - order.volume)
-                    self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)),'Size'] = diff
+                    self.order_d.loc[
+                        ((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)), 'Size'] = diff
 
                     if diff == 0:
                         self.cancelOrder(order=order)
 
     def printOrderBook(self):
-        print("Count\t\tVolume\t\t@ Price")
-        for buyOrder in self.buyOrders:
+
+
+
+        for i in range(0, 10):
+            buyOrder = self.buyOrders[i]
+
             volume = 0;
             for orderId in self.buyOrdersDetails[buyOrder]:
-                order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-                volume += order.volume
+                order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
+                volume += order['Size'].iloc[0]
 
-            print(len(self.buyOrdersDetails[buyOrder]), "\t\t", volume, "\t\t @", buyOrder)
+            print(len(self.buyOrdersDetails[buyOrder]), "\t\t", volume, "\t\t @", buyOrder, "\t\t", )
 
-        print("\n\n\n")
-        print("Count\t\tVolume\t\t@ Price")
-        for sellOrder in self.sellOrders:
+            sellOrder = self.sellOrders[i]
             volume = 0;
             for orderId in self.sellOrdersDetails[sellOrder]:
-                order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-                volume += order.volume
+                order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
+                volume += order['Size'].iloc[0]
 
             print(len(self.sellOrdersDetails[sellOrder]), "\t\t", volume, "\t\t @", sellOrder)
