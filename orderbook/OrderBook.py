@@ -72,10 +72,10 @@ class OrderBook:
     def executeOrder(self, order):
         if order.direction == 1:  # if buy order
             if order.price in self.buyOrdersDetails.keys():
-                tempOrder = self.order_d[self.order_d['Order_ID'] == order.id and self.order_d['Event'] == 1]
+                tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
                 volume = tempOrder['Size']
-                diff = volume - order.size
-                self.order_d[self.order_d['Order_ID'] == order.id and self.order_d['Event'] == 1]['Size'] = diff
+                diff = volume - order.volume
+                self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)), 'Size'] = diff
 
                 if diff == 0:
                     self.cancelOrder(order=order)
@@ -84,9 +84,9 @@ class OrderBook:
             if order.price in self.sellOrdersDetails.keys():
                 if order.price in self.sellOrdersDetails.keys():
                     tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
-                    volume = tempOrder['Size']
+                    volume = tempOrder['Size'].iloc[0]
                     diff = volume - order.volume
-                    self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]['Size'] = diff
+                    self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)),'Size'] = diff
 
                     if diff == 0:
                         self.cancelOrder(order=order)
