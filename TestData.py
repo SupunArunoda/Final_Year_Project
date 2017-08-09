@@ -1,4 +1,4 @@
-from InputData import LobsterData
+from InputData import InputData
 from orderbook.Order import Order
 from orderbook.OrderBook import OrderBook
 #from spark.InputData import Spark
@@ -16,20 +16,31 @@ def analyze_model():
 #    kml.read_vector_file(message_file=message_file)
 
 def order_book():
-    message_file = './data/testdata_50.csv'
-    lob=LobsterData()
+    message_file = './data/data.csv'
+    lob=InputData()
     data=lob.read_single_day_data(message_file=message_file)
 
     orderBook=OrderBook(order_data=data)
     for index, order_row in data.iterrows():
-        time = order_row['Time']
-        type = order_row['Event']
-        price = order_row['Price']
-        direction = order_row['Direction']
-        order_id= order_row['Order_ID']
-        volume = order_row['Size']  # set size attribute
-        order=Order(id=order_id,price=price,time=time,volume=volume,type=type,direction=direction)
+        order_id = order_row['order_id']
+        visible_size = order_row['visible_size']
+        side = order_row['side']
+        total_qty = order_row['total_qty']
+        executed_qty = order_row['executed_qty']
+        order_qty = order_row['order_qty']
+        execution_type = order_row['execution_type']
+        transact_time = order_row['transact_time']
+        value = order_row['value']
+        executed_value = order_row['executed_value']
+        broker_id = order_row['broker_id']
+        instrument_id = order_row['instrument_id']  # set size attribute
+        order=Order(order_id=order_id,visible_size=visible_size,side=side,total_qty=total_qty,executed_qty=executed_qty
+                    ,order_qty=order_qty,execution_type=execution_type,transact_time=transact_time,value=value,executed_value=executed_value
+                    ,broker_id=broker_id,instrument_id=instrument_id)
         orderBook.processOrder(order=order)
+
+        if index==1000:
+            break
 
     orderBook.printOrderBook()
 
