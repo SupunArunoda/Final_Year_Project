@@ -91,13 +91,22 @@ class OrderBook:
                     if diff == 0:
                         self.cancelOrder(order=order)
 
-
     def printOrderBook(self):
-        print("Count\t\t@ Price")
+        print("Count\t\tVolume\t\t@ Price")
         for buyOrder in self.buyOrders:
-            print(len(self.buyOrdersDetails[buyOrder]), "\t\t@ ", buyOrder)
+            volume = 0;
+            for orderId in self.buyOrdersDetails[buyOrder]:
+                order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
+                volume += order.volume
+
+            print(len(self.buyOrdersDetails[buyOrder]), "\t\t", volume, "\t\t @", buyOrder)
 
         print("\n\n\n")
-        print("Count\t\t@ Price")
+        print("Count\t\tVolume\t\t@ Price")
         for sellOrder in self.sellOrders:
-            print(len(self.sellOrdersDetails[sellOrder]), "\t\t@ ", sellOrder)
+            volume = 0;
+            for orderId in self.sellOrdersDetails[sellOrder]:
+                order = self.order_d[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
+                volume += order.volume
+
+            print(len(self.sellOrdersDetails[sellOrder]), "\t\t", volume, "\t\t @", sellOrder)
