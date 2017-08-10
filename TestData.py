@@ -39,7 +39,7 @@ def order_book():
                     ,broker_id=broker_id,instrument_id=instrument_id)
         orderBook.processOrder(order=order)
 
-        if index==1000:
+        if index==100:
             break
 
     orderBook.printOrderBook()
