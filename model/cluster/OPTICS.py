@@ -1,287 +1,123 @@
-import math
-import json
-from pandas import read_csv
-
-class Point:
-    def __init__(self, latitude, longitude):
-        self.latitude = latitude
-        self.longitude = longitude
-        self.cd = None  # core distance
-        self.rd = None  # reachability distance
-        self.processed = False  # has this point been processed?
-
-    # --------------------------------------------------------------------------
-    # calculate the distance between any two points on earth
-    # --------------------------------------------------------------------------
-
-    def distance(self, point):
-        # convert coordinates to radians
-
-        p1_lat, p1_lon, p2_lat, p2_lon = [math.radians(c) for c in
-                                          (self.latitude, self.longitude, point.latitude, point.longitude)]
-
-        numerator = math.sqrt(
-            math.pow(math.cos(p2_lat) * math.sin(p2_lon - p1_lon), 2) +
-            math.pow(
-                math.cos(p1_lat) * math.sin(p2_lat) -
-                math.sin(p1_lat) * math.cos(p2_lat) *
-                math.cos(p2_lon - p1_lon), 2))
-
-        denominator = (
-            math.sin(p1_lat) * math.sin(p2_lat) +
-            math.cos(p1_lat) * math.cos(p2_lat) *
-            math.cos(p2_lon - p1_lon))
-
-        # convert distance from radians to meters
-        # note: earth's radius ~ 6372800 meters
-
-        return math.atan2(numerator, denominator) * 6372800
-
-    # --------------------------------------------------------------------------
-    # point as GeoJSON
-    # --------------------------------------------------------------------------
-
-    def to_geo_json_dict(self, properties=None):
-        return {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [
-                    self.longitude,
-                    self.latitude,
-                ]
-            },
-            'properties': properties,
-        }
-
-    def __repr__(self):
-        return '(%f, %f)' % (self.latitude, self.longitude)
-
-
-################################################################################
-# CLUSTER
-################################################################################
-
-class Cluster:
-    def __init__(self, points):
-        self.points = points
-
-    # --------------------------------------------------------------------------
-    # calculate the centroid for the cluster
-    # --------------------------------------------------------------------------
-
-    def centroid(self):
-        return Point(sum([p.latitude for p in self.points]) / len(self.points),
-                     sum([p.longitude for p in self.points]) / len(self.points))
-
-    # --------------------------------------------------------------------------
-    # calculate the region (centroid, bounding radius) for the cluster
-    # --------------------------------------------------------------------------
-
-    def region(self):
-        centroid = self.centroid()
-        radius = reduce(lambda r, p: max(r, p.distance(centroid)), self.points)
-        return centroid, radius
-
-    # --------------------------------------------------------------------------
-    # cluster as GeoJSON
-    # --------------------------------------------------------------------------
-
-    def to_geo_json_dict(self, user_properties=None):
-        center, radius = self.region()
-        properties = {'radius': radius}
-        if user_properties: properties.update(user_properties)
-
-        return {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [
-                    center.longitude,
-                    center.latitude,
-                ]
-            },
-            'properties': properties,
-        }
 
 
-################################################################################
-# OPTICS
-################################################################################
+import numpy as N
+import pylab as P
+import hcluster as H
 
-class Optics:
-    def __init__(self, points, max_radius, min_cluster_size):
 
-        self.points = points
-        self.max_radius = max_radius  # maximum radius to consider
-        self.min_cluster_size = min_cluster_size  # minimum points in cluster
-
-    # --------------------------------------------------------------------------
-    # get ready for a clustering run
-    # --------------------------------------------------------------------------
-
-    def _setup(self):
-
-        for p in self.points:
-            p.rd = None
-            p.processed = False
-        self.unprocessed = [p for p in self.points]
-        self.ordered = []
-
-    # --------------------------------------------------------------------------
-    # distance from a point to its nth neighbor (n = min_cluser_size)
-    # --------------------------------------------------------------------------
-
-    def _core_distance(self, point, neighbors):
-
-        if point.cd is not None: return point.cd
-        if len(neighbors) >= self.min_cluster_size - 1:
-            sorted_neighbors = sorted([n.distance(point) for n in neighbors])
-            point.cd = sorted_neighbors[self.min_cluster_size - 2]
-            return point.cd
-
-    # --------------------------------------------------------------------------
-    # neighbors for a point within max_radius
-    # --------------------------------------------------------------------------
-
-    def _neighbors(self, point):
-
-        return [p for p in self.points if p is not point and
-                p.distance(point) <= self.max_radius]
-
-    # --------------------------------------------------------------------------
-    # mark a point as processed
-    # --------------------------------------------------------------------------
-
-    def _processed(self, point):
-
-        point.processed = True
-        self.unprocessed.remove(point)
-        self.ordered.append(point)
-
-    # --------------------------------------------------------------------------
-    # update seeds if a smaller reachability distance is found
-    # --------------------------------------------------------------------------
-
-    def _update(self, neighbors, point, seeds):
-
-        # for each of point's unprocessed neighbors n...
-
-        for n in [n for n in neighbors if not n.processed]:
-
-            # find new reachability distance new_rd
-            # if rd is null, keep new_rd and add n to the seed list
-            # otherwise if new_rd < old rd, update rd
-
-            new_rd = max(point.cd, point.distance(n))
-            if n.rd is None:
-                n.rd = new_rd
-                seeds.append(n)
-            elif new_rd < n.rd:
-                n.rd = new_rd
-
-    # --------------------------------------------------------------------------
-    # run the OPTICS algorithm
-    # --------------------------------------------------------------------------
-
-    def run(self):
-
-        self._setup()
-
-        # for each unprocessed point (p)...
-
-        while self.unprocessed:
-            point = self.unprocessed[0]
-
-            # mark p as processed
-            # find p's neighbors
-
-            self._processed(point)
-            point_neighbors = self._neighbors(point)
-
-            # if p has a core_distance, i.e has min_cluster_size - 1 neighbors
-
-            if self._core_distance(point, point_neighbors) is not None:
-
-                # update reachability_distance for each unprocessed neighbor
-
-                seeds = []
-                self._update(point_neighbors, point, seeds)
-
-                # as long as we have unprocessed neighbors...
-
-                while (seeds):
-
-                    # find the neighbor n with smallest reachability distance
-
-                    seeds.sort(key=lambda n: n.rd)
-                    n = seeds.pop(0)
-
-                    # mark n as processed
-                    # find n's neighbors
-
-                    self._processed(n)
-                    n_neighbors = self._neighbors(n)
-
-                    # if p has a core_distance...
-
-                    if self._core_distance(n, n_neighbors) is not None:
-                        # update reachability_distance for each of n's neighbors
-
-                        self._update(n_neighbors, n, seeds)
-
-        # when all points have been processed
-        # return the ordered list
-
-        return self.ordered
-
-    # --------------------------------------------------------------------------
-
-    def cluster(self, cluster_threshold):
-
-        clusters = []
-        separators = []
-
-        for i in range(len(self.ordered)):
-            this_i = i
-            next_i = i + 1
-            this_p = self.ordered[i]
-            this_rd = this_p.rd if this_p.rd else float('infinity')
-
-            # use an upper limit to separate the clusters
-
-            if this_rd > cluster_threshold:
-                separators.append(this_i)
-
-        separators.append(len(self.ordered))
-
-        for i in range(len(separators) - 1):
-            start = separators[i]
-            end = separators[i + 1]
-            if end - start >= self.min_cluster_size:
-                clusters.append(Cluster(self.ordered[start:end]))
-
-        return clusters
-
-
-# LOAD SOME POINTS
-
-# points = [
-#     Point(37.769006, -122.429299),  # cluster #1
-#     Point(37.769044, -122.429130),  # cluster #1
-#     Point(37.768775, -122.429092),  # cluster #1
-#     Point(37.776299, -122.424249),  # cluster #2
-#     Point(37.776265, -122.424657),  # cluster #2
-# ]
-
-file_path = 'sample.csv'
-datafile = read_csv(file_path)
-datafile = datafile[['time_vector', 'price_vector', 'volume_vector']]
-points = list(datafile.values)
-
-optics = Optics(points, 100, 2)  # 100m radius for neighbor consideration, cluster size >= 2 points
-optics.run()  # run the algorithm
-clusters = optics.cluster(50)  # 50m threshold for clustering
-
-for cluster in clusters:
-    print(cluster.points)
+def optics(x, k, distMethod = 'euclidean'):
+    if len(x.shape)>1:
+        m,n = x.shape
+    else:
+        m = x.shape[0]
+        n == 1
+
+    try:
+        D = H.squareform(H.pdist(x, distMethod))
+        distOK = True
+    except:
+        print ("squareform or pdist error")
+        distOK = False
+
+
+    CD = N.zeros(m)
+    RD = N.ones(m)*1E10
+
+    for i in range(m):
+        #again you can use the euclid function if you don't want hcluster
+#        d = euclid(x[i],x)
+#        d.sort()
+#        CD[i] = d[k]
+
+        tempInd = D[i].argsort()
+        tempD = D[i][tempInd]
+#        tempD.sort() #we don't use this function as it changes the reference
+        CD[i] = tempD[k]#**2
+
+
+    order = []
+    seeds = N.arange(m, dtype = N.int)
+
+    ind = 0
+    while len(seeds) != 1:
+#    for seed in seeds:
+        ob = seeds[ind]
+        seedInd = N.where(seeds != ob)
+        seeds = seeds[seedInd]
+
+        order.append(ob)
+        tempX = N.ones(len(seeds))*CD[ob]
+        tempD = D[ob][seeds]#[seeds]
+        #you can use this function if you don't want to use hcluster
+        #tempD = euclid(x[ob],x[seeds])
+
+        temp = N.column_stack((tempX, tempD))
+        mm = N.max(temp, axis = 1)
+        ii = N.where(RD[seeds]>mm)[0]
+        RD[seeds[ii]] = mm[ii]
+        ind = N.argmin(RD[seeds])
+
+
+    order.append(seeds[0])
+    RD[0] = 0 #we set this point to 0 as it does not get overwritten
+    return RD, CD, order
+
+def euclid(i, x):
+    """euclidean(i, x) -> euclidean distance between x and y"""
+    y = N.zeros_like(x)
+    y += 1
+    y *= i
+    if len(x) != len(y):
+        raise ValueError("vectors must be same length")
+
+    d = (x-y)**2
+    return N.sqrt(N.sum(d, axis = 1))
+
+
+
+if __name__ == "__main__":
+
+    testX = N.array([[ 15.,  70.],
+                    [ 31.,  87.],
+                    [ 45.,  32.],
+                    [  5.,   8.],
+                    [ 73.,   9.],
+                    [ 32.,  83.],
+                    [ 26.,  50.],
+                    [  7.,  31.],
+                    [ 43.,  97.],
+                    [ 97.,   9.]])
+
+#    mlabOrder = N.array(1,2,6,7,3,8,9,4,5,10) #the order returned by the original MATLAB code
+# Remeber MATLAB counts from 1, python from 0
+
+
+    P.plot(testX[:,0], testX[:,1], 'ro')
+    RD, CD, order = optics(testX, 4)
+    testXOrdered = testX[order]
+    P.plot(testXOrdered[:,0], testXOrdered[:,1], 'b-')
+	
+    print (order)
+
+    P.show()
+
+def cluster(order, distance, points, threshold):
+    ''' Given the output of the options algorithm,
+    compute the clusters:
+
+    @param order The order of the points
+    @param distance The relative distances of the points
+    @param points The actual points
+    @param threshold The threshold value to cluster on
+    @returns A list of cluster groups
+    '''
+    clusters = [[]]
+    points   = sorted(zip(order, distance, points))
+    splits   = ((v > threshold, p) for i,v,p in points)
+    for iscluster, point in splits:
+        if iscluster: clusters[-1].append(point)
+        elif len(clusters[-1]) > 0: clusters.append([])
+    return clusters
+
+    rd, cd, order = optics(points, 4)
+    print (cluster(order, rd, points, 38.0))
