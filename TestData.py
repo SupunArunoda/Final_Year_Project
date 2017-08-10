@@ -52,7 +52,7 @@ def window_test():
     print(window.get_regular_time())
 
 
-#order_book()
+order_book()
 #test_read_single_date_files()
 #analyze_model()
-window_test()
+#window_test()

@@ -9,6 +9,8 @@ class Window:
 
         self.attributes = DataFrame()
         self.temp_time=0;
+        self.buy_order_price=0
+        self.sell_order_price=0;
         self.session = read_csv(session_file)
         self.regular_list=[]
 
@@ -25,9 +27,18 @@ class Window:
         reg_list=self.get_regular_time()
         for i in range(len(reg_list)):
             if(order.transact_time>=reg_list[i] and order.transact_time<=reg_list[i+1]):
-                self.attributes = self.attributes.append(DataFrame(
-                    {'order_id': order.order_id, 'value': order.value, 'visible_size': order.visible_size,}
-                    , index=[0]), ignore_index=True);
+                time_gap=order.transact_time-self.temp_time;
+                print(time_gap)
+                if(self.temp_time==0):
+                    self.temp_time=order.transact_time
+                if(order.side==1):
+                    self.buy_order_price+=order.value
+                elif(order.side==2):
+                    self.sell_order_price+=order.value
+                #
+                # self.attributes = self.attributes.append(DataFrame(
+                #     {'order_id': order.order_id, 'value': order.value, 'visible_size': order.visible_size,}
+                #     , index=[0]), ignore_index=True);
             i+=2;
         return self.attributes;
 
