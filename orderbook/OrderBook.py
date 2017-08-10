@@ -21,6 +21,8 @@ class OrderBook:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
                 self.cancelOrder(order)
+            elif order.execution_type == 5:
+                self.amendOrder(order)
             elif order.execution_type == 15:
                 self.executeOrder(order)
 
@@ -105,6 +107,25 @@ class OrderBook:
 
                 if diff == 0:
                     self.cancelOrder(order=order)
+
+    def amendOrder(self, order):
+        price = self.neworders.loc[
+            ((self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
+        if price.empty == False:
+            self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value'] = [order.value]
+            self.neworders.loc[
+                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'transact_time'] = [
+                order.transact_time]
+            self.neworders.loc[
+                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'order_qty'] = [
+                order.order_qty]
+            self.neworders.loc[
+                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'total_qty'] = [
+                order.total_qty]
+            self.neworders.loc[
+                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = [
+                order.visible_size]
+            #print (order.value)
 
     def printOrderBook(self):
         print("Count\t\tVolume\t\t\t@ Price")
