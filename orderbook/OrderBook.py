@@ -10,95 +10,109 @@ class OrderBook:
 
     def __init__(self, order_data):
         self.order_d = order_data
+        columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
+                   'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
+        self.neworders = DataFrame(columns=columns)
+
 
     def processOrder(self, order):
-        if order.type == 1:
-            self.addNewOrder(order)
-        elif order.type == 3:
-            self.cancelOrder(order)
-        elif order.type == 4 or order.type == 5:
-            self.executeOrder(order)
+        if(order.value>0):
+            if order.execution_type == 0:
+                self.addNewOrder(order)
+            elif order.execution_type == 4:
+                self.cancelOrder(order)
+            elif order.execution_type == 15:
+                self.executeOrder(order)
 
     def addNewOrder(self, order):
-        if order.direction == 1:
+        #to keep track of total volume of a order
+        tempDataFrame=self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+        if(tempDataFrame.count().iloc[0]==0):
+            self.neworders = self.neworders.append(self.order_d[(self.order_d['order_id'] == order.order_id) & (self.order_d['execution_type'] == 0)], ignore_index=True);
+        elif(tempDataFrame.count().iloc[0]>0):
+            self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] += order.visible_size
+
+         #to check buy sell orders seperately
+        if order.side == 1:
             self.addNewBuyOrder(order)
         else:
             self.addNewSellOrder(order)
 
     def addNewBuyOrder(self, order):
-        if order.price not in self.buyOrders:
-            self.buyOrders.append(order.price)
+        if order.value not in self.buyOrders:
+            self.buyOrders.append(order.value)
             self.buyOrders.sort(reverse=True)
-            self.buyOrdersDetails[order.price] = [order.id]
+            self.buyOrdersDetails[order.value] = [order.order_id]
         else:
-            self.buyOrdersDetails[order.price].append(order.id)
+            self.buyOrdersDetails[order.value].append(order.order_id)
 
     def addNewSellOrder(self, order):
-        if order.price not in self.sellOrders:
-            self.sellOrders.append(order.price)
+        if order.value not in self.sellOrders:
+            self.sellOrders.append(order.value)
             self.sellOrders.sort()
-            self.sellOrdersDetails[order.price] = [order.id]
+            self.sellOrdersDetails[order.value] = [order.order_id]
         else:
-            self.sellOrdersDetails[order.price].append(order.id)
+            self.sellOrdersDetails[order.value].append(order.order_id)
 
     def cancelOrder(self, order):
-        if order.direction == 1:  # buy order cancellation
+        if order.side == 1:  # buy order cancellation
             tempList = []
-            if order.price in self.sellOrdersDetails.keys():
-                tempList = self.sellOrdersDetails[order.price]
+            if order.value in self.sellOrdersDetails.keys():
+                tempList = self.sellOrdersDetails[order.value]
 
                 for tempOrderId in tempList:
-                    if order.id == tempOrderId:
-                        self.buyOrdersDetails[order.price].remove(tempOrderId)
+                    if order.order_id == tempOrderId:
+                        self.buyOrdersDetails[order.value].remove(tempOrderId)
                         break
                 if len(tempList) == 0:
-                    del self.buyOrdersDetails[order.price]
-                    self.buyOrders.remove(order.price)
+                    del self.buyOrdersDetails[order.value]
+                    self.buyOrders.remove(order.value)
 
         else:  # sell order cancellation
             tempList = []
-            if order.price in self.sellOrdersDetails.keys():
-                tempList = self.sellOrdersDetails[order.price]
+            if order.value in self.sellOrdersDetails.keys():
+                tempList = self.sellOrdersDetails[order.value]
 
                 for tempOrderId in tempList:
-                    if order.id == tempOrderId:
-                        self.sellOrdersDetails[order.price].remove(tempOrderId)
+                    if order.order_id == tempOrderId:
+                        self.sellOrdersDetails[order.value].remove(tempOrderId)
                         break
 
                 if len(tempList) == 0:
-                    del self.sellOrdersDetails[order.price]
-                    self.sellOrders.remove(order.price)
+                    del self.sellOrdersDetails[order.value]
+                    self.sellOrders.remove(order.value)
 
     def executeOrder(self, order):
-        if order.direction == 1:  # if buy order
-            if order.price in self.buyOrdersDetails.keys():
-                tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
-                volume = tempOrder['Size'].iloc[0]
-                diff = (volume - order.volume)
-                self.order_d.loc[((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)), 'Size'] = diff
+        if order.side == 1:  # if buy order
+            price=self.neworders.loc[((self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)),'value']
+            if price.empty==False:
+                tempOrder = self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                volume = tempOrder['visible_size'].iloc[0]
+                diff = (volume - order.visible_size)
+                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
 
                 if diff == 0:
                     self.cancelOrder(order=order)
 
         else:  # if sell order
-            if order.price in self.sellOrdersDetails.keys():
-                if order.price in self.sellOrdersDetails.keys():
-                    tempOrder = self.order_d[(self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)]
-                    volume = tempOrder['Size'].iloc[0]
-                    diff = (volume - order.volume)
-                    self.order_d.loc[
-                        ((self.order_d['Order_ID'] == order.id) & (self.order_d['Event'] == 1)), 'Size'] = diff
+            price = self.neworders.loc[
+                ((self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
+            if price.empty==False:
+                tempOrder = self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                volume = tempOrder['visible_size'].iloc[0]
+                diff = (volume - order.visible_size)
+                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
 
-                    if diff == 0:
-                        self.cancelOrder(order=order)
+                if diff == 0:
+                    self.cancelOrder(order=order)
 
     def printOrderBook(self):
         print("Count\t\tVolume\t\t\t@ Price")
         for buyOrder in self.buyOrders:
             volume = 0
             for orderId in self.buyOrdersDetails[buyOrder]:
-                order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-                volume += order['Size'].iloc[0]
+                order = self.order_d.loc[(self.order_d['order_id'] == orderId) & (self.order_d['execution_type'] == 0)]
+                volume += order['visible_size'].iloc[0]
 
             print(len(self.buyOrdersDetails[buyOrder]), "\t\t\t", volume, "\t\t\t @", buyOrder)
 
@@ -107,7 +121,7 @@ class OrderBook:
         for sellOrder in self.sellOrders:
             volume = 0
             for orderId in self.sellOrdersDetails[sellOrder]:
-                order = self.order_d.loc[(self.order_d['Order_ID'] == orderId) & (self.order_d['Event'] == 1)]
-                volume += order['Size'].iloc[0]
+                order = self.order_d.loc[(self.order_d['order_id'] == orderId) & (self.order_d['execution_type'] == 0)]
+                volume += order['visible_size'].iloc[0]
 
             print(len(self.sellOrdersDetails[sellOrder]), "\t\t\t", volume, "\t\t\t @", sellOrder)
