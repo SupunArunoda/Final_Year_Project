@@ -39,11 +39,11 @@ def order_book():
                     ,broker_id=broker_id,instrument_id=instrument_id)
         orderBook.processOrder(order=order)
 
-        if index==100:
+        if index==400:
             break
 
     orderBook.printOrderBook()
 
 order_book()
 #test_read_single_date_files()
-#analyze_model()
+#analyze_model()+
