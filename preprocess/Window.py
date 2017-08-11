@@ -33,7 +33,7 @@ class Window:
         return reg_list
 
     def get_time_frame(self,order):
-        const_time_gap=datetime.timedelta(0, 5)#set time window value
+        const_time_gap=datetime.timedelta(0, 300)#set time window value
         temp_trasact_time=DUp.parse(order.transact_time)
         for i in range(0,len(self.regular_list),2):
             if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):

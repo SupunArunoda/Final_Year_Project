@@ -44,10 +44,10 @@ def order_book():
                     ,broker_id=broker_id,instrument_id=instrument_id)
         writable_df=orderBook.processOrder(order=order)
 
-        if index==1000:
-            break
+        # if index==1000:
+        #     break
     print(writable_df)
-    writable_df.to_csv("output/time_framed_data_volume.csv", index=False, encoding='utf-8')
+    writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')
 
     #orderBook.printOrderBook()
 def window_test():
