@@ -44,7 +44,7 @@ def order_book():
                     ,broker_id=broker_id,instrument_id=instrument_id)
         writable_df=orderBook.processOrder(order=order)
 
-        if index==500:
+        if index==50000:
             break
     print(writable_df)
     writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')

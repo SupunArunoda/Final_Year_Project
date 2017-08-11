@@ -37,6 +37,7 @@ class OrderBook:
                 self.amendOrder(order)
             elif order.execution_type == 15:
                 self.fillOrder(order)
+            return df
 
     def addNewOrder(self, order):
         #to keep track of total volume of a order
