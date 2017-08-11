@@ -1,9 +1,11 @@
 from sklearn.cluster import KMeans
 import numpy as np
 # from matplotlib import pyplot
+from scipy.spatial import distance
 import math
 from pandas import DataFrame, read_csv
 import plotly.plotly as py
+
 py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
 
@@ -41,7 +43,7 @@ for i in range(k):
 #     pyplot.setp(lines, mew=2.0)
 # pyplot.show()
 
-#plot the data using plotly
+# plot the data using plotly
 data = [];
 for i in clusters:
     x = []
@@ -83,22 +85,38 @@ py.iplot(fig, filename='simple-3d-scatter')
 # result = zip(X, kmeans.labels_)
 # sortedR = sorted(result, key=lambda x: x[1])
 
-print(clusters)
+# print(clusters)
 
 minCluster = 0
 minLength = math.inf
+scores = []
 for i in clusters:
-    if len(clusters[i]) < minLength:
-        minCluster = i
+    # if len(clusters[i]) < minLength:
+    #     minCluster = i
+    tempClusters = list(clusters.keys())
+    tempClusters = tempClusters[0:i] + tempClusters[i + 1:]
 
-for i in clusters[minCluster]:
-    print(i)
-    print(i[1])
-    print(np.float64(0.0011958658638801835))
+    distTotal = 0
+    for j in tempClusters:
+        dist = distance.euclidean(centroids[i], centroids[j])
+        distTotal += dist
+    distMean = distTotal / len(tempClusters)
+    scores.append(distMean / len(clusters[i]))
 
-    # print(abs(i[1] - np.float64(0.0011958658638801835)) < 1e-10)
-    # time = abs(i[0] - np.float64(X['time_vector']))
+print(scores)
 
-    order = X[(np.float64(X['time_vector']) == i[0]) & (np.float64(X['price_vector']) == i[1]) & (np.float64(X['volume_vector']) == i[2])]
+print(scores.index(max(scores)))
+print(clusters[scores.index(max(scores))])
+# print(centroids)
 
-print(order)
+# for i in clusters[minCluster]:
+#     print(i)
+#     print(i[1])
+#     print(np.float64(0.0011958658638801835))
+#
+#     # print(abs(i[1] - np.float64(0.0011958658638801835)) < 1e-10)
+#     # time = abs(i[0] - np.float64(X['time_vector']))
+#
+#     order = X[(np.float64(X['time_vector']) == i[0]) & (np.float64(X['price_vector']) == i[1]) & (np.float64(X['volume_vector']) == i[2])]
+#
+# print(order)
