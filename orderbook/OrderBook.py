@@ -39,6 +39,10 @@ class OrderBook:
                 self.fillOrder(order)
             return df
 
+    """
+            Name : Add new order
+            This is to add new order (type 0) to order book
+    """
     def addNewOrder(self, order):
         #to keep track of total volume of a order
         tempDataFrame=self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
@@ -69,6 +73,12 @@ class OrderBook:
         else:
             self.sellOrdersDetails[order.value].append(order.order_id)
 
+    """
+                Name : Cancel Order
+                This is to cancel order (type 4) of order book
+                first remove the corresponding order id from the list
+                then if the list of that price point is empty then remove the price point also
+    """
     def cancelOrder(self, order):
         if order.side == 1:  # buy order cancellation
             tempList = []
@@ -97,6 +107,13 @@ class OrderBook:
                     del self.sellOrdersDetails[order.value]
                     self.sellOrders.remove(order.value)
 
+    """
+                Name : Fill order
+                This is to deal with fill (type 15) orders
+                Fill orders -> orders that has been matched
+                First reduce the executed volume of the corresponding order
+                If its executed with the total visible qty then do the same thing as cancel order
+    """
     def fillOrder(self, order):
         if order.side == 1:  # if buy order
             price=self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)),'value']
@@ -121,24 +138,22 @@ class OrderBook:
                 if diff == 0:
                     self.cancelOrder(order=order)
 
+    """
+                Name : Amend Order
+                This is to change details of amend (type 5) orders
+                First replace the corresponding entry of the database
+                then to change the values cancel the previous order and add new order with new values
+    """
     def amendOrder(self, order):
         price=0
         price = self.neworders.loc[
             ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
         if price.empty == False:
-            self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value'] = [order.value]
+            type=0
             self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'transact_time'] = [
-                order.transact_time]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'order_qty'] = [
-                order.order_qty]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'total_qty'] = [
-                order.total_qty]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = [
-                order.visible_size]
+                ((self.neworders['order_id'] == order.order_id) & (
+                self.neworders['execution_type'] == 0))] = [order.instrument_id, order.broker_id, order.executed_value, order.value, order.transact_time, type ,
+                                                            order.order_qty, order.executed_qty, order.total_qty, order.side, order.visible_size, order.order_id]
 
             if price.iloc[0] != order.value:
                 if order.side==1:
