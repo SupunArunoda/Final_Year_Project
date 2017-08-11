@@ -14,13 +14,14 @@ class OrderBook:
         columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
                    'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
         self.neworders = DataFrame(columns=columns)
-        self.window=Window()
+        self.window=Window(session_file=session_file)
 
 
 
     def processOrder(self, order):
         if(order.value>0):
             #time function here
+            df=self.window.get_time_frame(order=order)
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
@@ -29,7 +30,7 @@ class OrderBook:
                 self.amendOrder(order)
             elif order.execution_type == 15:
                 self.executeOrder(order)
-                self.window.get_time_frame(order=order)
+            return df
 
 
 
