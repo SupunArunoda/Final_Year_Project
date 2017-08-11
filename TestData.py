@@ -1,6 +1,9 @@
 from InputData import InputData
 from orderbook.Order import Order
 from orderbook.OrderBook import OrderBook
+from preprocess.Window import Window
+from pandas import DataFrame,read_csv
+import datetime
 #from spark.InputData import Spark
 #from model.cluster.KMeans import Kmeans
 
@@ -17,10 +20,12 @@ def analyze_model():
 
 def order_book():
     message_file = './data/data.csv'
+    session_file='./data/sessions.csv'
     lob=InputData()
     data=lob.read_single_day_data(message_file=message_file)
 
-    orderBook=OrderBook(order_data=data)
+    orderBook=OrderBook(order_data=data,session_file=session_file)
+
     for index, order_row in data.iterrows():
         order_id = order_row['order_id']
         visible_size = order_row['visible_size']
@@ -37,13 +42,22 @@ def order_book():
         order=Order(order_id=order_id,visible_size=visible_size,side=side,total_qty=total_qty,executed_qty=executed_qty
                     ,order_qty=order_qty,execution_type=execution_type,transact_time=transact_time,value=value,executed_value=executed_value
                     ,broker_id=broker_id,instrument_id=instrument_id)
-        orderBook.processOrder(order=order)
+        writable_df=orderBook.processOrder(order=order)
 
-        if index==10000:
+        if index==50000:
             break
+    print(writable_df)
+    writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')
 
-    orderBook.printOrderBook()
+    #orderBook.printOrderBook()
+def window_test():
+    session_file = './data/sessions.csv'
+    window=Window(session_file=session_file)
+    print(window.get_regular_time())
 
+
+#print(datetime.timedelta(0,120))
 order_book()
 #test_read_single_date_files()
-#analyze_model()+
+#analyze_model()
+#window_test()

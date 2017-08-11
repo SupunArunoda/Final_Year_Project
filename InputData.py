@@ -3,6 +3,7 @@ from os import path
 import numpy as np
 from enum import Enum
 import sys
+from datetime import datetime
 
 """
 Name : OrderEvent 
@@ -68,6 +69,16 @@ class InputData:
        # read_messages.Direction=read_messages['Direction'].map(get_orderDirection)
         self.messages = read_messages
         return self.messages
+
+    """
+    Name: str_to_date_time
+    Returns : time difference in minutes
+    """
+    def str_to_date_time(self,str_date_1,str_date_2):
+        new_date_1=datetime.strptime(str_date_1,'%m/%d/%Y %I:%M:%S %p')
+        new_date_2 = datetime.strptime(str_date_2, '%m/%d/%Y %I:%M:%S %p')
+        diff=((new_date_2-new_date_1).seconds)/60
+        return diff
 
 
     """
