@@ -9,19 +9,21 @@ from sklearn.preprocessing import StandardScaler
 ##############################################################################
 # # Generate sample data
 # centers = [[1, 1], [-1, -1], [1, -1]]
-# X, labels_true = make_blobs(n_samples=750, centers=centers, cluster_std=0.4,
+# datafile, labels_true = make_blobs(n_samples=150, centers=centers, cluster_std=0.4,
 #                             random_state=0)
 #
-# X = StandardScaler().fit_transform(X)
+# datafile = StandardScaler().fit_transform(datafile)
+#
+# print(datafile)
 
 ##############################################################################
 # Retrieve Data
 
-file_path = 'vecotrozed_AMZN_level_50_data.csv'
+file_path = 'sample.csv'
 datafile = read_csv(file_path)
 # datafile.drop(['Best_Bid_Ask','Direction','Order_ID','Price','Volume','mult','Execution_Time'],axis = 1,inplace = True)
 datafile = datafile[['time_vector','price_vector','volume_vector']]
-# print(datafile)
+print(datafile.values)
 
 
 ##############################################################################
@@ -61,11 +63,14 @@ for k, col in zip(unique_labels, colors):
     class_member_mask = (labels == k)
 
     xy = datafile[class_member_mask & core_samples_mask]
-    plt.plot(xy.iloc[:, 0], xy.iloc[:, 1], 'o', markerfacecolor=tuple(col),
+    print(class_member_mask & core_samples_mask)
+
+    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
              markeredgecolor='k', markersize=14)
+    # print(xy.iloc[:, 0])
 
     xy = datafile[class_member_mask & ~core_samples_mask]
-    plt.plot(xy.iloc[:, 0], xy.iloc[:, 1], 'o', markerfacecolor=tuple(col),
+    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
              markeredgecolor='k', markersize=6)
 
 plt.title('Estimated number of clusters: %d' % n_clusters_)
