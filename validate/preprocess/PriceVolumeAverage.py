@@ -3,7 +3,7 @@ from orderbook.OrderBook import OrderBook
 from pandas import read_csv
 from preprocess.static.PriceVolumeAverage import Window
 
-class VolumeAverage:
+class PriceVolumeAverage:
 
     def run_volume_average(self,message_file,session_file,no_of_lines):
 
