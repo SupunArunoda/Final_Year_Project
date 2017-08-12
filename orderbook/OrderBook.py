@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from preprocess.Window import Window
 
 
 class OrderBook:
@@ -8,15 +9,26 @@ class OrderBook:
     buyOrdersDetails = {}
     sellOrdersDetails = {}
 
-    def __init__(self, order_data):
+    def __init__(self, order_data,session_file):
         self.order_d = order_data
         columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
                    'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
         self.neworders = DataFrame(columns=columns)
+        self.window=Window(session_file=session_file)
 
 
+    """
+        Name : Process Order
+        Process the order as its 4 types
+        0-> New Order
+        4-> Cancel Order
+        5-> Amend Order
+        15-> Fill Order
+     """
     def processOrder(self, order):
         if(order.value>0):
+            #time function here
+            df=self.window.get_time_frame(order=order)
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
@@ -24,11 +36,16 @@ class OrderBook:
             elif order.execution_type == 5:
                 self.amendOrder(order)
             elif order.execution_type == 15:
-                self.executeOrder(order)
+                self.fillOrder(order)
+            return df
 
+    """
+            Name : Add new order
+            This is to add new order (type 0) to order book
+    """
     def addNewOrder(self, order):
         #to keep track of total volume of a order
-        tempDataFrame=self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+        tempDataFrame=self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
         if(tempDataFrame.count().iloc[0]==0):
             self.neworders = self.neworders.append(self.order_d[(self.order_d['order_id'] == order.order_id) & (self.order_d['execution_type'] == 0)], ignore_index=True);
         elif(tempDataFrame.count().iloc[0]>0):
@@ -56,6 +73,12 @@ class OrderBook:
         else:
             self.sellOrdersDetails[order.value].append(order.order_id)
 
+    """
+                Name : Cancel Order
+                This is to cancel order (type 4) of order book
+                first remove the corresponding order id from the list
+                then if the list of that price point is empty then remove the price point also
+    """
     def cancelOrder(self, order):
         if order.side == 1:  # buy order cancellation
             tempList = []
@@ -84,13 +107,20 @@ class OrderBook:
                     del self.sellOrdersDetails[order.value]
                     self.sellOrders.remove(order.value)
 
-    def executeOrder(self, order):
+    """
+                Name : Fill order
+                This is to deal with fill (type 15) orders
+                Fill orders -> orders that has been matched
+                First reduce the executed volume of the corresponding order
+                If its executed with the total visible qty then do the same thing as cancel order
+    """
+    def fillOrder(self, order):
         if order.side == 1:  # if buy order
-            price=self.neworders.loc[((self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)),'value']
+            price=self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)),'value']
             if price.empty==False:
-                tempOrder = self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
                 volume = tempOrder['visible_size'].iloc[0]
-                diff = (volume - order.visible_size)
+                diff = (volume - order.executed_qty)
                 self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
 
                 if diff == 0:
@@ -98,34 +128,32 @@ class OrderBook:
 
         else:  # if sell order
             price = self.neworders.loc[
-                ((self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
+                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
             if price.empty==False:
-                tempOrder = self.neworders[(self.order_d['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
                 volume = tempOrder['visible_size'].iloc[0]
-                diff = (volume - order.visible_size)
+                diff = (volume - order.executed_qty)
                 self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
 
                 if diff == 0:
                     self.cancelOrder(order=order)
 
+    """
+                Name : Amend Order
+                This is to change details of amend (type 5) orders
+                First replace the corresponding entry of the database
+                then to change the values cancel the previous order and add new order with new values
+    """
     def amendOrder(self, order):
         price=0
         price = self.neworders.loc[
             ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
         if price.empty == False:
-            self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value'] = [order.value]
+            type=0
             self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'transact_time'] = [
-                order.transact_time]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'order_qty'] = [
-                order.order_qty]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'total_qty'] = [
-                order.total_qty]
-            self.neworders.loc[
-                ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = [
-                order.visible_size]
+                ((self.neworders['order_id'] == order.order_id) & (
+                self.neworders['execution_type'] == 0))] = [order.instrument_id, order.broker_id, order.executed_value, order.value, order.transact_time, type ,
+                                                            order.order_qty, order.executed_qty, order.total_qty, order.side, order.visible_size, order.order_id]
 
             if price.iloc[0] != order.value:
                 if order.side==1:
