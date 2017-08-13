@@ -1,11 +1,12 @@
 from orderbook.Order import Order
 from orderbook.OrderBook import OrderBook
 from pandas import read_csv
-from preprocess.static.PriceVolumeAverage import Window
+from preprocess.static.ExecutionType import ExecutionType
 
-class PriceVolumeAverage:
+class ExecutionTypeTest:
 
-    def run_volume_average(self,message_file,session_file,no_of_lines):
+
+    def run_execution_type(self,message_file,session_file,no_of_lines,time_delta):
 
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
@@ -13,7 +14,7 @@ class PriceVolumeAverage:
                                  'order_id']
         data=read_messages
 
-        orderBook = OrderBook(order_data=data, session_file=session_file)
+        exe_type=ExecutionType(session_file=session_file)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -34,9 +35,10 @@ class PriceVolumeAverage:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            writable_df = orderBook.processOrder(order=order)
+            writable_df = exe_type.get_time_frame(order=order,time_delta=time_delta)
 
-            if index == no_of_lines:
+            if index == no_of_lines and no_of_lines!=0:
                 break
         print(writable_df)
-        writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')
+        writable_df.to_csv("output/ex_type_based_time_framed.csv", index=False, encoding='utf-8')
+

@@ -26,10 +26,10 @@ class OrderBook:
         5-> Amend Order
         15-> Fill Order
      """
-    def processOrder(self, order):
+    def processOrder(self, order,time_delta):
         if(order.value>0):
             #time function here
-            df=self.window.get_time_frame(order=order)
+            df=self.window.get_time_frame(order=order,time_delta=time_delta)
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
