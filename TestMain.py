@@ -3,7 +3,7 @@ from orderbook.OrderBook import OrderBook
 from preprocess.static.PriceVolumeAverage import Window
 from validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
 from validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
-#from validate.model.Kmeans import KMeans
+from validate.model.Kmeans import KMeans
 
 message_file = './data/data.csv'
 session_file='./data/sessions.csv'
@@ -21,8 +21,9 @@ ex_type_based.run_execution_type(message_file=message_file,session_file=session_
 # print(col_list)
 
 #Test clustering
-# kmeans=KMeans()
-# kmeans.run_kmeans_cluster(file_path=time_framed_file)
+
+kmeans=KMeans()
+kmeans.run_kmeans_cluster(file_path=time_framed_file)
 
 
 

@@ -1,77 +1,236 @@
-import numpy as np
-from pandas import DataFrame, read_csv
-from sklearn.cluster import DBSCAN
-from sklearn import metrics
-from sklearn.datasets.samples_generator import make_blobs
-from sklearn.preprocessing import StandardScaler
-
-
-##############################################################################
-# # Generate sample data
-# centers = [[1, 1], [-1, -1], [1, -1]]
-# datafile, labels_true = make_blobs(n_samples=150, centers=centers, cluster_std=0.4,
-#                             random_state=0)
+# DBSCAN
+# for point in points:
+#    if point is visited:
+#        continue
+#    mark point as visited
+#    neighbours = immediate_neighbours(point, epsilon)
+#    if len(neighbours) > min_pts:
+#        cluster = new_cluster()
+#        append point to cluster
+#        for n in neighbours:
+#            cluster.append(all_neighbours(n))
+#    else:
+#        mark point as NOISE
 #
-# datafile = StandardScaler().fit_transform(datafile)
-#
-# print(datafile)
+# def all_neighbours(n, epsilon, cluster):
+#     for point in points:
+#         if point has not been visited:
+#             mark point as visited
+#             new_points = immediate_neighbours(point)
+#             if len(new_points) > min_pts:
+#                 points.append(new_points)
+#         if point is not member of any cluster:
+#             append point to cluster
 
-##############################################################################
-# Retrieve Data
+from math import pow, sqrt
+from pandas import read_csv
+import plotly.plotly as py
+py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
+import plotly.graph_objs as go
 
-file_path = 'sample.csv'
-datafile = read_csv(file_path)
-# datafile.drop(['Best_Bid_Ask','Direction','Order_ID','Price','Volume','mult','Execution_Time'],axis = 1,inplace = True)
-datafile = datafile[['time_vector','price_vector','volume_vector']]
-print(datafile.values)
+class Point(object):
+    ''' internal helper class to support algorithm implementation'''
+
+    # def plot:
 
 
-##############################################################################
-# Compute DBSCAN
-db = DBSCAN(eps=0.3, min_samples=10).fit(datafile)
-core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
+    def __init__(self, feature_vector):
+        # feature vector should be something like a list or a numpy
+        # array
+        self.feature_vector = feature_vector
+        self.cluster = None
+        self.visited = False
 
-# Number of clusters in labels, ignoring noise if present.
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+    def __str__(self):
+        return str(self.feature_vector)
 
-# print('Estimated number of clusters: %d' % n_clusters_)
-# print("Homogeneity: %0.3f" % metrics.homogeneity_score(labels_true, labels))
-# print("Completeness: %0.3f" % metrics.completeness_score(labels_true, labels))
-# print("V-measure: %0.3f" % metrics.v_measure_score(labels_true, labels))
-# print("Adjusted Rand Index: %0.3f"
-#       % metrics.adjusted_rand_score(labels_true, labels))
-# print("Adjusted Mutual Information: %0.3f"
-#       % metrics.adjusted_mutual_info_score(labels_true, labels))
-# print("Silhouette Coefficient: %0.3f"
-#       % metrics.silhouette_score(X, labels))
 
-##############################################################################
-# Plot result
-import matplotlib.pyplot as plt
+def _as_points(points):
+    ''' convert a list of list- or array-type objects to internal
+    Point class'''
+    return [Point(point) for point in points]
 
-# Black removed and is used for noise instead.
-unique_labels = set(labels)
-colors = [plt.cm.Spectral(each)
-          for each in np.linspace(0, 1, len(unique_labels))]
-for k, col in zip(unique_labels, colors):
-    if k == -1:
-        # Black used for noise.
-        col = [0, 0, 0, 1]
 
-    class_member_mask = (labels == k)
+def as_lists(clusters):
+    ''' converts the Points in each cluster back into regular feature
+    vectors (lists).'''
+    clusters_as_points = {}
+    for cluster, members in clusters.items():
+        clusters_as_points[cluster] = [member.feature_vector for member in members]
+    return clusters_as_points
 
-    xy = datafile[class_member_mask & core_samples_mask]
-    print(class_member_mask & core_samples_mask)
 
-    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-             markeredgecolor='k', markersize=14)
-    # print(xy.iloc[:, 0])
+def print_points(points):
+    ''' function for printing lists of points. '''
+    s = ''
+    for p in points:
+        s += str(p) + '\n'
+    return s[:-2]
 
-    xy = datafile[class_member_mask & ~core_samples_mask]
-    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-             markeredgecolor='k', markersize=6)
 
-plt.title('Estimated number of clusters: %d' % n_clusters_)
-plt.show()
+def euclidean(x, y):
+    ''' calculate the euclidean distance between x and y.'''
+    # sqrt((x0-y0)^2 + ... (xN-yN)^2)
+    assert len(x) == len(y)
+    sum = 0.0
+    for i in range(len(x)):
+        sum += pow(x[i] - y[i], 2)
+    return sqrt(sum)
+
+
+def immediate_neighbours(point, all_points, epsilon, distance, debug):
+    # use a grid approach it should make this much faster.
+    neighbours = []
+    for p in all_points:
+        if p == point:
+            # you cant be your own neighbour...!
+            continue
+        d = distance(point.feature_vector, p.feature_vector)
+        if d < epsilon:
+            neighbours.append(p)
+    return neighbours
+
+
+def add_connected(points, all_points, epsilon, min_pts, current_cluster, distance, debug):
+    ''' find every point in the set of all_points which are
+    density-connected, starting with the initial points list. '''
+    cluster_points = []
+    for point in points:
+        if not point.visited:
+            point.visited = True
+            new_points = immediate_neighbours(point, all_points, epsilon, distance, debug)
+            if len(new_points) >= min_pts:
+                # append any new points on the end of the list we're
+                # already iterating over.
+                for p in new_points:
+                    if p not in points:
+                        points.append(p)
+
+        # here, we separate 'visited' from cluster membership, since
+        # 'visited' only helps keep track of if we've checked this
+        # point for neighbours. it may or may not have been assessed
+        # for cluster membership at that point.
+        if not point.cluster:
+            cluster_points.append(point)
+            point.cluster = current_cluster
+    if debug:
+        print('Added points %s' % print_points(cluster_points))
+    return cluster_points
+
+
+def dbscan(points, epsilon, min_pts, distance=euclidean, debug=False):
+    ''' Main dbscan algorithm function. pass in a list of feature
+    vectors (most likely a list of lists or a list of arrays), a
+    radius epsilon within which to search for neighbouring points, and
+    a min_pts, the minimum number of neighbours a point must have
+    within the radius epsilon to be considered connected. the default
+    distance metric is euclidean, but another could be used as
+    well. your custom distance metric must accept two equal-length
+    feature vectors as input as return a distance value. pass in
+    debug=True for verbose output.'''
+
+    assert isinstance(points, list)
+    epsilon = float(epsilon)
+    if not isinstance(points[0], Point):
+        # only check the first list instance. imperfect, but the lists
+        # could be arbitrarily long.
+        points = _as_points(points)
+
+    if debug:
+        print('\nEpsilon: %.2f' % epsilon)
+        print('Min_Pts: %d' % min_pts)
+
+    clusters = {}  # each cluster is a list of points
+    clusters[-1] = []  # store all the points deemed noise here.
+    current_cluster = -1
+    for point in points:
+        if not point.visited:
+            point.visited = True
+            neighbours = immediate_neighbours(point, points, epsilon, distance, debug)
+            if len(neighbours) >= min_pts:
+                current_cluster += 1
+                if debug:
+                    print('\nCreating new cluster %d' % (current_cluster))
+                    print('%s' % str(point))
+                point.cluster = current_cluster
+                cluster = [point, ]
+                cluster.extend(add_connected(neighbours, points, epsilon, min_pts,
+                                             current_cluster, distance, debug))
+                clusters[current_cluster] = cluster
+            else:
+                clusters[-1].append(point)
+                if debug:
+                    print('\nPoint %s has no density-connected neighbours.' % str(point.feature_vector))
+
+    # return the dictionary of clusters, converting the Point objects
+    # in the clusters back to regular lists
+    return as_lists(clusters)
+
+
+if __name__ == '__main__':
+
+    import random
+
+    epsilon = 3.0
+    min_pts = 2.0
+    points = []
+
+    time_framed_file = 'time_framed_data.csv'
+    datafile = read_csv(time_framed_file)
+    datafile = datafile[['cancel_order_buy', 'cancel_order_sell', 'execute_order_buy', 'execute_order_sell', 'new_order_buy',
+             'new_order_sell']]
+    points = list(datafile.values)
+    print(points)
+
+    data = []
+    x = []
+    y = []
+    z = []
+
+    clusters = dbscan(points, epsilon, min_pts, debug=True)
+    print('\n========== Results of Clustering =============')
+    for cluster, members in clusters.items():
+        print('\n--------Cluster %d---------' % cluster)
+        for point in members:
+            print(point)
+
+# plot the data using plotly
+def plot(clusters):
+        data = []
+        for i in clusters:
+            x = []
+            y = []
+            z = []
+            for c in clusters[i]:
+                x.append(c[0])
+                y.append(c[1])
+                z.append(c[2])
+            # x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()/
+            # print(x,y,z)
+            trace = go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode='markers',
+                marker=dict(
+                    size=6,
+                    line=dict(
+                        color='rgba(217, 217, 217, 0.14)',
+                        width=0.5
+                    ),
+                    opacity=0.8
+                )
+            )
+            data.append(trace)
+
+        layout = go.Layout(
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=0
+            )
+        )
+        fig = go.Figure(data=data, layout=layout)
+        py.iplot(fig, filename='simple-3d-scatter')
+
