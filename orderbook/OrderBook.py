@@ -1,5 +1,6 @@
 from pandas import DataFrame
-from preprocess.Window import Window
+
+from preprocess.static.PriceVolumeAverage import Window
 
 
 class OrderBook:
