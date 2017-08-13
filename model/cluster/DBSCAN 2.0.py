@@ -58,7 +58,7 @@ def as_lists(clusters):
 
 
 def print_points(points):
-    ''' a wierd klugey function for printing lists of points. '''
+    ''' function for printing lists of points. '''
     s = ''
     for p in points:
         s += str(p) + '\n'
@@ -76,8 +76,6 @@ def euclidean(x, y):
 
 
 def immediate_neighbours(point, all_points, epsilon, distance, debug):
-    ''' find the immediate neighbours of point.'''
-    # XXX TODO: this is probably a stupid way to do it; if we could
     # use a grid approach it should make this much faster.
     neighbours = []
     for p in all_points:

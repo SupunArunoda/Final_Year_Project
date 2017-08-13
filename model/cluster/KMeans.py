@@ -5,24 +5,35 @@ import math
 import plotly.plotly as py
 py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
-
+from pandas import DataFrame
 # kmeans = KMeans(n_clusters=3, random_state=0).fit(X)
 
 class Kmeans:
-    def cluster(X):
+    def cluster(X, df):
+        data = DataFrame(df)
         k = int(math.sqrt(len(X) / 2))
         # k = 3
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(X)
 
         labels = kmeans.labels_
+        # print(labels)
         centroids = kmeans.cluster_centers_
         clusters = {}
+        data['cluster_group'] = np.nan
+
+        for i in range(len(labels)):
+            data['cluster_group'].iloc[i] = labels[i]
+        print(data)
 
         for i in range(k):
             # select only data observations with cluster label == i
             ds = X[np.where(labels == i)]
             clusters[i] = ds
+            print(labels[i])
+            # print(ds)
+            # data['cluster_group'].iloc[i] = labels[i]
+
 
         scores = []
         for i in clusters:
@@ -36,9 +47,13 @@ class Kmeans:
                 distTotal += dist
             distMean = distTotal / len(tempClusters)
             scores.append(distMean / len(clusters[i]))
-        print(scores)
-        print(clusters[scores.index(max(scores))])
-
+        # print(scores)
+        # print(clusters[scores.index(max(scores))])
+        # print(data)
+        # print(clusters)
+        # for i in range(k):
+        #     for j in ds:
+        #         print(j, ': ', i, ': ', scores[i])
     def plot(clusters):
         # plot the data using plotly
         data = [];
