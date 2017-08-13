@@ -9,12 +9,13 @@ session_file='./data/sessions.csv'
 time_framed_file='./output/time_framed_data.csv'
 
 #Test PriceVolumeAverage
-vol_average=PriceVolumeAverage()
-vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=500)
+# vol_average=PriceVolumeAverage()
+# vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=500)
 
 #Test clustering
-# kmeans=KMeans()
-# kmeans.run_kmeans_cluster(file_path=time_framed_file)
+
+kmeans=KMeans()
+kmeans.run_kmeans_cluster(file_path=time_framed_file)
 
 
 

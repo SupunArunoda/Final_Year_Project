@@ -171,13 +171,14 @@ if __name__ == '__main__':
 
     import random
 
-    epsilon = 2.0
+    epsilon = 3.0
     min_pts = 2.0
     points = []
 
-    file_path = 'sample.csv'
-    datafile = read_csv(file_path)
-    datafile = datafile[['time_vector', 'price_vector', 'volume_vector']]
+    time_framed_file = 'time_framed_data.csv'
+    datafile = read_csv(time_framed_file)
+    datafile = datafile[['cancel_order_buy', 'cancel_order_sell', 'execute_order_buy', 'execute_order_sell', 'new_order_buy',
+             'new_order_sell']]
     points = list(datafile.values)
     print(points)
 
@@ -192,62 +193,44 @@ if __name__ == '__main__':
         print('\n--------Cluster %d---------' % cluster)
         for point in members:
             print(point)
-            # x.append(point[0])
-            # y.append(point[1])
-            # z.append(point[2])
 
-        # trace = go.Scatter3d(
-        #     x=x,
-        #     y=y,
-        #     z=z,
-        #     mode='markers',
-        #     marker=dict(
-        #         size=6,
-        #         line=dict(
-        #             color='rgba(217, 217, 217, 0.14)',
-        #             width=0.5
-        #         ),
-        #         opacity=0.8
-        #     )
-        # )
-        # data.append(trace)
+# plot the data using plotly
+def plot(clusters):
+        data = []
+        for i in clusters:
+            x = []
+            y = []
+            z = []
+            for c in clusters[i]:
+                x.append(c[0])
+                y.append(c[1])
+                z.append(c[2])
+            # x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()/
+            # print(x,y,z)
+            trace = go.Scatter3d(
+                x=x,
+                y=y,
+                z=z,
+                mode='markers',
+                marker=dict(
+                    size=6,
+                    line=dict(
+                        color='rgba(217, 217, 217, 0.14)',
+                        width=0.5
+                    ),
+                    opacity=0.8
+                )
+            )
+            data.append(trace)
 
-    # plot the data using plotly
-    data = []
-    for i in clusters:
-        x = []
-        y = []
-        z = []
-        for c in clusters[i]:
-            x.append(c[0])
-            y.append(c[1])
-            z.append(c[2])
-        # x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()/
-        # print(x,y,z)
-        trace = go.Scatter3d(
-            x=x,
-            y=y,
-            z=z,
-            mode='markers',
-            marker=dict(
-                size=6,
-                line=dict(
-                    color='rgba(217, 217, 217, 0.14)',
-                    width=0.5
-                ),
-                opacity=0.8
+        layout = go.Layout(
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=0
             )
         )
-        data.append(trace)
-
-    layout = go.Layout(
-        margin=dict(
-            l=0,
-            r=0,
-            b=0,
-            t=0
-        )
-    )
-    fig = go.Figure(data=data, layout=layout)
-    py.iplot(fig, filename='simple-3d-scatter')
+        fig = go.Figure(data=data, layout=layout)
+        py.iplot(fig, filename='simple-3d-scatter')
 
