@@ -5,17 +5,16 @@ from validate.preprocess.PriceVolumeAverage import PriceVolumeAverage
 from validate.model.Kmeans import KMeans
 
 message_file = './data/data.csv'
-session_file='./data/sessions.csv'
-time_framed_file='./output/time_framed_data.csv'
+session_file = './data/sessions.csv'
+time_framed_file = './output/time_framed_data.csv'
+ex_type_based_time_framed = './output/ex_type_based_time_framed.csv'
+ex_type_log_based_time_framed = './output/ex_type_log_based_time_framed.csv'
 
-#Test PriceVolumeAverage
+# Test PriceVolumeAverage
 # vol_average=PriceVolumeAverage()
 # vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=500)
 
-#Test clustering
+# Test clustering
 
-kmeans=KMeans()
-kmeans.run_kmeans_cluster(file_path=time_framed_file)
-
-
-
+kmeans = KMeans()
+kmeans.run_kmeans_cluster(file_path=ex_type_based_time_framed)
