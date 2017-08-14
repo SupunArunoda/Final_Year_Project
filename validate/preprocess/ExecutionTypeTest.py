@@ -40,5 +40,5 @@ class ExecutionTypeTest:
             if index == no_of_lines and no_of_lines!=0:
                 break
         print(writable_df)
-        writable_df.to_csv("output/ex_type_based_time_framed.csv", index=False, encoding='utf-8')
+        writable_df.to_csv("output/ex_type_log_based_time_framed.csv", index=False, encoding='utf-8')
 

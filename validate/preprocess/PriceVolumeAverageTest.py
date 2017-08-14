@@ -12,8 +12,7 @@ class PriceVolumeAverage:
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
         data=read_messages
-
-        orderBook = OrderBook(order_data=data, session_file=session_file)
+        window=Window(session_file=session_file)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -34,9 +33,9 @@ class PriceVolumeAverage:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            writable_df = orderBook.processOrder(order=order,time_delta=time_delta)
-
-            if index == no_of_lines:
+            if order.value>0:
+                writable_df=window.get_time_frame(order=order,time_delta=time_delta)
+            if index == no_of_lines and no_of_lines!=0:
                 break
         print(writable_df)
         writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')

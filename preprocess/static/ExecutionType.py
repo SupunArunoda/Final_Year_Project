@@ -2,6 +2,7 @@ from pandas import DataFrame,read_csv
 import datetime
 import csv
 from dateutil import parser as DUp
+import numpy as np
 
 class ExecutionType:
 
@@ -89,7 +90,7 @@ class ExecutionType:
         for i in range(len(self.count_order_type_list)):
             for j in range(len(self.count_order_type_list[i])):
                 if(col_list[j]!=0):
-                    temp_average=self.count_order_type_list[i][j]/col_list[j]
+                    temp_average=np.log(self.count_order_type_list[i][j]/col_list[j])
                     self.count_list.append(round(temp_average,4))
                 else:
                     self.count_list.append(float(0))

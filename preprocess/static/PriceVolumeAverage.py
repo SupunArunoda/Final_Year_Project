@@ -102,16 +102,18 @@ class Window:
         if (order.side == 1):  # buy order check
             if(type!=2):
                 self.order_volume_list[type][0] += order.visible_size
+                self.count_order_volume_list[type][0] += 1
             else:
                 self.order_volume_list[type][0] += order.executed_qty
-            self.count_order_volume_list[type][0] += 1
+                self.count_order_volume_list[type][0] += 1
 
         elif (order.side == 2):  # sell order check
             if (type != 2):
                 self.order_volume_list[type][0] += order.visible_size
+                self.count_order_volume_list[type][0] += 1
             else:
                 self.order_volume_list[type][0] += order.executed_qty
-            self.count_order_volume_list[type][0] += 1
+                self.count_order_volume_list[type][0] += 1
 
     def get_average_price(self):
 
