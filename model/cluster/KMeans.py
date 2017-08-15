@@ -23,10 +23,10 @@ def calculateScores(clusters, centroids):
             distTotal += dist
         distMean = distTotal / len(tempClusters)
         scores.append(distMean / len(clusters[i]))
-    # print(scores)
+    print(scores)
     std_deviation = np.std(scores)
     meanScore = np.mean(scores)
-    print(meanScore, ' .... ', std_deviation)
+    # print(meanScore, ' .... ', std_deviation)
 
     for i in range(len(scores)):
         if ((scores[i] > abs(meanScore - 3 * std_deviation) or scores[i] > abs(meanScore + 3 * std_deviation))):
@@ -36,7 +36,8 @@ def calculateScores(clusters, centroids):
 
 
 def writeToCSV(data):
-    data.to_csv("output/clustered_output_kmeans.csv", index=False, encoding='utf-8')
+    # outputFile =
+    data.to_csv("output/clustered_output_kmeans_ex_type_based_time_framed.csv", index=False, encoding='utf-8')
 
 
 def plot(clusters):
@@ -84,10 +85,12 @@ class Kmeans:
 
     def cluster(raw_datafile):
         X = raw_datafile[
-            ['cancel_order_buy', 'cancel_order_sell', 'execute_order_buy', 'execute_order_sell', 'new_order_buy',
-             'new_order_sell']]
+            ['ammend_order', 'cancel_order', 'execute_order', 'new_order']]
+        # X = raw_datafile.drop('time_index_volume', 1)
+        # X = raw_datafile.drop(raw_datafile.columns[[1, 3, 7, 11, 12]], axis=1)
         X = X.values
         data = DataFrame(raw_datafile)
+
         k = int(math.sqrt(len(X) / 2))
 
         kmeans = KMeans(n_clusters=k)
