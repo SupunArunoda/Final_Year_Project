@@ -35,7 +35,7 @@ class PriceVolumeAverage:
 
             if order.value>0:
                 writable_df=window.get_time_frame(order=order,time_delta=time_delta)
-            if index == no_of_lines and no_of_lines!=0:
+            if index == no_of_lines and no_of_lines != 0:
                 break
         print(writable_df)
-        writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')
+        writable_df.to_csv("output/price_volume_average_time_framed_data.csv", index=False, encoding='utf-8')
