@@ -16,25 +16,25 @@ from pandas import read_csv, DataFrame
 # X = np.concatenate((a, b), )
 # print(type(X))
 
-# X = np.array([[2,3],[5,4],[1,2],[3,2],[4,4],[7,6],[1,6],[5,6],[3,3],[5,3]])
+X = np.array([[2,3],[5,4],[1,2],[3,2],[4,4],[7,6],[1,6],[5,6],[3,3],[5,3]])
 # print(type(X))
 
-raw_datafile = read_csv('E:\Academic\Semester 6B\FYP\Project01\FinalYearProject02\output\price_volume_average_time_framed_data.csv')
-X = raw_datafile[['execute_order_buy_price', 'execute_order_buy_volume', 'execute_order_sell_price', 'execute_order_sell_volume']]  # X = raw_datafile.drop('time_index_volume', 1)
-# X = raw_datafile.drop(raw_datafile.columns[[1, 3, 7, 11, 12]], axis=1)
-X = X.values
-print(X)
-data = DataFrame(raw_datafile)
+# raw_datafile = read_csv('E:\Academic\Semester 6B\FYP\Project01\FinalYearProject02\output\price_volume_average_static_log.csv')
+# X = raw_datafile[['execute_order_buy_price', 'execute_order_buy_volume', 'execute_order_sell_price', 'execute_order_sell_volume']]  # X = raw_datafile.drop('time_index_volume', 1)
+# # X = raw_datafile.drop(raw_datafile.columns[[1, 3, 7, 11, 12]], axis=1)
+# X = X.values
+# # print(X)
+# data = DataFrame(raw_datafile)
 
-print(X)  # 150 samples with 2 dimensions
-print(X.shape)  # 150 samples with 2 dimensions
+# print(X)  # 150 samples with 2 dimensions
+# print(X.shape)  # 150 samples with 2 dimensions
 plt.scatter(X[:, 0], X[:, 1])
 plt.show()
 
 Z = linkage(X, "ward")
 c, coph_dists = cophenet(Z, pdist(X))
 
-print(Z)
+# print(Z)
 
 
 def fancy_dendrogram(*args, **kwargs):
@@ -65,16 +65,14 @@ def fancy_dendrogram(*args, **kwargs):
 # Calculate the Dendogram
 # plt.figure(figsize=(25, 10))
 
-# fancy_dendrogram(
-#     Z,
-#     truncate_mode='lastp',
-#     p=12,
-#     leaf_rotation=90.,
-#     leaf_font_size=12.,
-#     show_contracted=True,
-#     annotate_above=10,  # useful in small plots so annotations don't overlap
-# )
-# plt.show()
+fancy_dendrogram(
+    Z,
+    leaf_rotation=90.,
+    leaf_font_size=12.,
+    show_contracted=True,
+    annotate_above=10,  # useful in small plots so annotations don't overlap
+)
+plt.show()
 
 # depth = 3
 # incons = inconsistent(Z, depth)
@@ -92,6 +90,14 @@ k = acceleration_rev.argmax() + 2  # if idx 0 is the max of this we want 2 clust
 print("clusters:", k)
 
 clusters = fcluster(Z, k, criterion='maxclust')
+
+clusters = []
+for i in range(k):
+    # select only data observations with cluster label == i
+    ds = X[np.where(X == i)]
+    clusters[i] = ds
+
+print(clusters)
 
 plt.figure(figsize=(10, 8))
 plt.scatter(X[:, 0], X[:, 1], c=clusters, cmap='prism')  # plot points with cluster dependent colors
