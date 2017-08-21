@@ -119,24 +119,24 @@ class OrderBook:
         if order.side == 1:  # if buy order
             price=self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)),'value']
             if price.empty==False:
-                tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
-                volume = tempOrder['visible_size'].iloc[0]
-                diff = (volume - order.executed_qty)
-                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
+                # tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                # volume = tempOrder['visible_size'].iloc[0]
+                # diff = (volume - order.executed_qty)
+                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = order.visible_size
 
-                if diff == 0:
+                if order.total_qty == 0:
                     self.cancelOrder(order=order)
 
         else:  # if sell order
             price = self.neworders.loc[
                 ((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'value']
             if price.empty==False:
-                tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
-                volume = tempOrder['visible_size'].iloc[0]
-                diff = (volume - order.executed_qty)
-                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = diff
+                # tempOrder = self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
+                # volume = tempOrder['visible_size'].iloc[0]
+                # diff = (volume - order.executed_qty)
+                self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] = order.visible_size
 
-                if diff == 0:
+                if order.total_qty == 0:
                     self.cancelOrder(order=order)
 
     """
