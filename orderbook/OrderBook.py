@@ -9,6 +9,7 @@ class OrderBook:
 
     buyOrdersDetails = {}
     sellOrdersDetails = {}
+    indx=0
 
     def __init__(self, order_data,session_file):
         self.order_d = order_data
@@ -27,9 +28,14 @@ class OrderBook:
         15-> Fill Order
      """
     def processOrder(self, order,time_delta):
+        self.indx += 1
         if(order.value>0):
+
+            # if len(self.buyOrders)>0 and len(self.sellOrders)>0 and self.indx>500:
+            #     if self.buyOrders[0] > self.sellOrders[0]:
+            #         print("new")
             #time function here
-            df=self.window.get_time_frame(order=order,time_delta=time_delta)
+            # df=self.window.get_time_frame(order=order,time_delta=time_delta)
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
@@ -38,7 +44,7 @@ class OrderBook:
                 self.amendOrder(order)
             elif order.execution_type == 15:
                 self.fillOrder(order)
-            return df
+            # return df
 
     """
             Name : Add new order
@@ -49,8 +55,8 @@ class OrderBook:
         tempDataFrame=self.neworders[(self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)]
         if(tempDataFrame.count().iloc[0]==0):
             self.neworders = self.neworders.append(self.order_d[(self.order_d['order_id'] == order.order_id) & (self.order_d['execution_type'] == 0)], ignore_index=True);
-        elif(tempDataFrame.count().iloc[0]>0):
-            self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] += order.visible_size
+        # elif(tempDataFrame.count().iloc[0]>0):
+        #     self.neworders.loc[((self.neworders['order_id'] == order.order_id) & (self.neworders['execution_type'] == 0)), 'visible_size'] += order.visible_size
 
          #to check buy sell orders seperately
         if order.side == 1:
