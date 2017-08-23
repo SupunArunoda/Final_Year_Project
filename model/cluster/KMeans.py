@@ -85,7 +85,7 @@ class Kmeans:
 
     def cluster(raw_datafile):
         X = raw_datafile[
-            ['ammend_order', 'cancel_order', 'execute_order', 'new_order']]
+            ['nom_exe_order_buy_price', 'nom_exe_order_sell_price', 'nom_exe_order_buy_volume', 'nom_exe_order_sell_volume']]
         # X = raw_datafile.drop('time_index_volume', 1)
         # X = raw_datafile.drop(raw_datafile.columns[[1, 3, 7, 11, 12]], axis=1)
         X = X.values
