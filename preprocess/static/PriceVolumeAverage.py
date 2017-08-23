@@ -1,6 +1,7 @@
 from pandas import DataFrame,read_csv
 import datetime
 import csv
+import numpy as np
 from dateutil import parser as DUp
 
 class Window:
@@ -120,7 +121,7 @@ class Window:
         for i in range(len(self.order_price_list)):
             for j in range(len(self.order_price_list[i])):
                 if(self.count_order_list[i][j]!=0):
-                    temp_average=self.order_price_list[i][j]/self.count_order_list[i][j]
+                    temp_average=(self.order_price_list[i][j]/self.count_order_list[i][j])
                     self.price_average_list.append(round(temp_average,4))
                     #self.price_average_list.append(self.count_order_list[i][j])
                 else:
@@ -132,7 +133,7 @@ class Window:
         for i in range(len(self.order_volume_list)):
             for j in range(len(self.order_volume_list[i])):
                 if(self.count_order_volume_list[i][j]!=0):
-                    temp_average=self.order_volume_list[i][j]/self.count_order_volume_list[i][j]
+                    temp_average=(self.order_volume_list[i][j]/self.count_order_volume_list[i][j])
                     self.volume_average_list.append(round(temp_average,4))
                     #self.volume_average_list.append(self.count_order_list[i][j])
                 else:

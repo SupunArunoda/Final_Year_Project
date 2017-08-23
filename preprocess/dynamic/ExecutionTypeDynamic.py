@@ -3,14 +3,17 @@ import datetime
 import csv
 from dateutil import parser as DUp
 import numpy as np
+from itertools import tee
 
-class ExecutionType:
+class ExecutionTypeDynamic:
 
 
     def __init__(self,session_file):
 
         self.attributes = DataFrame()
         self.temp_time=0;
+        self.slide_window_flag=True
+        self.lag_orders=[]
 
         self.count_order_type_list = [[0 for _ in range(2)] for _ in range(4)]
         self.count_list=[]
@@ -28,13 +31,24 @@ class ExecutionType:
                 count+=1
         return reg_list
 
-    def get_time_frame(self,order,time_delta):
+    def sliding_window(self,iterable,size):
+        iters = tee(iterable, size)
+        for i in range(1, size):
+            for each in iters[i:]:
+                next(each, None)
+        return zip(*iters)
+
+
+    def get_time_frame(self,order,time_delta,time_lag):
         const_time_gap=datetime.timedelta(0, time_delta)#set time window value
         temp_trasact_time=DUp.parse(order.transact_time)
+
         for i in range(0,len(self.regular_list),2):
             if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
                 if(self.temp_time!=0):
                     time_gap=temp_trasact_time-self.temp_time;
+                    dynamic_valid=time_gap+time_lag
+
                     if(time_gap<=const_time_gap):
                         self.check_order_type(order=order)
                     else:
@@ -59,6 +73,11 @@ class ExecutionType:
 
                         self.remove_values()
                         self.temp_time=0
+                        self.slide_window_flag=False# start the next window
+                    if(dynamic_valid>=const_time_gap & self.slide_window_flag):
+                        self.lag_orders.append(order)
+
+
                     if(self.temp_time==0):
                         self.temp_time = temp_trasact_time
 
