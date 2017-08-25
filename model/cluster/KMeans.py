@@ -5,7 +5,7 @@ import math
 import plotly.plotly as py
 from scipy.cluster.hierarchy import linkage
 
-# py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
+py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
 from pandas import DataFrame, read_csv
 from matplotlib import pyplot as plt
@@ -86,30 +86,8 @@ def plotPlotly(clusters):
 class Kmeans:
     data = DataFrame()
 
-    def cluster(self, file_path):
-        raw_datafile = read_csv(file_path)
-
-        # X = raw_datafile[
-        #     ['nom_exe_order_buy_price', 'nom_exe_order_buy_volume', 'nom_exe_order_sell_price',
-        #      'nom_exe_order_sell_volume']]
-        # X = X.values
-
-        # X = np.array(
-        #     [[1.5, 5], [1.7, 6], [1.3, 5.8], [1.3, 5.9], [3.4, 2.6], [3, 2], [3.6, 2.6], [3.1, 2.9], [3, 3], [6.1, 5.5],
-        #      [6.3, 5.8], [6.3, 5.7], [6.9, 5.1], [6.4, 5.5]])
-
-        # np.random.seed(4711)  # for repeatability of this tutorial
-        # a = np.random.multivariate_normal([10, 0], [[3, 1], [1, 4]], size=[100, ])
-        # b = np.random.multivariate_normal([0, 20], [[3, 1], [1, 4]], size=[50, ])
-        # X = np.concatenate((a, b), )
-
-        c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[200, ])
-        d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[200, ])
-        e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[200, ])
-        X = np.concatenate((c, d, e), )
-
-        plt.scatter(X[:, 0], X[:, 1])
-        plt.show()
+    def cluster(self, data):
+        X = data
 
         inertia = []
         for k in range(2, len(X) + 1):
@@ -122,15 +100,17 @@ class Kmeans:
 
         # last_rev = inertia[::-1]
         idxs = np.arange(1, len(inertia) + 1)
-        plt.plot(idxs, inertia)
+        # plt.plot(idxs, inertia)
 
         acceleration = np.diff(inertia, 2)  # 2nd derivative of the distances
         # acceleration_rev = acceleration[::-1]
-        plt.plot(idxs[:-2] + 1, acceleration)
+        # plt.plot(idxs[:-2] + 1, acceleration)
         k = acceleration.argmax() + 2  # if idx 0 is the max of this we want 2 clusters
         print('k: ', k)
+        #
+        # plt.show()
 
-        plt.show()
+        # k = 3
 
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(X)
@@ -149,18 +129,18 @@ class Kmeans:
         plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='gist_rainbow')  # plot points with cluster dependent colors
         plt.show()
 
-        # suspicious = calculateScores(clusters, centroids)
+        suspicious = calculateScores(clusters, centroids)
 
-        # data = DataFrame(raw_datafile)
-        # data['cluster_group'] = np.nan
-        # data['anomaly_state'] = np.nan
-        #
-        # for i in range(len(labels)):
-        #     data['cluster_group'].iloc[i] = labels[i]
-        #     if labels[i] in suspicious:
-        #         data['anomaly_state'].iloc[i] = 'Suspicious'
-        #     else:
-        #         data['anomaly_state'].iloc[i] = 'Not Suspicious'
+        data = DataFrame(raw_datafile)
+        data['cluster_group'] = np.nan
+        data['anomaly_state'] = np.nan
 
-        # plotPlotly(clusters)
-        # writeToCSV(data)
+        for i in range(len(labels)):
+            data['cluster_group'].iloc[i] = labels[i]
+            if labels[i] in suspicious:
+                data['anomaly_state'].iloc[i] = 'Suspicious'
+            else:
+                data['anomaly_state'].iloc[i] = 'Not Suspicious'
+
+        plotPlotly(clusters)
+        writeToCSV(data)

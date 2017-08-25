@@ -12,30 +12,10 @@ from pandas import read_csv, DataFrame
 
 
 class Hierarchical:
-    def cluster(self, file_path):
-        # np.random.seed(4711)  # for repeatability of this tutorial
-        # a = np.random.multivariate_normal([10, 0], [[3, 1], [1, 4]], size=[100, ])
-        # b = np.random.multivariate_normal([0, 20], [[3, 1], [1, 4]], size=[50, ])
-        # X = np.concatenate((a, b), )
+    def cluster(self, data):
+        X = data
 
-        # c = np.random.multivariate_normal([40, 40], [[20, 1], [1, 30]], size=[200, ])
-        # d = np.random.multivariate_normal([80, 80], [[30, 1], [1, 30]], size=[200, ])
-        # e = np.random.multivariate_normal([0, 100], [[100, 1], [1, 100]], size=[200, ])
-        # X = np.concatenate((c, d, e), )
-
-        # X = np.array(
-        #     [[1.5, 5], [1.7, 6], [1.3, 5.8], [1.3, 5.9], [3.4, 2.6], [3, 2], [3.6, 2.6], [3.1, 2.9], [3, 3], [6.1, 5.5],
-        #      [6.3, 5.8], [6.3, 5.7], [6.9, 5.1], [6.4, 5.5]])
-
-        raw_datafile = read_csv(file_path)
-        X = raw_datafile[['nom_exe_order_buy_price', 'nom_exe_order_buy_volume', 'nom_exe_order_sell_price',
-                          'nom_exe_order_sell_volume']]  # X = raw_datafile.drop('time_index_volume', 1)
-        X = X.values
-
-        plt.scatter(X[:, 0], X[:, 1])
-        plt.show()
-
-        Z = linkage(X, "ward")
+        Z = linkage(X, "average")
         c, coph_dists = cophenet(Z, pdist(X))
 
         def fancy_dendrogram(*args, **kwargs):
@@ -74,9 +54,6 @@ class Hierarchical:
         print("clusters:", k)
 
         max_d = last_rev[k - 2]
-
-        print(len(Z))
-        print(last)
         print('max_d: ', max_d)
 
         plt.show()
@@ -92,7 +69,6 @@ class Hierarchical:
         plt.show()
 
         cluster_data = fcluster(Z, k, criterion='maxclust')
-        print(cluster_data)
 
         clusters = {}
         for i in range(1, k + 1):
@@ -100,5 +76,6 @@ class Hierarchical:
             ds = X[np.where(cluster_data == i)]
             clusters[i] = ds
 
-        plt.scatter(X[:, 0], X[:, 1], c=cluster_data, cmap='gist_rainbow')  # plot points with cluster dependent colors
-        plt.show()
+            print('cluster ', i, ds)
+
+        return clusters;
