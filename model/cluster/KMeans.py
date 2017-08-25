@@ -1,13 +1,11 @@
 from sklearn.cluster import KMeans
 import numpy as np
 from scipy.spatial import distance
-import math
 import plotly.plotly as py
-from scipy.cluster.hierarchy import linkage
 
-py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
+# py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
-from pandas import DataFrame, read_csv
+from pandas import DataFrame
 from matplotlib import pyplot as plt
 
 
@@ -39,13 +37,9 @@ def calculateScores(clusters, centroids):
     return suspicious
 
 
-def writeToCSV(data):
-    data.to_csv("output/clustered_output_kmeans_ex_type_based_time_framed.csv", index=False, encoding='utf-8')
-
-
 def plotPlotly(clusters):
     # plot the data using plotly
-    data = [];
+    data = []
     for i in clusters:
         x = []
         y = []
@@ -84,8 +78,6 @@ def plotPlotly(clusters):
 
 
 class Kmeans:
-    data = DataFrame()
-
     def cluster(self, data):
         X = data
 
@@ -105,18 +97,13 @@ class Kmeans:
         acceleration = np.diff(inertia, 2)  # 2nd derivative of the distances
         # acceleration_rev = acceleration[::-1]
         # plt.plot(idxs[:-2] + 1, acceleration)
-        k = acceleration.argmax() + 2  # if idx 0 is the max of this we want 2 clusters
+        k = acceleration.argmax() + 3  # if idx 0 is the max of this we want 2 clusters
         print('k: ', k)
-        #
-        # plt.show()
-
-        # k = 3
 
         kmeans = KMeans(n_clusters=k)
         kmeans.fit(X)
 
         labels = kmeans.labels_
-        centroids = kmeans.cluster_centers_
 
         print(labels)
 
@@ -126,9 +113,11 @@ class Kmeans:
             ds = X[np.where(labels == i)]
             clusters[i] = ds
 
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='gist_rainbow')  # plot points with cluster dependent colors
-        plt.show()
+        return [clusters, kmeans]
 
+    def writeToCSV(self, clusters, kmeans, raw_datafile):
+        centroids = kmeans.cluster_centers_
+        labels = kmeans.labels_
         suspicious = calculateScores(clusters, centroids)
 
         data = DataFrame(raw_datafile)
@@ -142,5 +131,4 @@ class Kmeans:
             else:
                 data['anomaly_state'].iloc[i] = 'Not Suspicious'
 
-        plotPlotly(clusters)
-        writeToCSV(data)
+        data.to_csv("output/clustered_output_kmeans_ex_type_based_time_framed_new.csv", index=False, encoding='utf-8')

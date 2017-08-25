@@ -5,17 +5,14 @@ import numpy as np
 from scipy.cluster.hierarchy import cophenet
 from scipy.spatial.distance import pdist
 
-# from scipy.cluster.hierarchy import inconsistent
 from scipy.cluster.hierarchy import fcluster
-
-from pandas import read_csv, DataFrame
 
 
 class Hierarchical:
-    def cluster(self, data):
+    def cluster(self, data, distance_method):
         X = data
 
-        Z = linkage(X, "average")
+        Z = linkage(X, distance_method)
         c, coph_dists = cophenet(Z, pdist(X))
 
         def fancy_dendrogram(*args, **kwargs):
