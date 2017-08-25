@@ -1,8 +1,4 @@
-from model.cluster.KMeans import Kmeans
-from model.cluster.Hierarchical import Hierarchical
+from module.momentum_ignition.MomentumIgnition import MomentumIgnition
 
-kmeans = Kmeans()
-kmeans.cluster(file_path='C:\wamp\www\FinalYearProject02\output\price_volume_average_static_normalize_5_20.csv')
-
-# hierarchical = Hierarchical()
-# hierarchical.cluster(file_path='C:\wamp\www\FinalYearProject02\output\output.csv')
+momentumIgnition = MomentumIgnition()
+momentumIgnition.analyze(file_path='C:\wamp\www\FinalYearProject02\output\output.csv')
