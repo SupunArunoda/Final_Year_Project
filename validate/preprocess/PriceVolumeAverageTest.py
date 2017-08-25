@@ -2,8 +2,13 @@ from orderbook.Order import Order
 from orderbook.OrderBook import OrderBook
 from pandas import read_csv
 from preprocess.static.PriceVolumeAverage import Window
+from pandas import DataFrame,read_csv
+import numpy as np
 
 class PriceVolumeAverage:
+
+    def __init__(self):
+        self.normalize_data_frame = DataFrame()
 
     def run_volume_average(self,message_file,session_file,no_of_lines,time_delta):
 
@@ -34,8 +39,28 @@ class PriceVolumeAverage:
                           , broker_id=broker_id, instrument_id=instrument_id)
 
             if order.value>0:
-                writable_df=window.get_time_frame(order=order,time_delta=time_delta)
-            if index == no_of_lines and no_of_lines!=0:
+                self.normalize_data_frame=window.get_time_frame(order=order,time_delta=time_delta)
+            if index == no_of_lines and no_of_lines != 0:
                 break
-        print(writable_df)
-        writable_df.to_csv("output/time_framed_data.csv", index=False, encoding='utf-8')
+        #print(self.normalize_data_frame)
+        self.normalize_df(writable_df=self.normalize_data_frame)
+        self.normalize_data_frame.to_csv("output/price_volume_average_static_normalize.csv", index=False, encoding='utf-8')
+
+    def normalize_df(self,writable_df):
+        mean_buy_price=self.normalize_data_frame['execute_order_buy_price'].mean()
+        mean_sell_price=self.normalize_data_frame['execute_order_sell_price'].mean()
+        mean_buy_volume=self.normalize_data_frame['execute_order_buy_volume'].mean()
+        mean_sell_volume=self.normalize_data_frame['execute_order_sell_volume'].mean()
+
+        std_buy_price=self.normalize_data_frame['execute_order_buy_price'].values.std(ddof=1)
+        std_sell_price=self.normalize_data_frame['execute_order_sell_price'].values.std(ddof=1)
+        std_buy_volume=self.normalize_data_frame['execute_order_buy_volume'].values.std(ddof=1)
+        std_sell_volume=self.normalize_data_frame['execute_order_sell_volume'].values.std(ddof=1)
+
+        print(mean_buy_price,mean_sell_price,std_buy_price,std_sell_price,mean_buy_volume,mean_sell_volume,std_buy_volume,std_sell_volume)
+
+        self.normalize_data_frame['nom_exe_order_buy_price']=(self.normalize_data_frame['execute_order_buy_price']-mean_buy_price)/std_buy_price
+        self.normalize_data_frame['nom_exe_order_sell_price']=(self.normalize_data_frame['execute_order_sell_price']-mean_sell_price)/std_sell_price
+        self.normalize_data_frame['nom_exe_order_buy_volume'] = (self.normalize_data_frame['execute_order_buy_volume'] - mean_buy_volume)/std_buy_volume
+        self.normalize_data_frame['nom_exe_order_sell_volume'] = (self.normalize_data_frame['execute_order_sell_volume'] - mean_sell_volume)/std_sell_volume
+

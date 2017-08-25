@@ -1,6 +1,7 @@
 from pandas import DataFrame,read_csv
 import datetime
 import csv
+import numpy as np
 from dateutil import parser as DUp
 
 class Window:
@@ -99,28 +100,28 @@ class Window:
             self.count_order_list[type][1] += 1
 
     def count_order_volume(self, order, type):
-        if (order.side == 1):  # buy order check
-            if(type!=2):
-                self.order_volume_list[type][0] += order.visible_size
+        if order.side == 1:  # buy order check
+            if type == 2:
+                self.order_volume_list[type][0] += order.executed_qty
                 self.count_order_volume_list[type][0] += 1
             else:
-                self.order_volume_list[type][0] += order.executed_qty
+                self.order_volume_list[type][0] += order.visible_size
                 self.count_order_volume_list[type][0] += 1
 
-        elif (order.side == 2):  # sell order check
-            if (type != 2):
-                self.order_volume_list[type][0] += order.visible_size
-                self.count_order_volume_list[type][0] += 1
+        elif order.side == 2:  # sell order check
+            if type == 2:
+                self.order_volume_list[type][1] += order.executed_qty
+                self.count_order_volume_list[type][1] += 1
             else:
-                self.order_volume_list[type][0] += order.executed_qty
-                self.count_order_volume_list[type][0] += 1
+                self.order_volume_list[type][1] += order.visible_size
+                self.count_order_volume_list[type][1] += 1
 
     def get_average_price(self):
 
         for i in range(len(self.order_price_list)):
             for j in range(len(self.order_price_list[i])):
                 if(self.count_order_list[i][j]!=0):
-                    temp_average=self.order_price_list[i][j]/self.count_order_list[i][j]
+                    temp_average=(self.order_price_list[i][j]/self.count_order_list[i][j])
                     self.price_average_list.append(round(temp_average,4))
                     #self.price_average_list.append(self.count_order_list[i][j])
                 else:
@@ -132,7 +133,7 @@ class Window:
         for i in range(len(self.order_volume_list)):
             for j in range(len(self.order_volume_list[i])):
                 if(self.count_order_volume_list[i][j]!=0):
-                    temp_average=self.order_volume_list[i][j]/self.count_order_volume_list[i][j]
+                    temp_average=(self.order_volume_list[i][j]/self.count_order_volume_list[i][j])
                     self.volume_average_list.append(round(temp_average,4))
                     #self.volume_average_list.append(self.count_order_list[i][j])
                 else:

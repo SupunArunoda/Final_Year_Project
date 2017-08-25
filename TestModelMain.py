@@ -1,8 +1,8 @@
-from validate.model.Kmeans import KMeans
+from model.cluster.KMeans import Kmeans
+from model.cluster.Hierarchical import Hierarchical
 
-#Test clustering
+kmeans = Kmeans()
+kmeans.cluster(file_path='C:\wamp\www\FinalYearProject02\output\price_volume_average_static_normalize_5_20.csv')
 
-time_framed_file = ''
-
-kmeans=KMeans()
-kmeans.run_kmeans_cluster(file_path=time_framed_file)
+# hierarchical = Hierarchical()
+# hierarchical.cluster(file_path='C:\wamp\www\FinalYearProject02\output\output.csv')
