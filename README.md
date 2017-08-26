@@ -1,4 +1,5 @@
-"# Final_Year_Project"
+# Final_Year_Project
 
-Add each validation in validate module
-Use TestMain.py as main class to run scripts
+Add each anomaly detection module in the directory module
+Use TestPreprocessMain.py as main class to run scripts for preprocessing
+Use TestModelMain.py as main class to run scripts for clustering
