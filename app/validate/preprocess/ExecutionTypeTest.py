@@ -44,7 +44,12 @@ class ExecutionTypeTest:
                 break
         #print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
-        self.normalize_data_frame.to_csv("output/ex_type_static_normalize.csv", index=False, encoding='utf-8')
+        self.normalize_data_frame.to_csv("./app/output/ex_type_static_normalize.csv", index=False, encoding='utf-8')
+
+        return_data = {}
+        return_data['total_rows'] = len(data)
+
+        return return_data
 
     def run_execution_type_dynamic(self,message_file,session_file,no_of_lines,time_delta,time_lag):
 
