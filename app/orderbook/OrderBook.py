@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from dateutil import parser as DUp
 
 from app.preprocess.static.PriceVolumeAverage import Window
 
@@ -11,12 +12,19 @@ class OrderBook:
     sellOrdersDetails = {}
     indx=0
 
+
+
     def __init__(self, order_data,session_file):
+
         self.order_d = order_data
         columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
                    'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
         self.neworders = DataFrame(columns=columns)
         self.window=Window(session_file=session_file)
+        self.bestBuyList=DataFrame()
+
+        self.anomaly_first_point = DUp.parse("2016-04-29 12:55:00")
+        self.anomaly_second_point = DUp.parse("2016-04-29 13:15:00")
 
 
     """
@@ -29,6 +37,7 @@ class OrderBook:
      """
     def processOrder(self, order,time_delta):
         self.indx += 1
+
         if(order.value>0):
 
             # if len(self.buyOrders)>0 and len(self.sellOrders)>0 and self.indx>500:
@@ -45,6 +54,19 @@ class OrderBook:
             elif order.execution_type == 15:
                 self.fillOrder(order)
             # return df
+
+            temp_trasact_time = DUp.parse(order.transact_time)
+            if (temp_trasact_time <= self.anomaly_second_point and temp_trasact_time >= self.anomaly_first_point):
+                self.bestBuyList = self.bestBuyList.append(DataFrame(
+                {'time_index': order.transact_time,
+                 'best_buy': self.buyOrders[0],
+                 'best_sell': self.sellOrders[0]
+                 }, index=[0]), ignore_index=True);
+
+    def get_best_buy(self):
+        return self.bestBuyList
+
+
 
     """
             Name : Add new order

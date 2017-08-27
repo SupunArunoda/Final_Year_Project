@@ -39,7 +39,15 @@ class OrderbookAttr:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            orderbook.processOrder(order=order, time_delta=time_delta)
-            if index > no_of_lines:
+            orderbook.processOrder(order=order,time_delta=time_delta)
+            if index == no_of_lines and no_of_lines != 0:
                 break
         orderbook.printOrderBook()
+
+        data=orderbook.get_best_buy()
+        data.to_csv("output/best_buy_price.csv", index=False, encoding='utf-8')
+
+
+
+
+
