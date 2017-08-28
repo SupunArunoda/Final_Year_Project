@@ -75,8 +75,8 @@ class InputData:
     Returns : time difference in minutes
     """
     def str_to_date_time(self,str_date_1,str_date_2):
-        new_date_1=datetime.strptime(str_date_1,'%m/%d/%Y %I:%M:%S %p')
-        new_date_2 = datetime.strptime(str_date_2, '%m/%d/%Y %I:%M:%S %p')
+        new_date_1=datetime.strptime(str_date_1,'%Y-%m-%d %H:%M:%S.%f')
+        new_date_2 = datetime.strptime(str_date_2, '%Y-%m-%d %H:%M:%S.%f')
         diff=((new_date_2-new_date_1).seconds)/60
         return diff
 
@@ -87,43 +87,44 @@ class InputData:
     """
     @property
     def get_calculation(self):
-        group=self.messages.groupby('Order_ID')['Time'].unique()
+        group=self.messages.groupby('order_id')['transact_time'].unique()
         group=group[group.apply(lambda x: len(x)>1)]#remove orders not having at least two time values
         bestBid = 0
         bestAsk = sys.maxsize
 
         for index, order_row in group.iteritems():
-            if(index>0):
-                min=float(order_row[0])
-                max=float(order_row[-1])
-                diff=max-min#calculate the execution time for an order
-                volume=self.messages.loc[self.messages['Order_ID'] == index, 'Size'].iloc[0]#set size attribute
-                price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  #set price attribute
-                direction = self.messages.loc[self.messages['Order_ID'] == index, 'Direction'].iloc[0]  #set direction attribute
 
-                if (direction == 1):
-                    if (bestBid == 0):
-                        self.processed_message = self.processed_message.append(DataFrame(
-                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                             'Direction': direction, 'Best_Bid_Ask': price}, index=[0]), ignore_index=True);
-                    elif (bestBid > 0):
-                        self.processed_message = self.processed_message.append(DataFrame(
-                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                             'Direction': direction, 'Best_Bid_Ask': bestBid}, index=[0]), ignore_index=True)
-                    if (bestBid < price):
-                        bestBid = price
+            min=order_row[0]
+            max=order_row[-1]
+            diff=self.str_to_date_time(str_date_1=min,str_date_2=max)#calculate the execution time for an order
+            #diff=max-min#calculate the execution time for an order
+            volume=self.messages.loc[self.messages['order_id'] == index, 'visible_size'].iloc[0]#set size attribute
+            price = self.messages.loc[self.messages['order_id'] == index, 'value'].iloc[0]  #set price attribute
+            direction = self.messages.loc[self.messages['order_id'] == index, 'side'].iloc[0]  #set direction attribute
 
-                else:
-                    if (bestAsk == sys.maxsize):
-                        self.processed_message = self.processed_message.append(DataFrame(
-                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                             'Direction': direction, 'Best_Bid_Ask': price}, index=[0]), ignore_index=True);
-                    elif (bestBid > 0):
-                        self.processed_message = self.processed_message.append(DataFrame(
-                            {'Order_ID': index, 'Execution_Time': diff, 'Volume': volume, 'Price': price,
-                             'Direction': direction, 'Best_Bid_Ask': bestAsk}, index=[0]), ignore_index=True);
-                    if (bestAsk > price):
-                        bestAsk = price
+            if (direction == 1):
+                if (bestBid == 0):
+                    self.processed_message = self.processed_message.append(DataFrame(
+                        {'order_id': index, 'execution_time': diff, 'size': volume, 'value': price,
+                            'direction': direction, 'best_bid_ask': price}, index=[0]), ignore_index=True);
+                elif (bestBid > 0):
+                    self.processed_message = self.processed_message.append(DataFrame(
+                        {'order_id': index, 'execution_time': diff, 'size': volume, 'value': price,
+                            'direction': direction, 'best_bid_ask': bestBid}, index=[0]), ignore_index=True)
+                if (bestBid < price):
+                    bestBid = price
+
+            else:
+                if (bestAsk == sys.maxsize):
+                    self.processed_message = self.processed_message.append(DataFrame(
+                        {'order_id': index, 'execution_time': diff, 'size': volume, 'price': price,
+                            'direction': direction, 'best_bid_ask': price}, index=[0]), ignore_index=True);
+                elif (bestBid > 0):
+                    self.processed_message = self.processed_message.append(DataFrame(
+                        {'order_id': index, 'execution_time': diff, 'size': volume, 'value': price,
+                            'direction': direction, 'best_bid_ask': bestAsk}, index=[0]), ignore_index=True);
+                if (bestAsk > price):
+                    bestAsk = price
         return self.processed_message;
 
     """
@@ -131,11 +132,11 @@ class InputData:
     Returns  : processed_message=DataFrame.append('time_vector')
     """
     def get_time_vector(self):
-        self.processed_message['mult']=(self.processed_message.Execution_Time*self.processed_message.Volume);
-        vol_sum=self.processed_message['Volume'].sum()
+        self.processed_message['mult']=(self.processed_message.execution_time*self.processed_message.size);
+        vol_sum=self.processed_message['size'].sum()
         mul_sum=self.processed_message['mult'].sum()
         weighted_avrge=mul_sum/vol_sum;
-        self.processed_message['time_vector'] = (np.log(self.processed_message.Execution_Time/weighted_avrge));
+        self.processed_message['time_vector'] = (np.log(self.processed_message.execution_time/weighted_avrge));
         return self.processed_message;
 
     """
@@ -143,9 +144,9 @@ class InputData:
     Returns  : processed_message = DataFrame.append('volume_vector')
     """
     def get_volume_vector(self):
-        vol_sum = self.processed_message['Volume'].sum()
-        vol_day=vol_sum/self.processed_message['Order_ID'].count();
-        self.processed_message['volume_vector'] = (np.log(self.processed_message.Volume/vol_day));
+        vol_sum = self.processed_message['size'].sum()
+        vol_day=vol_sum/self.processed_message['order_id'].count();
+        self.processed_message['volume_vector'] = (np.log(self.processed_message.size/vol_day));
         return self.processed_message;
 
     """
@@ -153,7 +154,7 @@ class InputData:
     Returns : processed_message = DataFrame.append('price_vector')
     """
     def get_price_vector(self):
-        self.processed_message['price_vector'] = (np.log(self.processed_message.Price/self.processed_message.Best_Bid_Ask));
+        self.processed_message['price_vector'] = (np.log(self.processed_message.value/self.processed_message.best_bid_ask));
         return self.processed_message;
 
     """
@@ -165,7 +166,7 @@ class InputData:
 
     def run_data_process(self,message_file):
         self.read_single_day_data(message_file=message_file)
-        self.get_calculation
+        self.get_calculation()
         self.get_time_vector()
         self.get_volume_vector()
         print(self.get_price_vector())

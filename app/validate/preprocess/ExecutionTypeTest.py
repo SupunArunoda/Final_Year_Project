@@ -98,6 +98,11 @@ class ExecutionTypeTest:
         mean_buy_cancel = self.normalize_data_frame['cancel_order_buy_average'].mean()
         mean_sell_cancel = self.normalize_data_frame['cancel_order_sell_average'].mean()
 
+        mean_execute = self.normalize_data_frame['execute_order_average'].mean()
+        mean_new = self.normalize_data_frame['new_order_average'].mean()
+        mean_cancel = self.normalize_data_frame['cancel_order_average'].mean()
+        mean_ammend=self.normalize_data_frame['ammend_order_average'].mean()
+
         std_buy_execute = self.normalize_data_frame['execute_order_buy_average'].values.std(ddof=1)
         std_sell_execute = self.normalize_data_frame['execute_order_sell_average'].values.std(ddof=1)
         std_buy_new = self.normalize_data_frame['new_order_buy_average'].values.std(ddof=1)
@@ -106,6 +111,11 @@ class ExecutionTypeTest:
         std_sell_ammend = self.normalize_data_frame['ammend_order_sell_average'].values.std(ddof=1)
         std_buy_cancel = self.normalize_data_frame['cancel_order_buy_average'].values.std(ddof=1)
         std_sell_cancel = self.normalize_data_frame['cancel_order_sell_average'].values.std(ddof=1)
+
+        std_execute = self.normalize_data_frame['execute_order_average'].values.std(ddof=1)
+        std_new = self.normalize_data_frame['new_order_average'].values.std(ddof=1)
+        std_cancel = self.normalize_data_frame['cancel_order_average'].values.std(ddof=1)
+        std_ammend = self.normalize_data_frame['ammend_order_average'].values.std(ddof=1)
 
         print(mean_buy_execute,std_buy_execute,mean_sell_ammend,std_sell_ammend)
 
@@ -119,5 +129,8 @@ class ExecutionTypeTest:
         self.normalize_data_frame['nom_can_buy'] = (self.normalize_data_frame['cancel_order_buy_average'] - mean_buy_cancel) / std_buy_cancel
         self.normalize_data_frame['nom_can_sell'] = (self.normalize_data_frame['cancel_order_sell_average'] - mean_sell_cancel) / std_sell_cancel
 
-
+        self.normalize_data_frame['nom_exe'] = (self.normalize_data_frame['execute_order_average'] - mean_execute) / std_execute
+        self.normalize_data_frame['nom_new'] = (self.normalize_data_frame['new_order_average'] - mean_new) / std_new
+        self.normalize_data_frame['nom_can'] = (self.normalize_data_frame['cancel_order_average'] - mean_cancel) / std_cancel
+        self.normalize_data_frame['nom_amm'] = (self.normalize_data_frame['ammend_order_average'] - mean_ammend) / std_ammend
 

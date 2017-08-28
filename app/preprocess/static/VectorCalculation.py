@@ -1,12 +1,16 @@
 from pandas import DataFrame,read_csv
 import datetime
 import csv
+import sys
 from dateutil import parser as DUp
 
 class VectorWindow:
 
 
     def __init__(self,session_file):
+
+        self.messages = DataFrame()
+        self.processed_message = DataFrame([]);
 
         self.attributes = DataFrame()
         self.temp_time=0;
@@ -41,39 +45,42 @@ class VectorWindow:
                 if(self.temp_time!=0):
                     time_gap=temp_trasact_time-self.temp_time;
                     if(time_gap<=const_time_gap):
-                        self.check_order(order=order)
+                        self.set_input(order=order)
                     else:
-                        self.check_order(order=order)
-
+                        self.set_input(order=order)
+                        self.get_calculation()
                         index=str(self.temp_time)+str('$$')+str(order.transact_time)
                         self.volume_average_list.append(index)
                         self.price_average_list.append(index)
-                        self.get_average_volume()
-                        self.get_average_price()
-                        self.attributes = self.attributes.append(DataFrame(
-                            {'time_index_volume': self.volume_average_list[0],
-                             'new_order_buy_volume': self.volume_average_list[1],
-                             'new_order_sell_volume': self.volume_average_list[2],
-                             'cancel_order_buy_volume': self.volume_average_list[3],
-                             'cancel_order_sell_volume': self.volume_average_list[4],
-                             'execute_order_buy_volume': self.volume_average_list[5],
-                             'execute_order_sell_volume': self.volume_average_list[6],
 
-                             'new_order_buy_price': self.price_average_list[1],
-                             'new_order_sell_price': self.price_average_list[2],
-                             'cancel_order_buy_price': self.price_average_list[3],
-                             'cancel_order_sell_price': self.price_average_list[4],
-                             'execute_order_buy_price': self.price_average_list[5],
-                             'execute_order_sell_price': self.price_average_list[6]
-                             }, index=[0]), ignore_index=True);
-
-                        self.remove_values()
                         self.temp_time=0
                     if(self.temp_time==0):
                         self.temp_time = temp_trasact_time
 
                 elif(self.temp_time==0):
                     self.temp_time=temp_trasact_time
-                    self.check_order(order=order)
 
         return self.attributes;
+
+    def set_input(self,order):
+        self.messages = self.messages.append(DataFrame(
+            {'Order_ID': order.order_id, 'Submitted_Time': order.transact_time, 'Size': order.visible_qty, 'Price': order.value,
+             'Execution_Type' : order.execution_type,'Side': order.side}, index=[0]), ignore_index=True);
+
+
+    def get_calculation(self):
+        group=self.messages.groupby('Order_ID')['Submitted_Time'].unique()
+        group=group[group.apply(lambda x: len(x)>1)]#remove orders not having at least two time values
+        bestBid = 0
+        bestAsk = sys.maxsize
+
+        for index, order_row in group.iteritems():
+            if(index>0):
+                min=float(order_row[0])
+                max=float(order_row[-1])
+                diff=max-min#calculate the execution time for an order
+                volume=self.messages.loc[self.messages['Order_ID'] == index, 'Size'].iloc[0]#set size attribute
+                price = self.messages.loc[self.messages['Order_ID'] == index, 'Price'].iloc[0]  #set price attribute
+                direction = self.messages.loc[self.messages['Order_ID'] == index, 'Side'].iloc[0]  #set direction attribute
+
+        return self.processed_message;
