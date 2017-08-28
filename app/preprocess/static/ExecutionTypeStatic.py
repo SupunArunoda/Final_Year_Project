@@ -32,8 +32,8 @@ class ExecutionTypeStatic:
         const_time_gap=datetime.timedelta(0, time_delta)#set time window value
         temp_trasact_time=DUp.parse(order.transact_time)
         for i in range(0,len(self.regular_list),2):
-            if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
-                if(self.temp_time!=0):
+            if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+                if (self.temp_time != 0):
                     time_gap=temp_trasact_time-self.temp_time;
                     if(time_gap<=const_time_gap):
                         self.check_order_type(order=order)
