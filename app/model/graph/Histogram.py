@@ -4,8 +4,8 @@ import numpy as np
 
 
 
-raw_datafile = read_csv('../../output/analyzing values/price_gap_buy_anomaly.csv')
-X = raw_datafile[['nom_buy_price_gap', 'time_index']]
+raw_datafile = read_csv('../../output/real/ex_type_norm_20.0.csv')
+X = raw_datafile[['nom_exe_buy', 'time_index_volume']]
 X = X.values
 x = X[:, 0]
 y = np.array(range(1, len(X)+1))

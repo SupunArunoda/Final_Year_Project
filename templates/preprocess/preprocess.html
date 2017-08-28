@@ -48,7 +48,7 @@
             <ul class="sidebar-menu">
                 <li class="header">MAIN NAVIGATION</li>
                 <li>
-                    <a href="pages/widgets.html">
+                    <a href="{{ url_for('preprocess_route.show_template') }}">
                         <i class="fa fa-caret-right"></i> <span>Preprocess Data</span>
                         <!--<span class="pull-right-container">-->
                         <!--<small class="label pull-right bg-green">new</small>-->
@@ -105,6 +105,7 @@
                                 <!-- /.box-footer -->
                             </div>
                         </div>
+                        {% if(data) %}
                         <div class="col-md-12">
                             <div class="box box-info">
                                 <div class="box-header with-border">
@@ -114,20 +115,86 @@
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            {% if(data) %}
                                                 Total rows processed: {{ data['total_rows'] }}
-                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="info-box bg-green">
+                                                <div style="padding: 5px 10px;">
+                                                  <span class="info-box-text">New Orders</span>
+                                                  <span class="info-box-number">{{ data['new_orders_count'] }}</span>
+
+                                                  <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ data['new_orders_percentage'] }}%"></div>
+                                                  </div>
+                                                      <span class="progress-description">
+                                                            {{ data['new_orders_percentage'] }}%
+                                                      </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-box bg-green">
+                                                <div style="padding: 5px 10px;">
+                                                  <span class="info-box-text">Cancelled Orders</span>
+                                                  <span class="info-box-number">{{ data['cancel_orders_count'] }}</span>
+
+                                                  <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ data['cancel_orders_percentage'] }}%"></div>
+                                                  </div>
+                                                      <span class="progress-description">
+                                                            {{ data['cancel_orders_percentage'] }}%
+                                                      </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-box bg-green">
+                                                <div style="padding: 5px 10px;">
+                                                  <span class="info-box-text">Ammended Orders</span>
+                                                  <span class="info-box-number">{{ data['ammend_orders_count'] }}</span>
+
+                                                  <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ data['ammend_orders_percentage'] }}%"></div>
+                                                  </div>
+                                                      <span class="progress-description">
+                                                            {{ data['ammend_orders_percentage'] }}%
+                                                      </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-box bg-green">
+                                                <div style="padding: 5px 10px;">
+                                                  <span class="info-box-text">Executed Orders</span>
+                                                  <span class="info-box-number">{{ data['execute_orders_count'] }}</span>
+
+                                                  <div class="progress">
+                                                        <div class="progress-bar" style="width: {{ data['execute_orders_percentage'] }}%"></div>
+                                                  </div>
+                                                      <span class="progress-description">
+                                                            {{ data['execute_orders_percentage'] }}%
+                                                      </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{ data['piechart_data']|safe }}
                                         </div>
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer clearfix">
-                                    <a href="javascript:void(0)"
+                                    <a href=""
                                        class="btn btn-sm btn-info btn-flat pull-right">Next</a>
                                 </div>
                                 <!-- /.box-footer -->
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                     <!-- /.box -->
                 </div>

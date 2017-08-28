@@ -1,4 +1,4 @@
-from orderbook.Order import Order
+from app.orderbook.Order import Order
 from pandas import DataFrame, read_csv
 
 from app.preprocess.static.PriceGapStatic import PriceGapStatic
