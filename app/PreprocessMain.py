@@ -5,10 +5,8 @@ from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 from app.validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 
-import pandas as pd
-
-# from app.validate.model.Kmeans import KMeans
-
+from matplotlib import pyplot as plt
+from mpld3 import fig_to_d3
 from flask import Blueprint, request, render_template, redirect, url_for
 import sys
 from werkzeug.utils import secure_filename
@@ -32,6 +30,28 @@ def preprocess_data():
             returned_data = ex_type_based.run_execution_type_static(message_file=message_file,
                                                                     session_file=session_file, no_of_lines=0,
                                                                     time_delta=420)
+
+            returned_data['new_orders_percentage'] = round((returned_data['new_orders_count'] / returned_data[
+                'total_rows']) * 100, 4)
+            returned_data['cancel_orders_percentage'] = round((returned_data['cancel_orders_count'] / returned_data[
+                'total_rows']) * 100, 4)
+            returned_data['ammend_orders_percentage'] = round((returned_data['ammend_orders_count'] / returned_data[
+                'total_rows']) * 100, 4)
+            returned_data['execute_orders_percentage'] = round((returned_data['execute_orders_count'] / returned_data[
+                'total_rows']) * 100, 4)
+
+            # piechart details
+            labels = ['New Orders', 'Cancelled Orders', 'Ammended Orders', 'Executed Orders']
+            sizes = [returned_data['new_orders_count'], returned_data['cancel_orders_count'],
+                     returned_data['ammend_orders_count'], returned_data['execute_orders_count']]
+
+            fig, ax = plt.subplots()
+            ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+            ax.axis('equal')
+
+            display_data = fig_to_d3(fig)
+
+            returned_data['piechart_data'] = display_data
 
     return render_template('preprocess/preprocess.html', data=json.loads(json.dumps(returned_data)))
     # return redirect(url_for('preprocess_route.show_template', data=json.loads(json.dumps(returned_data)), code=307))
