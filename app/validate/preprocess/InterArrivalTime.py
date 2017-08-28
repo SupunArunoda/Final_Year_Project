@@ -9,9 +9,9 @@ from app.orderbook.Order import Order
 
 class InterArrivalTime:
     def __init__(self):
-        # session_file = 'E:\projects\Final_Year_Project\data\sessions.csv'
-        # self.session = read_csv(session_file)
-        # self.regular_list = self.get_regular_time()
+        session_file = '../../data/sessions.csv'
+        self.session = read_csv(session_file)
+        self.regular_list = self.get_regular_time()
 
         self.normalize_data_frame = DataFrame()
 
@@ -48,7 +48,7 @@ class InterArrivalTime:
         diff = ((new_date_2 - new_date_1).seconds) / 60
         return diff
 
-    def run_inter_arrival_time_static(self, message_file, time_delta):
+    def run_inter_arrival_time_static(self, message_file):
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
@@ -77,102 +77,105 @@ class InterArrivalTime:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            if order.execution_type == 0 and order.side == 2:
-                if self.prevSellNew != 0:
-                    diff = self.str_to_date_time(self.prevSellNew, order.transact_time)
-                    self.sellNew = self.sellNew.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
+            temp_trasact_time = DUp.parse(order.transact_time)
+            for i in range(0, len(self.regular_list), 2):
+                if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+                    if order.execution_type == 0 and order.side == 2:
+                        if self.prevSellNew != 0:
+                            diff = self.str_to_date_time(self.prevSellNew, order.transact_time)
+                            self.sellNew = self.sellNew.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
 
-                    self.prevSellNew = order.transact_time
-                else:
-                    self.prevSellNew = order.transact_time
+                            self.prevSellNew = order.transact_time
+                        else:
+                            self.prevSellNew = order.transact_time
 
-            if order.execution_type == 4 and order.side == 2:
-                if self.prevSellAmmend != 0:
-                    diff = self.str_to_date_time(self.prevSellAmmend, order.transact_time)
-                    self.sellAmmend = self.sellAmmend.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevSellAmmend = order.transact_time
-                else:
-                    self.prevSellAmmend = order.transact_time
+                    if order.execution_type == 4 and order.side == 2:
+                        if self.prevSellAmmend != 0:
+                            diff = self.str_to_date_time(self.prevSellAmmend, order.transact_time)
+                            self.sellAmmend = self.sellAmmend.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevSellAmmend = order.transact_time
+                        else:
+                            self.prevSellAmmend = order.transact_time
 
-            if order.execution_type == 5 and order.side == 2:
-                if self.prevSellCancel != 0:
-                    diff = self.str_to_date_time(self.prevSellCancel, order.transact_time)
-                    self.sellCancel = self.sellCancel.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevSellCancel = order.transact_time
-                else:
-                    self.prevSellCancel = order.transact_time
+                    if order.execution_type == 5 and order.side == 2:
+                        if self.prevSellCancel != 0:
+                            diff = self.str_to_date_time(self.prevSellCancel, order.transact_time)
+                            self.sellCancel = self.sellCancel.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevSellCancel = order.transact_time
+                        else:
+                            self.prevSellCancel = order.transact_time
 
-            if order.execution_type == 15 and order.side == 2:
-                if self.prevSellExecute != 0:
-                    diff = self.str_to_date_time(self.prevSellExecute, order.transact_time)
-                    self.sellExecute = self.sellExecute.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevSellExecute = order.transact_time
-                else:
-                    self.prevSellExecute = order.transact_time
+                    if order.execution_type == 15 and order.side == 2:
+                        if self.prevSellExecute != 0:
+                            diff = self.str_to_date_time(self.prevSellExecute, order.transact_time)
+                            self.sellExecute = self.sellExecute.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevSellExecute = order.transact_time
+                        else:
+                            self.prevSellExecute = order.transact_time
 
-            if order.execution_type == 0 and order.side == 1:
-                if self.prevBuyNew != 0:
-                    diff = self.str_to_date_time(self.prevBuyNew, order.transact_time)
-                    self.buyNew = self.buyNew.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevBuyNew = order.transact_time
-                else:
-                    self.prevBuyNew = order.transact_time
+                    if order.execution_type == 0 and order.side == 1:
+                        if self.prevBuyNew != 0:
+                            diff = self.str_to_date_time(self.prevBuyNew, order.transact_time)
+                            self.buyNew = self.buyNew.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevBuyNew = order.transact_time
+                        else:
+                            self.prevBuyNew = order.transact_time
 
-            if order.execution_type == 4 and order.side == 1:
-                if self.prevBuyAmmend != 0:
-                    diff = self.str_to_date_time(self.prevBuyAmmend, order.transact_time)
-                    self.buyAmmend = self.buyAmmend.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevBuyAmmend = order.transact_time
-                else:
-                    self.prevBuyAmmend = order.transact_time
+                    if order.execution_type == 4 and order.side == 1:
+                        if self.prevBuyAmmend != 0:
+                            diff = self.str_to_date_time(self.prevBuyAmmend, order.transact_time)
+                            self.buyAmmend = self.buyAmmend.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevBuyAmmend = order.transact_time
+                        else:
+                            self.prevBuyAmmend = order.transact_time
 
-            if order.execution_type == 5 and order.side == 1:
-                if self.prevBuyCancel != 0:
-                    diff = self.str_to_date_time(self.prevBuyCancel, order.transact_time)
-                    self.buyCancel = self.buyCancel.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevBuyCancel = order.transact_time
-                else:
-                    self.prevBuyCancel = order.transact_time
+                    if order.execution_type == 5 and order.side == 1:
+                        if self.prevBuyCancel != 0:
+                            diff = self.str_to_date_time(self.prevBuyCancel, order.transact_time)
+                            self.buyCancel = self.buyCancel.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevBuyCancel = order.transact_time
+                        else:
+                            self.prevBuyCancel = order.transact_time
 
-            if order.execution_type == 15 and order.side == 1:
-                if self.prevBuyExecute != 0:
-                    diff = self.str_to_date_time(self.prevBuyExecute, order.transact_time)
-                    self.buyExecute = self.buyExecute.append(DataFrame(
-                        {
-                            'inter_arr_time': diff,
-                            'time_stamp': order.transact_time
-                        }, index=[0]), ignore_index=True);
-                    self.prevBuyExecute = order.transact_time
-                else:
-                    self.prevBuyExecute = order.transact_time
+                    if order.execution_type == 15 and order.side == 1:
+                        if self.prevBuyExecute != 0:
+                            diff = self.str_to_date_time(self.prevBuyExecute, order.transact_time)
+                            self.buyExecute = self.buyExecute.append(DataFrame(
+                                {
+                                    'inter_arr_time': diff,
+                                    'time_stamp': order.transact_time
+                                }, index=[0]), ignore_index=True);
+                            self.prevBuyExecute = order.transact_time
+                        else:
+                            self.prevBuyExecute = order.transact_time
         # print(self.sellNew)
         self.writeToFile()
 
@@ -276,5 +279,6 @@ class InterArrivalTime:
         plt.plot(y, x)
         plt.show()
 
-# InterArrivalTime().run_inter_arrival_time_static(message_file='../../data/data.csv')
-InterArrivalTime().plotHistogram()
+
+InterArrivalTime().run_inter_arrival_time_static(message_file='../../data/data.csv')
+# InterArrivalTime().plotHistogram()
