@@ -48,8 +48,7 @@ class InterArrivalTime:
         diff = ((new_date_2 - new_date_1).seconds) / 60
         return diff
 
-    def run_inter_arrival_time_static(self, message_file):
-
+    def run_inter_arrival_time_static(self, message_file, time_delta):
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
@@ -78,7 +77,7 @@ class InterArrivalTime:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            if order.execution_type == '0' and order.side == '2':
+            if order.execution_type == 0 and order.side == 2:
                 if self.prevSellNew != 0:
                     diff = self.str_to_date_time(self.prevSellNew, order.transact_time)
                     self.sellNew = self.sellNew.append(DataFrame(
@@ -91,7 +90,7 @@ class InterArrivalTime:
                 else:
                     self.prevSellNew = order.transact_time
 
-            if order.execution_type == '4' and order.side == '2':
+            if order.execution_type == 4 and order.side == 2:
                 if self.prevSellAmmend != 0:
                     diff = self.str_to_date_time(self.prevSellAmmend, order.transact_time)
                     self.sellAmmend = self.sellAmmend.append(DataFrame(
@@ -103,7 +102,7 @@ class InterArrivalTime:
                 else:
                     self.prevSellAmmend = order.transact_time
 
-            if order.execution_type == '5' and order.side == '2':
+            if order.execution_type == 5 and order.side == 2:
                 if self.prevSellCancel != 0:
                     diff = self.str_to_date_time(self.prevSellCancel, order.transact_time)
                     self.sellCancel = self.sellCancel.append(DataFrame(
@@ -115,7 +114,7 @@ class InterArrivalTime:
                 else:
                     self.prevSellCancel = order.transact_time
 
-            if order.execution_type == '15' and order.side == '2':
+            if order.execution_type == 15 and order.side == 2:
                 if self.prevSellExecute != 0:
                     diff = self.str_to_date_time(self.prevSellExecute, order.transact_time)
                     self.sellExecute = self.sellExecute.append(DataFrame(
@@ -127,7 +126,7 @@ class InterArrivalTime:
                 else:
                     self.prevSellExecute = order.transact_time
 
-            if order.execution_type == '0' and order.side == '1':
+            if order.execution_type == 0 and order.side == 1:
                 if self.prevBuyNew != 0:
                     diff = self.str_to_date_time(self.prevBuyNew, order.transact_time)
                     self.buyNew = self.buyNew.append(DataFrame(
@@ -139,7 +138,7 @@ class InterArrivalTime:
                 else:
                     self.prevBuyNew = order.transact_time
 
-            if order.execution_type == '4' and order.side == '1':
+            if order.execution_type == 4 and order.side == 1:
                 if self.prevBuyAmmend != 0:
                     diff = self.str_to_date_time(self.prevBuyAmmend, order.transact_time)
                     self.buyAmmend = self.buyAmmend.append(DataFrame(
@@ -151,7 +150,7 @@ class InterArrivalTime:
                 else:
                     self.prevBuyAmmend = order.transact_time
 
-            if order.execution_type == '5' and order.side == '1':
+            if order.execution_type == 5 and order.side == 1:
                 if self.prevBuyCancel != 0:
                     diff = self.str_to_date_time(self.prevBuyCancel, order.transact_time)
                     self.buyCancel = self.buyCancel.append(DataFrame(
@@ -163,7 +162,7 @@ class InterArrivalTime:
                 else:
                     self.prevBuyCancel = order.transact_time
 
-            if order.execution_type == '15' and order.side == '1':
+            if order.execution_type == 15 and order.side == 1:
                 if self.prevBuyExecute != 0:
                     diff = self.str_to_date_time(self.prevBuyExecute, order.transact_time)
                     self.buyExecute = self.buyExecute.append(DataFrame(
@@ -183,7 +182,7 @@ class InterArrivalTime:
         std_sell_new = np.std(self.sellNew['inter_arr_time'], axis=0)
         self.sellNew['nom_inter_arr'] = (self.sellNew['inter_arr_time'] - mean_sell_new) / std_sell_new
         self.sellNew.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\sell_new_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/sell_new_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -193,7 +192,7 @@ class InterArrivalTime:
         self.sellExecute['nom_inter_arr'] = (self.sellExecute[
                                                  'inter_arr_time'] - mean_sell_execute) / std_sell_execute
         self.sellExecute.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\sell_execute_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/sell_execute_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -203,7 +202,7 @@ class InterArrivalTime:
         self.sellCancel['nom_inter_arr'] = (self.sellCancel[
                                                 'inter_arr_time'] - mean_sell_cancel) / std_sell_cancel
         self.sellCancel.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\sell_cancel_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/sell_cancel_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -213,7 +212,7 @@ class InterArrivalTime:
         self.sellAmmend['nom_inter_arr'] = (self.sellAmmend[
                                                 'inter_arr_time'] - mean_sell_ammend) / std_sell_ammend
         self.sellAmmend.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\sell_ammend_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/sell_ammend_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -223,7 +222,7 @@ class InterArrivalTime:
         self.buyNew['nom_inter_arr'] = (self.buyNew[
                                             'inter_arr_time'] - mean_buy_new) / std_buy_new
         self.buyNew.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\buy_new_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/buy_new_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -233,7 +232,7 @@ class InterArrivalTime:
         self.buyAmmend['nom_inter_arr'] = (self.buyAmmend[
                                                'inter_arr_time'] - mean_buy_ammend) / std_buy_ammend
         self.buyAmmend.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\buy_ammend_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/buy_ammend_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -243,7 +242,7 @@ class InterArrivalTime:
         self.buyCancel['nom_inter_arr'] = (self.buyCancel[
                                                'inter_arr_time'] - mean_buy_cancel) / std_buy_cancel
         self.buyCancel.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\buy_cancel_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/buy_cancel_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
@@ -253,18 +252,29 @@ class InterArrivalTime:
         self.buyExecute['nom_inter_arr'] = (self.buyExecute[
                                                 'inter_arr_time'] - mean_buy_execute) / std_buy_execute
         self.buyExecute.to_csv(
-            "E:\projects\Final_Year_Project\app\output\inter_arrival_time\buy_executed_inter_arrival_time.csv",
+            "../../output/inter_arrival_time/buy_executed_inter_arrival_time.csv",
             index=False,
             encoding='utf-8')
 
-        X = self.sellNew['nom_inter_arr']
-        X = X.values
+        # X = self.sellNew['nom_inter_arr']
+        # X = X.values
+        #
+        # x = X[:, 0]
+        # y = np.array(range(1, len(X) + 1))
+        #
+        # plt.plot(y, x)
+        # plt.show()
 
-        x = X[:, 0]
+    def plotHistogram(self):
+        df = read_csv('../../output/inter_arrival_time/buy_executed_inter_arrival_time.csv')
+        df = df['nom_inter_arr'][0:1000]
+        X = df.values
+
+        x = X[0:]
         y = np.array(range(1, len(X) + 1))
 
         plt.plot(y, x)
         plt.show()
 
-
-InterArrivalTime().run_inter_arrival_time_static(message_file='E:\projects\Final_Year_Project\app\data\data.csv')
+# InterArrivalTime().run_inter_arrival_time_static(message_file='../../data/data.csv')
+InterArrivalTime().plotHistogram()
