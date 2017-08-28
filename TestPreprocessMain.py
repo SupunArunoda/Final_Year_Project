@@ -30,7 +30,7 @@ time_framed_file='./output/time_framed_data.csv'
 
 # #Test PriceVolumeAverage
 orderbook=OrderbookAttr()
-orderbook.run_orderbook(message_file=message_file,session_file=session_file,no_of_lines=500,time_delta=420)
+orderbook.run_orderbook(message_file=message_file,session_file=session_file,no_of_lines=2000,time_delta=420)
 
 # ex_type_based=ExecutionTypeTest()
 # ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=420)

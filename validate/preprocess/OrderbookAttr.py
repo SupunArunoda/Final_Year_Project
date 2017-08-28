@@ -43,6 +43,8 @@ class OrderbookAttr:
             if index > no_of_lines:
                 break
         orderbook.printOrderBook()
-
+        # print(df)
+        # df.to_csv("output/orderbook_attr.csv", index=False,
+        #                                  encoding='utf-8')
 
 

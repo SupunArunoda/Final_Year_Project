@@ -1,5 +1,6 @@
 from pandas import DataFrame
 
+from preprocess.static.OrderbookAttrStatic import OrderbookAttrStatic
 from preprocess.static.PriceVolumeAverage import Window
 
 
@@ -16,7 +17,7 @@ class OrderBook:
         columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
                    'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
         self.neworders = DataFrame(columns=columns)
-        self.window=Window(session_file=session_file)
+        self.window=OrderbookAttrStatic(session_file=session_file)
 
 
     """
@@ -35,7 +36,7 @@ class OrderBook:
             #     if self.buyOrders[0] > self.sellOrders[0]:
             #         print("new")
             #time function here
-            # df=self.window.get_time_frame(order=order,time_delta=time_delta)
+
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
@@ -44,6 +45,8 @@ class OrderBook:
                 self.amendOrder(order)
             elif order.execution_type == 15:
                 self.fillOrder(order)
+            # detail=self.getDetails()
+            # df = self.window.get_time_frame(order=order, time_delta=time_delta, details=detail)
             # return df
 
     """
@@ -211,3 +214,43 @@ class OrderBook:
                     volume += order['visible_size'].iloc[0]
 
             print(len(self.sellOrdersDetails[sellOrder]), "\t\t\t", volume, "\t\t\t @", sellOrder)
+
+
+    def getDetails(self):
+        details=[]
+        if(len(self.buyOrders)>0):
+            details.append(self.buyOrders[0])
+        else:
+            details.append(0)
+
+        if (len(self.sellOrders) > 0):
+            details.append(self.sellOrders[0])
+        else:
+            details.append(0)
+        volume = 0
+        count=0
+        for buyOrder in self.buyOrders:
+            count+=1
+            if(count>10):
+                break
+            for orderId in self.buyOrdersDetails[buyOrder]:
+                order = self.neworders.loc[(self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
+                if order.empty==False:
+                    volume += order['visible_size'].iloc[0]
+
+        details.append(volume/10)
+
+        volume = 0
+        count = 0
+        for sellOrder in self.sellOrders:
+            count += 1
+            if (count > 10):
+                break
+            for orderId in self.sellOrdersDetails[sellOrder]:
+                order = self.neworders.loc[(self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
+                if order.empty==False:
+                    volume += order['visible_size'].iloc[0]
+
+        details.append(volume / 10)
+
+        return details
