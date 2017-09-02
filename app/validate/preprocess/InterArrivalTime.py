@@ -11,7 +11,7 @@ class InterArrivalTime:
     def __init__(self):
         # session_file = 'E:\projects\Final_Year_Project\data\sessions.csv'
         # self.session = read_csv(session_file)
-        # self.regular_list = self.get_regular_time()
+        self.regular_list = self.get_regular_time()
 
         self.normalize_data_frame = DataFrame()
 
