@@ -2,7 +2,13 @@ from flask import Flask, render_template
 from app.PreprocessRoute import preprocess_route
 from app.PreprocessMain import preprocess_main
 
+import pymysql
+
+
 app = Flask(__name__)
+
+
+
 app.register_blueprint(preprocess_route, url_prefix='/preprocess')
 app.register_blueprint(preprocess_main, url_prefix='/preprocess_main')
 

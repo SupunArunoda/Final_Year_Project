@@ -40,7 +40,7 @@ class PriceGapStaticTest:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            self.normalize_data_frame=pricegapstatic.get_anomaly_area_buy_sell(order=order)
+            self.normalize_data_frame=pricegapstatic.get_regular_gap_chunks(order=order,time_delta=1200)
             #self.normalize_data_frame=pricegapstatic.get_all_day_gap(order=order)
             #pricegapstatic.get_regular_gap_chunks(order=order,time_delta=1200)
             self.buy_data=pricegapstatic.get_buy_data()
@@ -53,8 +53,8 @@ class PriceGapStaticTest:
         #print(self.sell_data)
         #self.normalize_buy_sell()
         #self.normalize_data_frame.to_csv("output/price_gap_10_50_all.csv", index=False, encoding='utf-8')
-        self.buy_data.to_csv("output/price_gap_buy_anomaly.csv", index=False, encoding='utf-8')
-        self.sell_data.to_csv("output/price_gap_sell_anomaly.csv", index=False, encoding='utf-8')
+        self.buy_data.to_csv("F:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/price_gap_buy_anomaly.csv", index=False, encoding='utf-8')
+        self.sell_data.to_csv("F:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/price_gap_sell_anomaly.csv", index=False, encoding='utf-8')
 
     def normalize_df(self):
         mean_price_gap=self.normalize_data_frame['price_gap'].mean()
