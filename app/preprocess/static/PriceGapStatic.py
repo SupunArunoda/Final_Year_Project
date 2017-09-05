@@ -83,28 +83,29 @@ class PriceGapStatic:
                 if (self.temp_time!=0):
                     time_gap = temp_trasact_time - self.temp_time;
                     if (time_gap<=const_time_gap):
-                        self.get_calculation(order=order)
+                        self.get_calculation_first(order=order)
                     else:
                         print(self.attributes)
-                        self.get_calculation(order=order)
+                        self.get_calculation_first(order=order)
                         self.normalize_df()
                         self.count=self.count+1
                         self.write_csv(count=self.count)
                         self.temp_time=0
-                        self.first_order = None;
+                        #self.first_order = None;
                         self.attributes=DataFrame()
                     if (self.temp_time==0):
                         self.temp_time = temp_trasact_time
 
                 elif (self.temp_time==0):
                     self.temp_time = temp_trasact_time
-                    self.get_calculation(order=order)
+                    self.get_calculation_first(order=order)
 
 
     def normalize_df(self):
         mean_price_gap=self.attributes['price_gap'].mean()
         std_price_gap=self.attributes['price_gap'].values.std(ddof=1)
         self.attributes['nom_price_gap']=(self.attributes['price_gap']-mean_price_gap)/std_price_gap
+        self.attributes['std_price_gap'] = std_price_gap
 
         # mean_time_gap = self.attributes['time_gap'].mean()
         # std_time_gap = self.attributes['time_gap'].values.std(ddof=1)
@@ -115,12 +116,11 @@ class PriceGapStatic:
 
     def get_calculation(self,order):
         if(order.value>0):
-            if (self.first_order==None and self.first_time==None):
+            if (self.first_order==None):
                 if(order.execution_type==15):
                     self.first_order=order.executed_value
                 else:
                     self.first_order = order.value
-                self.first_time = order.transact_time
             else:
                 if(order.execution_type==15):
                     price_gap = order.executed_value - self.first_order
@@ -128,13 +128,25 @@ class PriceGapStatic:
                 else:
                     price_gap = order.value - self.first_order
                     self.first_order = order.value
-                time_gap = DUp.parse(order.transact_time) - DUp.parse(self.first_time)
-                self.first_time = order.transact_time
                 self.attributes = self.attributes.append(DataFrame({
                 'time_index': order.transact_time,
-                'price_gap': price_gap,
-                'time_gap':time_gap
+                'price_gap': price_gap
                     }, index=[0]), ignore_index=True);
+
+    def get_calculation_first(self, order):
+        if (order.value > 0):
+            if (self.first_order == None):
+                if (order.execution_type == 15):
+                    self.first_order = order.executed_value
+            else:
+                if (order.execution_type == 15):
+                    price_gap = order.executed_value - self.first_order
+                else:
+                    price_gap = order.value - self.first_order
+                self.attributes = self.attributes.append(DataFrame({
+                    'time_index': order.transact_time,
+                    'price_gap': price_gap
+                }, index=[0]), ignore_index=True);
 
     def get_anomaly_area(self,order):
 
