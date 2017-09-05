@@ -4,7 +4,7 @@ import csv
 import numpy as np
 from dateutil import parser as DUp
 
-class PriceGapStatic:
+class PriceGapStaticByEvents:
 
 
     def __init__(self,session_file):
@@ -51,37 +51,39 @@ class PriceGapStatic:
                  }, index=[0]), ignore_index=True);
         return self.attributes
 
-    def get_regular_gap(self,order):
-        for i in range(0, len(self.regular_list), 2):
-            temp_trasact_time = DUp.parse(order.transact_time)
-            if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
-                if (self.first_order==None):
-                    if(order.execution_type==15):
-                        self.first_order=order.executed_value
-                    else:
-                        self.first_order = order.value
-                else:
-                    if(order.execution_type==15):
-                        price_gap = order.executed_value - self.first_order
-                        self.first_order = order.executed_value
-                    else:
-                        price_gap = order.value - self.first_order
-                        self.first_order = order.value
-                    self.attributes = self.attributes.append(DataFrame({
-                        'time_index': order.transact_time,
-                        'price_gap': price_gap
-                         }, index=[0]), ignore_index=True);
-
-        return self.attributes
+    # def get_regular_gap(self,order):
+    #     for i in range(0, len(self.regular_list), 2):
+    #         temp_trasact_time = DUp.parse(order.transact_time)
+    #         if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+    #             if (self.first_order==None):
+    #                 if(order.execution_type==15):
+    #                     self.first_order=order.executed_value
+    #                 else:
+    #                     self.first_order = order.value
+    #             else:
+    #                 if(order.execution_type==15):
+    #                     price_gap = order.executed_value - self.first_order
+    #                     self.first_order = order.executed_value
+    #                 else:
+    #                     price_gap = order.value - self.first_order
+    #                     self.first_order = order.value
+    #                 self.attributes = self.attributes.append(DataFrame({
+    #                     'time_index': order.transact_time,
+    #                     'price_gap': price_gap
+    #                      }, index=[0]), ignore_index=True);
+    #
+    #     return self.attributes
 
     def get_regular_gap_chunks(self, order, no_of_events):
-        const_time_gap = datetime.timedelta(0, no_of_events)  # set time window value
+        # const_time_gap = datetime.timedelta(0, no_of_events)  # set time window value
+        eventCount=0
         temp_trasact_time = DUp.parse(order.transact_time)
         for i in range(0, len(self.regular_list), 2):
             if (temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i + 1]):
                 if (self.temp_time!=0):
                     time_gap = temp_trasact_time - self.temp_time;
-                    if (time_gap<=const_time_gap):
+                    eventCount+=1
+                    if (eventCount<=no_of_events):
                         self.get_calculation(order=order)
                     else:
                         print(self.attributes)
