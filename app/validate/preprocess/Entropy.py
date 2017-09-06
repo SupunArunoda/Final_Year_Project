@@ -68,10 +68,10 @@ class Entropy:
 
             for i in range(0, len(self.regular_list), 2):
                 if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
-                    chunk.append(order)
+                    chunk.append(order)     #methanata dapanko time window kadana scene eka
 
-            if (len(chunk) > 2000):
-                en.calculate_entropy(chunk)
+            if (len(chunk) > 2000):         #meka test karanna dapu ekak. time window kadala, 1 window ekaka thiyena orders tike list ekak tamai chunk kiyanne.
+                en.calculate_entropy(chunk)         #chunk hama ekatama me func eken entropy calculate karanne
                 break
 
     def calculate_entropy(self, chunk):
