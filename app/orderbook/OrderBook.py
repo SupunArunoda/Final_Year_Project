@@ -1,7 +1,7 @@
 from pandas import DataFrame
-from dateutil import parser as DUp
 
-from app.preprocess.static.PriceVolumeAverage import Window
+from preprocess.static.OrderbookAttrStatic import OrderbookAttrStatic
+from preprocess.static.PriceVolumeAverage import Window
 
 
 class OrderBook:
@@ -12,19 +12,12 @@ class OrderBook:
     sellOrdersDetails = {}
     indx=0
 
-
-
     def __init__(self, order_data,session_file):
-
         self.order_d = order_data
         columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
                    'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
         self.neworders = DataFrame(columns=columns)
-        self.window=Window(session_file=session_file)
-        self.bestBuyList=DataFrame()
-
-        self.anomaly_first_point = DUp.parse("2016-04-29 12:55:00")
-        self.anomaly_second_point = DUp.parse("2016-04-29 13:15:00")
+        self.window=OrderbookAttrStatic(session_file=session_file)
 
 
     """
@@ -37,14 +30,13 @@ class OrderBook:
      """
     def processOrder(self, order,time_delta):
         self.indx += 1
-
         if(order.value>0):
 
             # if len(self.buyOrders)>0 and len(self.sellOrders)>0 and self.indx>500:
             #     if self.buyOrders[0] > self.sellOrders[0]:
             #         print("new")
             #time function here
-            # df=self.window.get_time_frame(order=order,time_delta=time_delta)
+
             if order.execution_type == 0:
                 self.addNewOrder(order)
             elif order.execution_type == 4:
@@ -53,20 +45,9 @@ class OrderBook:
                 self.amendOrder(order)
             elif order.execution_type == 15:
                 self.fillOrder(order)
+            # detail=self.getDetails()
+            # df = self.window.get_time_frame(order=order, time_delta=time_delta, details=detail)
             # return df
-
-            temp_trasact_time = DUp.parse(order.transact_time)
-            if (temp_trasact_time <= self.anomaly_second_point and temp_trasact_time >= self.anomaly_first_point):
-                self.bestBuyList = self.bestBuyList.append(DataFrame(
-                {'time_index': order.transact_time,
-                 'best_buy': self.buyOrders[0],
-                 'best_sell': self.sellOrders[0]
-                 }, index=[0]), ignore_index=True);
-
-    def get_best_buy(self):
-        return self.bestBuyList
-
-
 
     """
             Name : Add new order
@@ -233,3 +214,43 @@ class OrderBook:
                     volume += order['visible_size'].iloc[0]
 
             print(len(self.sellOrdersDetails[sellOrder]), "\t\t\t", volume, "\t\t\t @", sellOrder)
+
+
+    def getDetails(self):
+        details=[]
+        if(len(self.buyOrders)>0):
+            details.append(self.buyOrders[0])
+        else:
+            details.append(0)
+
+        if (len(self.sellOrders) > 0):
+            details.append(self.sellOrders[0])
+        else:
+            details.append(0)
+        volume = 0
+        count=0
+        for buyOrder in self.buyOrders:
+            count+=1
+            if(count>10):
+                break
+            for orderId in self.buyOrdersDetails[buyOrder]:
+                order = self.neworders.loc[(self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
+                if order.empty==False:
+                    volume += order['visible_size'].iloc[0]
+
+        details.append(volume/10)
+
+        volume = 0
+        count = 0
+        for sellOrder in self.sellOrders:
+            count += 1
+            if (count > 10):
+                break
+            for orderId in self.sellOrdersDetails[sellOrder]:
+                order = self.neworders.loc[(self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
+                if order.empty==False:
+                    volume += order['visible_size'].iloc[0]
+
+        details.append(volume / 10)
+
+        return details
