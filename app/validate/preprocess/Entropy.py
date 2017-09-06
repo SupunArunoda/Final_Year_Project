@@ -2,6 +2,7 @@ from pandas import DataFrame, read_csv
 from datetime import datetime
 from dateutil import parser as DUp
 import numpy as np
+import math
 
 from app.orderbook.Order import Order
 
@@ -11,8 +12,10 @@ class Entropy:
         session_file = '../../data/sessions.csv'
         self.session = read_csv(session_file)
         self.regular_list = self.get_regular_time()
-        print(self.regular_list)
-
+        self.final_dataframe = DataFrame()
+        self.type_df = DataFrame()
+        self.side_df = DataFrame()
+        # print(self.regular_list)
 
     def get_regular_time(self):
         count = 0;
@@ -36,8 +39,12 @@ class Entropy:
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
         data = read_messages
-        temp = []
+        chunk = []
+
         for index, order_row in data.iterrows():
+            if index == 0:
+                continue
+
             order_id = order_row['order_id']
             visible_size = order_row['visible_size']
             side = order_row['side']
@@ -61,9 +68,53 @@ class Entropy:
 
             for i in range(0, len(self.regular_list), 2):
                 if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
-                    temp.append(temp_trasact_time)
-        print(temp)
+                    chunk.append(order)
+
+            if (len(chunk) > 2000):
+                en.calculate_entropy(chunk)
+                break
+
+    def calculate_entropy(self, chunk):
+        newC, ammendC, cancelC, execC = 0, 0, 0, 0
+        sellC, buyC = 0, 0
+        for i in range(0, len(chunk)):
+            order = chunk[i]
+            if order.side == "1":
+                buyC += 1
+            if order.side == "2":
+                sellC += 1
+            if order.execution_type == "0":
+                newC += 1
+            if order.execution_type == "4":
+                ammendC += 1
+            if order.execution_type == "5":
+                cancelC += 1
+            if order.execution_type == "15":
+                execC += 1
+
+        type_total = len(chunk)
+        type_entropy = -(newC / type_total) * math.log2(newC / type_total) - (ammendC / type_total) * math.log2(ammendC / type_total) - (
+                                                                                                                 cancelC / type_total) * math.log2(
+            cancelC / type_total) + (execC / type_total) * math.log2(
+            execC / type_total)
+
+        side_total = sellC + buyC
+        side_entropy = -(sellC / side_total) * math.log2(sellC / side_total) - (buyC / side_total) * math.log2(
+            buyC / side_total)
+
+        self.type_df.append(type_entropy)
+        self.side_df.append(side_entropy)
+
+        print(type_entropy)
+        print(side_entropy)
+
+    def write_csv(self):
+        self.final_dataframe['entropy_exec_type'] = self.type_df
+        self.final_dataframe['entropy_side'] = self.side_df
+
+        self.final_dataframe.to_csv("../../output/entropy.csv",index=False,
+            encoding='utf-8')
 
 en = Entropy()
 message_file = '../../data/data.csv'
-en.get_valid_data(message_file = '../../data/data.csv')
+en.get_valid_data(message_file='../../data/data.csv')
