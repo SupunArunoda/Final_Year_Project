@@ -93,8 +93,9 @@ class Entropy:
                 execC += 1
 
         type_total = len(chunk)
-        type_entropy = -(newC / type_total) * math.log2(newC / type_total) - (ammendC / type_total) * math.log2(ammendC / type_total) - (
-                                                                                                                 cancelC / type_total) * math.log2(
+        type_entropy = -(newC / type_total) * math.log2(newC / type_total) - (ammendC / type_total) * math.log2(
+            ammendC / type_total) - (
+                                        cancelC / type_total) * math.log2(
             cancelC / type_total) + (execC / type_total) * math.log2(
             execC / type_total)
 
@@ -112,8 +113,8 @@ class Entropy:
         self.final_dataframe['entropy_exec_type'] = self.type_df
         self.final_dataframe['entropy_side'] = self.side_df
 
-        self.final_dataframe.to_csv("../../output/entropy.csv",index=False,
-            encoding='utf-8')
+        self.final_dataframe.to_csv("../../output/entropy.csv", index=False, encoding='utf-8')
+
 
 en = Entropy()
 message_file = '../../data/data.csv'
