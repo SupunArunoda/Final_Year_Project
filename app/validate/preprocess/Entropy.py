@@ -116,6 +116,12 @@ class Entropy:
         self.final_dataframe.to_csv("../../output/entropy.csv", index=False, encoding='utf-8')
 
 
+    def get_entropy(self):
+        temp_df = DataFrame()
+        for i in range(1,26):
+            print("")
+
+
 en = Entropy()
-message_file = '../../data/data.csv'
-en.get_valid_data(message_file='../../data/data.csv')
+# message_file = '../../data/data.csv'
+# en.get_valid_data(message_file='../../data/data.csv')
