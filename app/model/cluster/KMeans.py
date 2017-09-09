@@ -131,5 +131,5 @@ class Kmeans:
             else:
                 data['anomaly_state'].iloc[i] = 'Not Suspicious'
 
-        data.to_csv("output/clustered_output_kmeans_ex_type_based_time_framed_new.csv", index=False, encoding='utf-8')
+        data.to_csv("../output/clustered_output_entropy.csv", index=False, encoding='utf-8')
         print('Output file saved!')
