@@ -1,24 +1,24 @@
-from app.orderbook.Order import Order
-from app.orderbook.OrderBook import OrderBook
+from orderbook.Order import Order
+from orderbook.OrderBook import OrderBook
 from pandas import read_csv
-from app.preprocess.static.PriceVolumeAverage import Window
-from pandas import DataFrame, read_csv
+from preprocess.static.PriceVolumeAverage import Window
+from pandas import DataFrame,read_csv
 import numpy as np
 
-
 class OrderbookAttr:
+
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
-    def run_orderbook(self, message_file, session_file, no_of_lines, time_delta):
+    def run_orderbook(self,message_file,session_file,no_of_lines,time_delta):
 
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
-        data = read_messages
-        orderbook = OrderBook(order_data=read_messages, session_file=session_file)
-        window = Window(session_file=session_file)
+        data=read_messages
+        orderbook=OrderBook(order_data=read_messages,session_file=session_file)
+        window=Window(session_file=session_file)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -40,14 +40,11 @@ class OrderbookAttr:
                           , broker_id=broker_id, instrument_id=instrument_id)
 
             orderbook.processOrder(order=order,time_delta=time_delta)
-            if index == no_of_lines and no_of_lines != 0:
+            if index > no_of_lines:
                 break
         orderbook.printOrderBook()
-
-        data=orderbook.get_best_buy()
-        data.to_csv("output/best_buy_price.csv", index=False, encoding='utf-8')
-
-
-
+        # print(df)
+        # df.to_csv("output/orderbook_attr.csv", index=False,
+        #                                  encoding='utf-8')
 
 

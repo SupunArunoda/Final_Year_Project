@@ -1,5 +1,5 @@
 from pandas import DataFrame, read_csv
-from model.cluster.KMeans import Kmeans
+from app.model.cluster.KMeans import Kmeans
 
 class KMeans:
 

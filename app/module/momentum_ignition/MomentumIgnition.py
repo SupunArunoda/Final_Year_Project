@@ -1,5 +1,5 @@
-from model.cluster.Hierarchical import Hierarchical
-from model.cluster.KMeans import Kmeans
+from app.model.cluster.Hierarchical import Hierarchical
+from app.model.cluster.KMeans import Kmeans
 from pandas import read_csv
 
 
