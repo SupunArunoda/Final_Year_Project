@@ -1,0 +1,194 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Preprocess Data
+            <!--<small>Version 2.0</small>-->
+        </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Main row -->
+        <div class="row">
+            <!-- Left col -->
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Upload Data File</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <form method="post" enctype="multipart/form-data" id="uploadForm" name="uploadForm">
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <fieldset>
+                                                    <input type="file" file-read="myFile">
+                                                    <p class="help-block">Select a .csv file containing stock
+                                                        data.</p>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                  <input type="radio" name="g" checked data-ng-model="vm.type" value="order">
+                                                    Order window
+                                                </span>
+                                                <input type="text" class="form-control" placeholder="Window size" data-ng-model="vm.windowSize">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                  <input type="radio" name="g" data-ng-model="vm.type" value="time">
+                                                    Time interval
+                                                </span>
+                                                <input type="text" class="form-control" placeholder="Time in minutes" data-ng-model="vm.timeInterval">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                                <div class="box-footer clearfix">
+                                    <fieldset>
+                                        <input type="button" class="btn btn-sm btn-info btn-flat pull-right"
+                                               value="Upload File" data-ng-click="vm.uploadFile()"/>
+                                        <input type="button" class="btn btn-sm btn-info btn-flat pull-right"
+                                        value="Test" data-ng-click="vm.testFunction()"/>
+                                    </fieldset>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12" ng-show="vm.isResultVisible == true" id="results">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Result</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12" id="total-rows">
+                                        Total rows processed: {{ vm.total_rows }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="info-box bg-green">
+                                            <div style="padding: 5px 10px;">
+                                                <span class="info-box-text">New Orders</span>
+                                                <span class="info-box-number">{{ vm.new_orders_count }}</span>
+
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         ng-style="vm.getStyleForProgressBar(vm.new_orders_percentage)"></div>
+                                                </div>
+                                                <span class="progress-description">
+                                                    {{ vm.new_orders_percentage }}
+                                                      </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box bg-green">
+                                            <div style="padding: 5px 10px;">
+                                                <span class="info-box-text">Cancelled Orders</span>
+                                                <span class="info-box-number">{{ vm.cancel_orders_count }}</span>
+
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         ng-style="vm.getStyleForProgressBar(vm.cancel_orders_percentage)"></div>
+                                                </div>
+                                                <span class="progress-description">
+                                                            {{ vm.cancel_orders_percentage }}
+                                                      </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box bg-green">
+                                            <div style="padding: 5px 10px;">
+                                                <span class="info-box-text">Ammended Orders</span>
+                                                <span class="info-box-number">{{ vm.ammend_orders_count }}</span>
+
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         ng-style="vm.getStyleForProgressBar(vm.ammend_orders_percentage)"></div>
+                                                </div>
+                                                <span class="progress-description">
+                                                        {{ vm.ammend_orders_percentage }}
+                                                      </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box bg-green">
+                                            <div style="padding: 5px 10px;">
+                                                <span class="info-box-text">Executed Orders</span>
+                                                <span class="info-box-number">{{ vm.execute_orders_count }}</span>
+
+                                                <div class="progress">
+                                                    <div class="progress-bar"
+                                                         ng-style="vm.getStyleForProgressBar(vm.execute_orders_percentage)"></div>
+                                                </div>
+                                                <span class="progress-description">
+                                                    {{ vm.execute_orders_percentage }}
+                                                      </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12" id="order-count-piechart">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer clearfix">
+                                <a href=""
+                                   class="btn btn-sm btn-info btn-flat pull-right">Next</a>
+                            </div>
+                            <!-- /.box-footer -->
+                        </div>
+                    </div>
+
+
+                </div>
+                <!-- /.box -->
+            </div>
+            <!--<div class="col-md-4">-->
+            <!--<div class="box box-info">-->
+            <!--<div class="box-header with-border">-->
+            <!--<h3 class="box-title">Recent Results</h3>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.box-header &ndash;&gt;-->
+            <!--<div class="box-body">-->
+            <!--<div class="row">-->
+            <!--<div class="col-md-12">-->
+            <!--Buddhi-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.box-body &ndash;&gt;-->
+            <!--<div class="box-footer clearfix">-->
+            <!--<a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-right">Upload</a>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; /.box-footer &ndash;&gt;-->
+            <!--</div>-->
+            <!--</div>-->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
