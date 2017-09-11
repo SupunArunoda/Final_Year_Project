@@ -14,8 +14,11 @@
 
         vm.isResultVisible = false;
 
+        vm.testFunction = testFunction;
         vm.uploadFile = uploadFile;
         vm.getStyleForProgressBar = getStyleForProgressBar;
+        vm.type = null;
+
 
         vm.results = false;
         vm.total_rows = '';
@@ -67,6 +70,10 @@
 
         function getStyleForProgressBar(value) {
             return {"width": value + '%'}
+        }
+
+        function testFunction() {
+            console.log(vm.type);
         }
     }
 })();
