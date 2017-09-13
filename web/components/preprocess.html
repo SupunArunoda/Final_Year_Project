@@ -33,38 +33,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                  <input type="radio" name="g" checked data-ng-model="vm.type" value="order">
-                                                    Order window
-                                                </span>
-                                                <input type="text" class="form-control" placeholder="Window size" data-ng-model="vm.windowSize">
-                                            </div>
-                                            <!-- /input-group -->
-                                        </div>
-                                        <!-- /.col-lg-6 -->
-                                        <div class="col-lg-6">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                  <input type="radio" name="g" data-ng-model="vm.type" value="time">
-                                                    Time interval
-                                                </span>
-                                                <input type="text" class="form-control" placeholder="Time in minutes" data-ng-model="vm.timeInterval">
-                                            </div>
-                                            <!-- /input-group -->
-                                        </div>
-                                        <!-- /.col-lg-6 -->
-                                    </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer clearfix">
                                     <fieldset>
                                         <input type="button" class="btn btn-sm btn-info btn-flat pull-right"
                                                value="Upload File" data-ng-click="vm.uploadFile()"/>
-                                        <input type="button" class="btn btn-sm btn-info btn-flat pull-right"
-                                        value="Test" data-ng-click="vm.testFunction()"/>
+                                        <img ng-show="vm.isLoaderVisible == true" class="pull-right" style="padding-top: 4px; padding-right: 5px" src=../images/Rolling.gif alt="loading">
+                                        <!--<input type="button" class="btn btn-sm btn-info btn-flat pull-right"-->
+                                        <!--value="Test" data-ng-click="vm.testFunction()"/>-->
                                     </fieldset>
                                 </div>
                             </form>
@@ -154,13 +131,52 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.box-body -->
-                            <div class="box-footer clearfix">
-                                <a href=""
-                                   class="btn btn-sm btn-info btn-flat pull-right">Next</a>
-                            </div>
-                            <!-- /.box-footer -->
                         </div>
+
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Select an option</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <form method="post" enctype="multipart/form-data" id="optionForm" name="uploadForm">
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                  <input type="radio" name="g" checked data-ng-model="vm.type" value="order">
+                                                    Order window
+                                                </span>
+                                                <input type="text" class="form-control" placeholder="Window size" data-ng-model="vm.windowSize">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                  <input type="radio" name="g" data-ng-model="vm.type" value="time">
+                                                    Time interval
+                                                </span>
+                                                <input type="text" class="form-control" placeholder="Time in minutes" data-ng-model="vm.timeInterval">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                                <div class="box-footer clearfix">
+                                    <fieldset>
+                                        <input type="button" class="btn btn-sm btn-info btn-flat pull-right"
+                                               value="Process File" data-ng-click="vm.processFile()"/>
+                                        <img ng-show="vm.isProcessLoaderVisible == true" class="pull-right" style="padding-top: 4px; padding-right: 5px" src=../images/Rolling.gif alt="loading">
+                                    </fieldset>
+                                </div>
+                            </form>
+                        </div>
+
+
                     </div>
 
 

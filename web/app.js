@@ -12,6 +12,11 @@
                     controller: 'PreprocessController',
                     controllerAs: 'vm'
                 })
+                .when('/process/:id', {
+                    templateUrl: 'components/process.html',
+                    controller: 'ProcessController',
+                    controllerAs: 'vm'
+                })
 
                 // By default it will open /
                 .otherwise({redirectTo: '/'});
