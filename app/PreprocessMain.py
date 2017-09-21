@@ -5,53 +5,89 @@ from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 from app.validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 
+from pandas import read_csv
 from matplotlib import pyplot as plt
-from mpld3 import fig_to_d3
+from mpld3 import fig_to_html
 from flask import Blueprint, request, render_template, redirect, url_for
 import sys
 from werkzeug.utils import secure_filename
 import json
 
+# import plotly.plotly as py
+
+# py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
+import plotly.graph_objs as go
+from plotly.offline.offline import _plot_html
+
 preprocess_main = Blueprint('preprocess_main', __name__, template_folder='templates')
 
 
-@preprocess_main.route('/preprocess_main', methods=['GET', 'POST'])
-@preprocess_main.route('/', methods=['GET', 'POST'])
-def preprocess_data():
+@preprocess_main.route('/process', methods=['GET', 'POST'])
+def process():
+    if (request.method == 'POST'):
+        data = json.loads(request.data.decode('utf-8'))
+
+        message_file = './app/data/' + data['file_name']
+        session_file = './app/data/sessions.csv'
+
+        ex_type_based = ExecutionTypeTest()
+        index = ex_type_based.run_execution_type_static(message_file=message_file,
+                                                        session_file=session_file, no_of_lines=0,
+                                                        time_delta=420)
+
+        return str(index)
+
+
+@preprocess_main.route('/get_csv_information', methods=['GET', 'POST'])
+def get_csv_information():
     if (request.method == 'POST'):
         if ('inputFile' in request.files):
             file = request.files['inputFile']
+
+            print(secure_filename(file.filename))
+
             file.save('./app/data/' + secure_filename(file.filename))
+            file_path = './app/data/' + secure_filename(file.filename)
 
-            message_file = './app/data/' + secure_filename(file.filename)
-            session_file = './app/data/sessions.csv'
+            print(file_path)
 
-            ex_type_based = ExecutionTypeTest()
-            returned_data = ex_type_based.run_execution_type_static(message_file=message_file,
-                                                                    session_file=session_file, no_of_lines=0,
-                                                                    time_delta=420)
+            read_messages = read_csv(file_path, header=None)
+            read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
+                                     'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
+                                     'order_id']
+            data = read_messages
 
-            returned_data['new_orders_percentage'] = round((returned_data['new_orders_count'] / returned_data[
+            return_data = {}
+            return_data['new_orders_count'] = 0
+            return_data['ammend_orders_count'] = 0
+            return_data['cancel_orders_count'] = 0
+            return_data['execute_orders_count'] = 0
+            return_data['total_rows'] = len(data)
+
+            for index, order_row in data.iterrows():
+                if order_row['execution_type'] == 0:
+                    return_data['new_orders_count'] = return_data['new_orders_count'] + 1
+                if order_row['execution_type'] == 4:
+                    return_data['cancel_orders_count'] = return_data['cancel_orders_count'] + 1
+                if order_row['execution_type'] == 5:
+                    return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
+                if order_row['execution_type'] == 15:
+                    return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
+
+            return_data['new_orders_percentage'] = round((return_data['new_orders_count'] / return_data[
                 'total_rows']) * 100, 4)
-            returned_data['cancel_orders_percentage'] = round((returned_data['cancel_orders_count'] / returned_data[
+            return_data['cancel_orders_percentage'] = round((return_data['cancel_orders_count'] / return_data[
                 'total_rows']) * 100, 4)
-            returned_data['ammend_orders_percentage'] = round((returned_data['ammend_orders_count'] / returned_data[
+            return_data['ammend_orders_percentage'] = round((return_data['ammend_orders_count'] / return_data[
                 'total_rows']) * 100, 4)
-            returned_data['execute_orders_percentage'] = round((returned_data['execute_orders_count'] / returned_data[
+            return_data['execute_orders_percentage'] = round((return_data['execute_orders_count'] / return_data[
                 'total_rows']) * 100, 4)
 
             # piechart details
-            labels = ['New Orders', 'Cancelled Orders', 'Ammended Orders', 'Executed Orders']
-            sizes = [returned_data['new_orders_count'], returned_data['cancel_orders_count'],
-                     returned_data['ammend_orders_count'], returned_data['execute_orders_count']]
+            piechart_labels = ['New Orders', 'Cancelled Orders', 'Ammended Orders', 'Executed Orders']
+            piechart_sizes = [return_data['new_orders_count'], return_data['cancel_orders_count'],
+                              return_data['ammend_orders_count'], return_data['execute_orders_count']]
 
-            fig, ax = plt.subplots()
-            ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
-            ax.axis('equal')
-
-            display_data = fig_to_d3(fig)
-
-            returned_data['piechart_data'] = display_data
-
-    return render_template('preprocess/preprocess.html', data=json.loads(json.dumps(returned_data)))
-    # return redirect(url_for('preprocess_route.show_template', data=json.loads(json.dumps(returned_data)), code=307))
+            return_data['piechart_labels'] = piechart_labels
+            return_data['piechart_sizes'] = piechart_sizes
+            return json.dumps(return_data)
