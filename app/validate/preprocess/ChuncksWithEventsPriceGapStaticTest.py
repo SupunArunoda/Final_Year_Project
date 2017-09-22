@@ -20,7 +20,7 @@ class ChuncksWithEventsPriceGapStaticTest:
                                  'order_id']
         data=read_messages
         print(len(data.index))
-        pricegapstatic=PriceGapStaticByEvents(session_file=session_file)
+        pricegapstatic=PriceGapStaticByEvents(session_file=session_file,no_of_events=5000)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -41,39 +41,39 @@ class ChuncksWithEventsPriceGapStaticTest:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            self.normalize_data_frame=pricegapstatic.get_regular_gap_chunks(order=order,no_of_events=1200)
+            self.normalize_data_frame=pricegapstatic.get_regular_gap_chunks(order=order)
             #self.normalize_data_frame=pricegapstatic.get_all_day_gap(order=order)
             #pricegapstatic.get_regular_gap_chunks(order=order,time_delta=1200)
-            self.buy_data=pricegapstatic.get_buy_data()
-            self.sell_data=pricegapstatic.get_sell_data()
+            # self.buy_data=pricegapstatic.get_buy_data()
+            # self.sell_data=pricegapstatic.get_sell_data()
             if index == no_of_lines and no_of_lines != 0:
                 break
 
-        self.normalize_buy_sell()
+        # self.normalize_buy_sell()
         #print(self.buy_data)
         #print(self.sell_data)
         #self.normalize_buy_sell()
         #self.normalize_data_frame.to_csv("output/price_gap_10_50_all.csv", index=False, encoding='utf-8')
 
-        self.buy_data.to_csv("/app/output/price_gap_buy_anomaly.csv", index=False, encoding='utf-8')
-        self.sell_data.to_csv("F:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/price_gap_sell_anomaly.csv", index=False, encoding='utf-8')
+        # self.buy_data.to_csv("/app/output/price_gap_buy_anomaly.csv", index=False, encoding='utf-8')
+        # self.sell_data.to_csv("/app/output/price_gap_sell_anomaly.csv", index=False, encoding='utf-8')
 
-    def normalize_df(self):
-        mean_price_gap=self.normalize_data_frame['price_gap'].mean()
-
-        std_price_gap=self.normalize_data_frame['price_gap'].values.std(ddof=1)
-
-        self.normalize_data_frame['nom_price_gap']=(self.normalize_data_frame['price_gap']-mean_price_gap)/std_price_gap
-
-    def normalize_buy_sell(self):
-        mean_buy_price_gap = self.buy_data['buy_price_gap'].mean()
-        mean_sell_price_gap = self.sell_data['sell_price_gap'].mean()
-
-        std_buy_price_gap = self.buy_data['buy_price_gap'].values.std(ddof=1)
-        std_sell_price_gap = self.sell_data['sell_price_gap'].values.std(ddof=1)
-
-        self.buy_data['nom_buy_price_gap'] = (self.buy_data['buy_price_gap'] - mean_buy_price_gap) / std_buy_price_gap
-        self.sell_data['nom_sell_price_gap'] = (self.sell_data['sell_price_gap'] - mean_sell_price_gap) / std_sell_price_gap
+    # def normalize_df(self):
+    #     mean_price_gap=self.normalize_data_frame['price_gap'].mean()
+    #
+    #     std_price_gap=self.normalize_data_frame['price_gap'].values.std(ddof=1)
+    #
+    #     self.normalize_data_frame['nom_price_gap']=(self.normalize_data_frame['price_gap']-mean_price_gap)/std_price_gap
+    #
+    # def normalize_buy_sell(self):
+    #     mean_buy_price_gap = self.buy_data['buy_price_gap'].mean()
+    #     mean_sell_price_gap = self.sell_data['sell_price_gap'].mean()
+    #
+    #     std_buy_price_gap = self.buy_data['buy_price_gap'].values.std(ddof=1)
+    #     std_sell_price_gap = self.sell_data['sell_price_gap'].values.std(ddof=1)
+    #
+    #     self.buy_data['nom_buy_price_gap'] = (self.buy_data['buy_price_gap'] - mean_buy_price_gap) / std_buy_price_gap
+    #     self.sell_data['nom_sell_price_gap'] = (self.sell_data['sell_price_gap'] - mean_sell_price_gap) / std_sell_price_gap
 
 
 

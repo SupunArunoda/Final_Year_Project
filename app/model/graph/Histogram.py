@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 from pandas import read_csv
 import numpy as np
-from scipy import fft
+#from scipy import fft
 
 class Histogram:
 
@@ -11,7 +11,7 @@ class Histogram:
 
         x = X[:, 0]
         y = np.array(range(1, len(X) + 1))
-        x=fft(x)
+        #x=fft(x)
         plt.plot(y, x)
         plt.show()
 

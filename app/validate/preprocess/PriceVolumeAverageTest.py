@@ -44,7 +44,7 @@ class PriceVolumeAverage:
                 break
         # print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
-        self.normalize_data_frame.to_csv("output/price_volume_average_static_normalize.csv", index=False,
+        self.normalize_data_frame.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/price_volume_average_static_normalize_test.csv", index=False,
                                          encoding='utf-8')
 
     def normalize_df(self, writable_df):
