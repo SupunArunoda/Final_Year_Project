@@ -12,8 +12,8 @@ class ExecutionTypeDynamic:
 
         self.attributes = DataFrame()
         self.temp_time=0;
-        self.slide_window_flag=True
-        self.lag_orders=[]
+        self.window_count=0;
+        self.lag_time=0;
 
         self.count_order_type_list = [[0 for _ in range(2)] for _ in range(4)]
         self.count_list=[]
@@ -31,24 +31,14 @@ class ExecutionTypeDynamic:
                 count+=1
         return reg_list
 
-    def sliding_window(self,iterable,size):
-        iters = tee(iterable, size)
-        for i in range(1, size):
-            for each in iters[i:]:
-                next(each, None)
-        return zip(*iters)
-
-
     def get_time_frame(self,order,time_delta,time_lag):
         const_time_gap=datetime.timedelta(0, time_delta)#set time window value
+        const_time_lag = datetime.timedelta(0, time_lag)  # set time window value
         temp_trasact_time=DUp.parse(order.transact_time)
-
         for i in range(0,len(self.regular_list),2):
-            if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
-                if(self.temp_time!=0):
+            if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+                if (self.temp_time != 0):
                     time_gap=temp_trasact_time-self.temp_time;
-                    dynamic_valid=time_gap+time_lag
-
                     if(time_gap<=const_time_gap):
                         self.check_order_type(order=order)
                     else:
@@ -57,32 +47,47 @@ class ExecutionTypeDynamic:
                         index=str(self.temp_time)+str('$$')+str(order.transact_time)
                         self.count_list.append(index)
                         self.get_all_count_average()
-
-                        self.attributes = self.attributes.append(DataFrame(
-                            {'time_index_volume': self.count_list[0],
-                             'new_order_buy_average': self.count_list[1],
-                             'new_order_sell_average': self.count_list[2],
-                             'cancel_order_buy_average': self.count_list[3],
-                             'cancel_order_sell_average': self.count_list[4],
-                             'execute_order_buy_average': self.count_list[5],
-                             'execute_order_sell_average': self.count_list[6],
-                             'ammend_order_buy_average': self.count_list[7],
-                             'ammend_order_sell_average': self.count_list[8],
-
-                             }, index=[0]), ignore_index=True);
-
+                        if (self.count_list[2] != 0 and self.count_list[4] != 0 and self.count_list[6] != 0):
+                            self.attributes = self.attributes.append(DataFrame(
+                                {'time_index_volume': self.count_list[0],
+                                 'new_order_buy_average': self.count_list[1],
+                                 'new_order_sell_average': self.count_list[2],
+                                 'cancel_order_buy_average': self.count_list[3],
+                                 'cancel_order_sell_average': self.count_list[4],
+                                 'execute_order_buy_average': self.count_list[5],
+                                 'execute_order_sell_average': self.count_list[6],
+                                 'ammend_order_buy_average': self.count_list[7],
+                                 'ammend_order_sell_average': self.count_list[8],
+                                 'new_order_average': round((self.count_list[1] / self.count_list[2]), 4),
+                                 'execute_order_average': round((self.count_list[5] / self.count_list[6]), 4),
+                                 'cancel_order_average': round((self.count_list[3] / self.count_list[4]), 4),
+                                 'ammend_order_average': round((self.count_list[7] / self.count_list[8]), 4)
+                                 }, index=[0]), ignore_index=True);
+                        else:
+                            self.attributes = self.attributes.append(DataFrame(
+                                {'time_index_volume': self.count_list[0],
+                                 'new_order_buy_average': self.count_list[1],
+                                 'new_order_sell_average': self.count_list[2],
+                                 'cancel_order_buy_average': self.count_list[3],
+                                 'cancel_order_sell_average': self.count_list[4],
+                                 'execute_order_buy_average': self.count_list[5],
+                                 'execute_order_sell_average': self.count_list[6],
+                                 'ammend_order_buy_average': self.count_list[7],
+                                 'ammend_order_sell_average': self.count_list[8],
+                                 'new_order_average': 0,
+                                 'execute_order_average': 0,
+                                 'cancel_order_average': 0,
+                                 'ammend_order_average': 0
+                                 }, index=[0]), ignore_index=True);
                         self.remove_values()
-                        self.temp_time=0
-                        self.slide_window_flag=False# start the next window
-                    if(dynamic_valid>=const_time_gap & self.slide_window_flag):
-                        self.lag_orders.append(order)
-
-
+                        self.temp_time=self.lag_time;
                     if(self.temp_time==0):
                         self.temp_time = temp_trasact_time
 
                 elif(self.temp_time==0):
+
                     self.temp_time=temp_trasact_time
+                    self.lag_time =self.temp_time+const_time_gap-const_time_lag;
                     self.check_order_type(order=order)
 
         return self.attributes;
@@ -109,7 +114,7 @@ class ExecutionTypeDynamic:
         for i in range(len(self.count_order_type_list)):
             for j in range(len(self.count_order_type_list[i])):
                 if(col_list[j]!=0):
-                    temp_average=np.log(self.count_order_type_list[i][j]/col_list[j])
+                    temp_average=self.count_order_type_list[i][j]/col_list[j]
                     self.count_list.append(round(temp_average,4))
                 else:
                     self.count_list.append(float(0))

@@ -74,6 +74,8 @@ class Entropy:
                 en.calculate_entropy(chunk)         #chunk hama ekatama me func eken entropy calculate karanne
                 break
 
+
+
     def calculate_entropy(self, chunk):
         newC, ammendC, cancelC, execC = 0, 0, 0, 0
         sellC, buyC = 0, 0

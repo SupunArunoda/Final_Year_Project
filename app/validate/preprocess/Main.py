@@ -3,10 +3,11 @@ from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
 from app.preprocess.static.PriceVolumeAverage import Window
 from pandas import DataFrame, read_csv
+from app.preprocess.static.ExecutionTypeStatic import ExecutionTypeStatic
 import numpy as np
 
 
-class PriceVolumeAverage:
+class Main:
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
@@ -18,6 +19,7 @@ class PriceVolumeAverage:
                                  'order_id']
         data = read_messages
         window = Window(session_file=session_file)
+        exe_type = ExecutionTypeStatic(session_file=session_file)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -41,6 +43,7 @@ class PriceVolumeAverage:
             #if order.value > 0:
             #self.normalize_data_frame = window.get_time_frame(order=order, time_delta=time_delta)
             window.get_all_attributes(order=order,time_delta=time_delta)
+            exe_type.get_time_frame(order=order, time_delta=time_delta)
             if index == no_of_lines and no_of_lines != 0:
                 break
         # print(self.normalize_data_frame)

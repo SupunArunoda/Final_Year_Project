@@ -36,6 +36,7 @@ class PriceGapStatic:
                 count+=1
         return reg_list
 
+    #get price gap from first price
     def get_all_day_gap(self,order):
         if(self.first_order==None):
             self.first_order=order.value
@@ -75,6 +76,7 @@ class PriceGapStatic:
 
         return self.attributes
 
+    #Regular time interval consecutive price gap
     def get_regular_gap_chunks(self,order,time_delta):
         const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
         temp_trasact_time = DUp.parse(order.transact_time)

@@ -1,7 +1,10 @@
 from matplotlib import pyplot as plt
 from pandas import read_csv
 import numpy as np
+from scipy.signal import argrelextrema
 from scipy import fft
+from scipy.optimize import fmin
+from scipy.optimize._basinhopping import basinhopping
 
 class Histogram:
 
@@ -15,6 +18,7 @@ class Histogram:
         plt.plot(y, x)
         plt.show()
 
+
     def get_one_variable(self,datafile,p,q):
         X = datafile[[p, q]]
         X = X.values
@@ -22,7 +26,14 @@ class Histogram:
         x = X[:, 0]
         y = np.array(range(1, len(X) + 1))
         plt.plot(y, x)
+       # x_0=[1.]
+        #minimizer_kwargs = {"method": "BFGS"}
+       # ret = basinhopping(x, x0=np.array([1]), minimizer_kwargs=minimizer_kwargs,niter = 200)
+       # print(ret)
         plt.show()
+        minm = argrelextrema(x, np.less)
+        print(minm)
+
 
     def get_two_varaible(self,datafile_1,p1,q1,datafile_2,p2,q2):
         X = datafile_1[[p1, q1]]

@@ -10,7 +10,9 @@ class Window:
     def __init__(self,session_file):
 
         self.attributes = DataFrame()
+        self.all_attributes = DataFrame()
         self.temp_time=0;
+        self.count = 0;
 
         self.order_price_list = [[0 for _ in range(2)] for _ in range(3)]
         self.price_average_list = []
@@ -34,6 +36,34 @@ class Window:
                 count+=1
         return reg_list
 
+    def get_all_attributes(self,order,time_delta):
+        const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
+        temp_trasact_time = DUp.parse(order.transact_time)
+        for i in range(0, len(self.regular_list), 2):
+            if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+                if (self.temp_time != 0):
+                    time_gap = temp_trasact_time - self.temp_time;
+                    if (time_gap <= const_time_gap):
+                        self.validate_order(order=order)
+                    else:
+                        self.validate_order(order=order)
+                        self.count = self.count + 1
+                        print(self.all_attributes)
+                        self.write_csv(count=self.count,time_delta=time_delta)
+                        self.all_attributes=DataFrame()
+                        self.temp_time = 0
+                    if (self.temp_time == 0):
+                        self.temp_time = temp_trasact_time
+
+                elif (self.temp_time == 0):
+                    self.temp_time = temp_trasact_time
+                    self.validate_order(order=order)
+
+
+    def write_csv(self, count,time_delta):
+        self.all_attributes.to_csv(
+            "app/output/day/"+str(time_delta)+"_regular_" + str(count) + "_all.csv", index=False, encoding='utf-8')
+
     def get_time_frame(self,order,time_delta):
         const_time_gap=datetime.timedelta(0, time_delta)#set time window value
         temp_trasact_time=DUp.parse(order.transact_time)
@@ -52,20 +82,20 @@ class Window:
                         self.get_average_volume()
                         self.get_average_price()
                         self.attributes = self.attributes.append(DataFrame(
-                            {'time_index_volume': self.volume_average_list[0],
-                             'new_order_buy_volume': self.volume_average_list[1],
-                             'new_order_sell_volume': self.volume_average_list[2],
-                             'cancel_order_buy_volume': self.volume_average_list[3],
-                             'cancel_order_sell_volume': self.volume_average_list[4],
-                             'execute_order_buy_volume': self.volume_average_list[5],
-                             'execute_order_sell_volume': self.volume_average_list[6],
+                            {'time_index': self.volume_average_list[0],
+                             'new_buy_volume': self.volume_average_list[1],
+                             'new_sell_volume': self.volume_average_list[2],
+                             'cancel_buy_volume': self.volume_average_list[3],
+                             'cancel_sell_volume': self.volume_average_list[4],
+                             'execute_buy_volume': self.volume_average_list[5],
+                             'execute_sell_volume': self.volume_average_list[6],
 
-                             'new_order_buy_price': self.price_average_list[1],
-                             'new_order_sell_price': self.price_average_list[2],
-                             'cancel_order_buy_price': self.price_average_list[3],
-                             'cancel_order_sell_price': self.price_average_list[4],
-                             'execute_order_buy_price': self.price_average_list[5],
-                             'execute_order_sell_price': self.price_average_list[6]
+                             'new_buy_price': self.price_average_list[1],
+                             'new_sell_price': self.price_average_list[2],
+                             'cancel_buy_price': self.price_average_list[3],
+                             'cancel_sell_price': self.price_average_list[4],
+                             'execute_buy_price': self.price_average_list[5],
+                             'execute_sell_price': self.price_average_list[6]
                              }, index=[0]), ignore_index=True);
 
                         self.remove_values()
@@ -78,6 +108,22 @@ class Window:
                     self.check_order(order=order)
 
         return self.attributes;
+
+    def validate_order(self,order):
+        self.all_attributes = self.all_attributes.append(DataFrame(
+            {'instrument_id': order.instrument_id,
+             'broker_id': order.broker_id,
+             'executed_value': order.executed_value,
+             'value': order.value,
+             'transact_time': order.transact_time,
+             'execution_type': order.execution_type,
+             'order_qty': order.order_qty,
+             'executed_qty': order.executed_qty,
+             'total_qty': order.total_qty,
+             'side': order.side,
+             'visible_size': order.visible_size,
+             'order_id': order.order_id
+             }, index=[0]), ignore_index=True);
 
     def check_order(self,order):
         if order.execution_type==0:#new order check

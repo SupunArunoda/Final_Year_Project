@@ -45,35 +45,35 @@ class ExecutionTypeStatic:
                         self.get_all_count_average()
                         if (self.count_list[2] != 0 and self.count_list[4] != 0 and self.count_list[6] != 0):
                             self.attributes = self.attributes.append(DataFrame(
-                                {'time_index_volume': self.count_list[0],
-                                 'new_order_buy_average': self.count_list[1],
-                                 'new_order_sell_average': self.count_list[2],
-                                 'cancel_order_buy_average': self.count_list[3],
-                                 'cancel_order_sell_average': self.count_list[4],
-                                 'execute_order_buy_average': self.count_list[5],
-                                 'execute_order_sell_average': self.count_list[6],
-                                 'ammend_order_buy_average': self.count_list[7],
-                                 'ammend_order_sell_average': self.count_list[8],
-                                 'new_order_average': round((self.count_list[1] / self.count_list[2]), 4),
-                                 'execute_order_average': round((self.count_list[5] / self.count_list[6]), 4),
-                                 'cancel_order_average': round((self.count_list[3] / self.count_list[4]), 4),
-                                 'ammend_order_average': round((self.count_list[7] / self.count_list[8]), 4)
+                                {'time_index': self.count_list[0],
+                                 'new_count_buy_average': self.count_list[1],
+                                 'new_count_sell_average': self.count_list[2],
+                                 'cancel_count_buy_average': self.count_list[3],
+                                 'cancel_count_sell_average': self.count_list[4],
+                                 'execute_count_buy_average': self.count_list[5],
+                                 'execute_count_sell_average': self.count_list[6],
+                                 'ammend_count_buy_average': self.count_list[7],
+                                 'ammend_count_sell_average': self.count_list[8],
+                                 'new_count_average': round((self.count_list[1] / self.count_list[2]), 4),
+                                 'execute_count_average': round((self.count_list[5] / self.count_list[6]), 4),
+                                 'cancel_count_average': round((self.count_list[3] / self.count_list[4]), 4),
+                                 'ammend_count_average': round((self.count_list[7] / self.count_list[8]), 4)
                                  }, index=[0]), ignore_index=True);
                         else:
                             self.attributes = self.attributes.append(DataFrame(
-                                {'time_index_volume': self.count_list[0],
-                                 'new_order_buy_average': self.count_list[1],
-                                 'new_order_sell_average': self.count_list[2],
-                                 'cancel_order_buy_average': self.count_list[3],
-                                 'cancel_order_sell_average': self.count_list[4],
-                                 'execute_order_buy_average': self.count_list[5],
-                                 'execute_order_sell_average': self.count_list[6],
-                                 'ammend_order_buy_average': self.count_list[7],
-                                 'ammend_order_sell_average': self.count_list[8],
-                                 'new_order_average': 0,
-                                 'execute_order_average': 0,
-                                 'cancel_order_average': 0,
-                                 'ammend_order_average': 0
+                                {'time_index': self.count_list[0],
+                                 'new_count_buy_average': self.count_list[1],
+                                 'new_count_sell_average': self.count_list[2],
+                                 'cancel_count_buy_average': self.count_list[3],
+                                 'cancel_count_sell_average': self.count_list[4],
+                                 'execute_count_buy_average': self.count_list[5],
+                                 'execute_count_sell_average': self.count_list[6],
+                                 'ammend_count_buy_average': self.count_list[7],
+                                 'ammend_count_sell_average': self.count_list[8],
+                                 'new_count_average': 0,
+                                 'execute_count_average': 0,
+                                 'cancel_count_average': 0,
+                                 'ammend_count_average': 0
                                  }, index=[0]), ignore_index=True);
                         self.remove_values()
                         self.temp_time=0
