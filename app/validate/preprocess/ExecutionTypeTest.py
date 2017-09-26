@@ -27,12 +27,6 @@ class ExecutionTypeTest:
 
         exe_type = ExecutionTypeStatic(session_file=session_file)
 
-        return_data = {}
-        return_data['new_orders_count'] = 0
-        return_data['ammend_orders_count'] = 0
-        return_data['cancel_orders_count'] = 0
-        return_data['execute_orders_count'] = 0
-
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
             visible_size = order_row['visible_size']
@@ -54,15 +48,6 @@ class ExecutionTypeTest:
 
             self.normalize_data_frame = exe_type.get_time_frame(order=order, time_delta=time_delta)
 
-            if order_row['execution_type'] == 0:
-                return_data['new_orders_count'] = return_data['new_orders_count'] + 1
-            if order_row['execution_type'] == 4:
-                return_data['cancel_orders_count'] = return_data['cancel_orders_count'] + 1
-            if order_row['execution_type'] == 5:
-                return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
-            if order_row['execution_type'] == 15:
-                return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
-
             if index == no_of_lines and no_of_lines != 0:
                 break
 
@@ -72,13 +57,12 @@ class ExecutionTypeTest:
         pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
                             last_process_end=last_process_end, output_file=output_file)
         pfc = PreprocessFileController()
-        return_data['proprocess_index'] = pfc.saveProcessFile(pf)
+        preprocess_index = pfc.saveProcessFile(pf)
 
         self.normalize_df(writable_df=self.normalize_data_frame)
         self.normalize_data_frame.to_csv(output_path, index=False, encoding='utf-8')
 
-        return_data['total_rows'] = len(data)
-        return return_data
+        return preprocess_index
 
     def normalize_df(self, writable_df):
         mean_buy_execute = self.normalize_data_frame['execute_order_buy_average'].mean()
