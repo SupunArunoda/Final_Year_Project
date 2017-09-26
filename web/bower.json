@@ -1,0 +1,26 @@
+{
+  "name": "web",
+  "homepage": "https://github.com/SupunArunoda/Final_Year_Project",
+  "authors": [
+    "buddhiv <92buddhiv@gmail.com>"
+  ],
+  "description": "Final year project application web folder",
+  "main": "index.html",
+  "keywords": [
+    "stock",
+    "market",
+    "anomaly",
+    "manipulation",
+    "detection",
+    "machine",
+    "learning"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

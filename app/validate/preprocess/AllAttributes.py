@@ -1,12 +1,12 @@
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
-from app.preprocess.static.PriceVolumeAverage import Window
+from app.preprocess.static.PriceVolumeAverage import PriceVolumeAverage
 from pandas import DataFrame, read_csv
 import numpy as np
 
 
-class PriceVolumeAverage:
+class PriceVolumeAverageTest:
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
@@ -17,7 +17,7 @@ class PriceVolumeAverage:
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
         data = read_messages
-        window = Window(session_file=session_file)
+        window = PriceVolumeAverage(session_file=session_file,time_delta=time_delta)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -38,17 +38,16 @@ class PriceVolumeAverage:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            #if order.value > 0:
-            #self.normalize_data_frame = window.get_time_frame(order=order, time_delta=time_delta)
-            window.get_all_attributes(order=order,time_delta=time_delta)
+            if order.value > 0:
+                self.normalize_data_frame = window.get_time_frame(order=order)
             if index == no_of_lines and no_of_lines != 0:
                 break
         # print(self.normalize_data_frame)
-        #self.normalize_df(writable_df=self.normalize_data_frame)
-        #self.normalize_data_frame.to_csv("output/price_volume_average_static_normalize.csv", index=False,
-                                       #  encoding='utf-8')
+        self.normalize_df()
+        self.normalize_data_frame.to_csv("/app/output/price_volume_average_static_normalize_test.csv", index=False,
+                                         encoding='utf-8')
 
-    def normalize_df(self, writable_df):
+    def normalize_df(self):
         mean_buy_price = self.normalize_data_frame['execute_order_buy_price'].mean()
         mean_sell_price = self.normalize_data_frame['execute_order_sell_price'].mean()
         mean_buy_volume = self.normalize_data_frame['execute_order_buy_volume'].mean()

@@ -3,17 +3,16 @@ from app.orderbook.OrderBook import OrderBook
 from app.preprocess.dynamic.ExecutionTypeDynamic import ExecutionTypeDynamic
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 from app.validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
-from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
-from app.validate.preprocess.PriceGapStaticTest import PriceGapStaticTest
+#from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
+from app.validate.preprocess.ChuncksWithEventsPriceGapStaticTest import ChuncksWithEventsPriceGapStaticTest
 from app.InputData import InputData
 
 import pandas as pd
 
 #from validate.model.Kmeans import KMeans
 
-message_file = 'app/data/data.csv'
-session_file='app/data/sessions.csv'
-
+message_file = 'F:/Hishara/FYP/Final_Year_Project/app/data/data.csv'
+session_file='F:/Hishara/FYP/Final_Year_Project/app/data/sessions.csv'
 # time_framed_file='./output/time_framed_data.csv'
 # regular_file = './data/price_gap_regular_norm.csv'
 
@@ -36,11 +35,9 @@ session_file='app/data/sessions.csv'
 # orderbook=OrderbookAttr()
 # orderbook.run_orderbook(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=420)
 
-ex_type_based=ExecutionTypeTest()
-ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=360)
-
-ex_type_based.get_normalize_data().to_csv('app/output/ex_type_sam.csv', index=False, encoding='utf-8')
-
+# ex_type_based=ExecutionTypeTest()
+# ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=1000,time_delta=315)
+# ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=360)
 # ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=420)
 # ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=600)
 # ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=900)
@@ -60,8 +57,8 @@ ex_type_based.get_normalize_data().to_csv('app/output/ex_type_sam.csv', index=Fa
 # inpudata.run_data_process(message_file=message_file)
 
 #Test PriceVolumeAverage
-# price_vol_average=PriceVolumeAverage()
-#price_vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=300)
+price_vol_average=PriceVolumeAverage()
+price_vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=1200)
 # price_vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=315)
 # price_vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=360)
 # price_vol_average.run_volume_average(message_file=message_file,session_file=session_file,no_of_lines=0,time_delta=420)
@@ -74,7 +71,11 @@ ex_type_based.get_normalize_data().to_csv('app/output/ex_type_sam.csv', index=Fa
 # pricegap_static=PriceGapStaticTest()
 # pricegap_static.run_price_gap(message_file=message_file,session_file=session_file,no_of_lines=0)
 
+# price_gap_event=ChuncksWithEventsPriceGapStaticTest()
+# price_gap_event.run_price_gap(message_file=message_file,session_file=session_file,no_of_lines=0)
 
+# oderbook=OrderbookAttr()
+# oderbook.run_orderbook(message_file=message_file,session_file=session_file,no_of_lines=0)
 
 
 
