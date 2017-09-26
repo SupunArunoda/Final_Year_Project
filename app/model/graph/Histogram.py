@@ -25,14 +25,14 @@ class Histogram:
 
         x = X[:, 0]
         y = np.array(range(1, len(X) + 1))
+        minm = argrelextrema(x, np.less)
+        print(minm)
         plt.plot(y, x)
        # x_0=[1.]
         #minimizer_kwargs = {"method": "BFGS"}
        # ret = basinhopping(x, x0=np.array([1]), minimizer_kwargs=minimizer_kwargs,niter = 200)
        # print(ret)
         plt.show()
-        minm = argrelextrema(x, np.less)
-        print(minm)
 
 
     def get_two_varaible(self,datafile_1,p1,q1,datafile_2,p2,q2):

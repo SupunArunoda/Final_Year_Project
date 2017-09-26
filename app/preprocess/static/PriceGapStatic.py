@@ -4,13 +4,13 @@ import csv
 import numpy as np
 from dateutil import parser as DUp
 
-from app.preprocess.Window.TimeWindow import TimeWindow
+
 
 
 class PriceGapStatic:
 
 
-    def __init__(self,session_file):
+    def __init__(self,session_file,time_delta):
 
         self.attributes = DataFrame()
         self.first_order=None;
@@ -27,6 +27,7 @@ class PriceGapStatic:
 
         self.session = read_csv(session_file)
         self.regular_list=self.get_regular_time()
+        self.window = TimeWindow(time_delta=time_delta)
 
 
     def get_regular_time(self):
@@ -39,7 +40,7 @@ class PriceGapStatic:
                 count+=1
         return reg_list
 
-    #get price gap from first price
+    #get price gap from first
     def get_all_day_gap(self,order):
         if(self.first_order==None):
             self.first_order=order.value

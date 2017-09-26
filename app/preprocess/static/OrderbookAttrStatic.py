@@ -4,7 +4,7 @@ import csv
 import numpy as np
 from dateutil import parser as DUp
 
-from app.preprocess.Window.TimeWindow import TimeWindow
+
 
 
 class OrderbookAttrStatic:

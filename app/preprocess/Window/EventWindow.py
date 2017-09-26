@@ -1,4 +1,4 @@
-from app.preprocess.Window.Window import Window
+from app.preprocess.window.Window import Window
 
 
 class EventWindow(Window):
