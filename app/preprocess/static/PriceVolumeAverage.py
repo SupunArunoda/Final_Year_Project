@@ -26,7 +26,7 @@ class Window:
         self.session = read_csv(session_file)
         self.regular_list=self.get_regular_time()
 
-        self.window = TimeWindow(time_delta=5)
+        self.window = TimeWindow(time_delta=1200)
 
 
     def get_regular_time(self):
@@ -91,6 +91,8 @@ class Window:
             if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
                 if(self.window.isWindowLimitReach(order=order)==False):
                     self.check_order(order=order)
+                    if (self.temp_time == 0):
+                        self.temp_time = temp_trasact_time
                 else:
                     self.check_order(order=order)
                     index=str(self.temp_time)+str('$$')+str(order.transact_time)

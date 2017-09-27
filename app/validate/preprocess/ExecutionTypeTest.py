@@ -1,5 +1,5 @@
 from app.db.PreprocessFile import PreprocessFile
-from app.db.PreprocessFileController import PreprocessFileController
+# from app.db.PreprocessFileController import PreprocessFileController
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv, DataFrame
@@ -15,7 +15,7 @@ class ExecutionTypeTest:
     def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta):
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-        output_path = "./app/output/ex_type_static_normalize.csv"
+        output_path = "F:/Hishara/FYP/Final_Year_Project/app/output/ex_type_static_normalize.csv"
 
         last_process_start = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         read_messages = read_csv(message_file, header=None)
@@ -69,10 +69,10 @@ class ExecutionTypeTest:
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = message_file
         output_file = output_path
-        pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
-                            last_process_end=last_process_end, output_file=output_file)
-        pfc = PreprocessFileController()
-        return_data['proprocess_index'] = pfc.saveProcessFile(pf)
+        # pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
+        #                     last_process_end=last_process_end, output_file=output_file)
+        # pfc = PreprocessFileController()
+        # return_data['proprocess_index'] = pfc.saveProcessFile(pf)
 
         # print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
