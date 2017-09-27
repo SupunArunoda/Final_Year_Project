@@ -15,6 +15,8 @@ class Entropy:
         self.final_dataframe = DataFrame()
         self.type_df = []
         self.side_df = []
+        self.start_times = []
+        self.end_times = []
         # print(self.regular_list)
 
     def get_regular_time(self):
@@ -68,11 +70,11 @@ class Entropy:
 
             for i in range(0, len(self.regular_list), 2):
                 if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
-                    chunk.append(order)  # methanata dapanko time window kadana scene eka
+                    chunk.append(order)
 
             if (len(
-                    chunk) > 2000):  # meka test karanna dapu ekak. time window kadala, 1 window ekaka thiyena orders tike list ekak tamai chunk kiyanne.
-                en.calculate_entropy(chunk)  # chunk hama ekatama me func eken entropy calculate karanne
+                    chunk) > 2000):
+                en.calculate_entropy(chunk)
                 break
 
     def calculate_entropy(self, chunk):
@@ -97,7 +99,7 @@ class Entropy:
         type_entropy = -(newC / type_total) * math.log2(newC / type_total) - (ammendC / type_total) * math.log2(
             ammendC / type_total) - (
                                         cancelC / type_total) * math.log2(cancelC / type_total) + (
-                                                                                                  execC / type_total) * math.log2(
+                                                                                                      execC / type_total) * math.log2(
             execC / type_total)
 
         side_total = sellC + buyC
@@ -114,13 +116,19 @@ class Entropy:
         self.final_dataframe['entropy_exec_type'] = self.type_df
         self.final_dataframe['entropy_side'] = self.side_df
 
-        self.final_dataframe.to_csv("../../output/entropy.csv", index=False, encoding='utf-8')
+        temp = []
+        for i in range(len(self.end_times)):
+            temp_time = '$$' + self.start_times[i] + '$$' + self.end_times[i]
+            temp.append(temp_time)
+
+        self.final_dataframe['time_index'] = temp
+        self.final_dataframe.to_csv("../../output/entropy_15mins.csv", index=False, encoding='utf-8')
 
     def get_entropy(self):
         temp_df = DataFrame()
         temp_list = []
-        for i in range(1, 26):
-            name = "../../data/day/regular_" + str(i) + "_all.csv"
+        for i in range(1, 34):
+            name = "../../data/15/900_regular_" + str(i) + "_all.csv"
             temp_df = read_csv(name)
             for index, order_row in temp_df.iterrows():
                 order_id = order_row['order_id']
@@ -140,6 +148,10 @@ class Entropy:
                               , order_qty=order_qty, execution_type=execution_type, transact_time=transact_time,
                               value=value, executed_value=executed_value
                               , broker_id=broker_id, instrument_id=instrument_id)
+                if index == 0:
+                    self.start_times.append(order.transact_time)
+                if index == len(temp_df) - 1:
+                    self.end_times.append(order.transact_time)
 
                 temp_list.append(order)
 
