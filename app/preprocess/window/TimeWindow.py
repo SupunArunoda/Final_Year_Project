@@ -1,4 +1,4 @@
-from app.preprocess.Window.Window import Window
+from app.preprocess.window.Window import Window
 import datetime
 from dateutil import parser as DUp
 

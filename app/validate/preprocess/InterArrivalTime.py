@@ -12,7 +12,7 @@ class InterArrivalTime:
         session_file = '../../data/sessions.csv'
         self.session = read_csv(session_file)
         self.regular_list = self.get_regular_time()
-
+        print(self.regular_list)
         self.normalize_data_frame = DataFrame()
 
         self.sellNew = DataFrame()
@@ -119,6 +119,7 @@ class InterArrivalTime:
 
                     if order.execution_type == 15 and order.side == 2:
                         if self.prevSellExecute != 0:
+                            # print(order.transact_time)
                             diff = self.str_to_date_time(self.prevSellExecute, order.transact_time)
                             self.sellExecute = self.sellExecute.append(DataFrame(
                                 {

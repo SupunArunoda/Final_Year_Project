@@ -2,25 +2,117 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            Process Data
+            Processing Result
         </h1>
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section class="content" ng-show="vm.isResultVisible == false">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-info">
+                    <div class="box box-header with-border">
+                        <h3 class="box-title">Processing</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                            </div>
+                            <div class="col-md-4">
+                                <img class="pull-left" width="100" height="100"
+                                     style="" src=../images/Rolling.gif alt="loading">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content" ng-show="vm.isResultVisible == true">
         <div class="row">
             <div class="col-md-12">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Processing result</h3>
+                        <h3 class="box-title">Entropy Variance</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div id="entropy-linechart"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 class="box-title">Local Minimum Time Frames</h3>
+                                <dl>
+                                    <div ng-repeat="minima in vm.local_minima_list">
+                                        <dt>{{ minima.id }}</dt>
+                                        <dd>
+                                            {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
+                                            <strong>Entropy score:</strong> {{ minima.entropy_value }}
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            <div class="col-md-4" ng-show="vm.onEntropyHover == true">
+                                <h3 class="box-title">Timeframe <span ng-bind="vm.time_frame_number"></span></h3>
+                                <dl>
+                                    <dt>Timeframe Start</dt>
+                                    <dd>
+                                        asdjnsd
+                                    </dd>
+                                    <dt>Timeframe End</dt>
+                                    <dd>
+                                        lansdjnsd
+                                    </dd>
+                                    <dt>Entropy Score</dt>
+                                    <dd>
+                                        <span ng-bind="vm.entropy_score"></span>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Attribute Variance</h3>
                     </div>
                     <!-- /.box-header -->
-                    <div class="box-body" ng-show="vm.isResultVisible == true">
-                        result
-                    </div>
-                    <div class="box-body" ng-show="vm.isLoaderVisible == true">
-                        <img class="pull-right"
-                             style="padding-top: 4px; padding-right: 5px" src=../images/Rolling.gif alt="loading">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-2" style="bottom: 0px; position: relative">
+                                <button type="button" class="btn btn-block btn-primary"
+                                        data-ng-click="vm.getPreviousWindow()">Previous
+                                </button>
+                            </div>
+                            <div class="col-md-8"></div>
+                            <div class="col-md-2" style="bottom: 0px; position: relative">
+                                <button type="button" class="btn btn-block btn-primary"
+                                        data-ng-click="vm.getNextWindow()">Next
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div ng-show="vm.isGraphLoaderVisible == true">
+                                    <div class="col-md-5">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <img class="pull-left" width="80" height="80"
+                                             style="" src=../images/Rolling.gif alt="loading">
+                                    </div>
+                                </div>
+
+                                <div ng-show="vm.isGraphLoaderVisible == false">
+                                    <div id="price-gap-linechart"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

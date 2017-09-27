@@ -1,7 +1,7 @@
 from dateutil import parser as DUp
 from pandas import DataFrame, read_csv
 
-from app.preprocess.Window.EventWindow import EventWindow
+from app.preprocess.window.EventWindow import EventWindow
 
 
 class PriceGapStaticByEvents:

@@ -2,7 +2,7 @@ from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from app.preprocess.dynamic.ExecutionTypeDynamic import ExecutionTypeDynamic
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
-from app.validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
+from app.validate.preprocess.AllAttributes import PriceVolumeAverage
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 
 from pandas import read_csv
@@ -29,6 +29,9 @@ def process():
 
         message_file = './app/data/' + data['file_name']
         session_file = './app/data/sessions.csv'
+
+        window_type = data['type']
+        window_size = data['window']
 
         ex_type_based = ExecutionTypeTest()
         index = ex_type_based.run_execution_type_static(message_file=message_file,
