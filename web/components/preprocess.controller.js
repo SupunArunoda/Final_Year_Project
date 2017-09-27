@@ -75,21 +75,39 @@
         }
 
         function processFile() {
-            vm.isProcessLoaderVisible = true;
+            if (vm.type === null) {
+                alert('Select processing type to continue');
+            } else {
+                var window = 0;
 
-            var file = fileservice[0];
+                if (vm.type === 'order') {
+                    window = vm.windowSize
+                } else if (vm.type === 'time') {
+                    window = vm.timeInterval;
+                }
 
-            var data = {
-                file_name: file.name
-            };
+                if (window = null) {
+                    alert('Enter valid value');
+                } else {
+                    vm.isProcessLoaderVisible = true;
 
-            webservice.call('/preprocess_main/process', 'post', JSON.stringify(data)).then(function (response) {
-                vm.isProcessLoaderVisible = false;
+                    var file = fileservice[0];
 
-                console.log(response.data);
+                    var data = {
+                        file_name: file.name,
+                        type: vm.type,
+                        window: window
+                    };
 
-                $location.path('/process/' + response.data);
-            });
+                    webservice.call('/preprocess_main/process', 'post', JSON.stringify(data)).then(function (response) {
+                        vm.isProcessLoaderVisible = false;
+
+                        console.log(response.data);
+
+                        $location.path('/process/' + response.data);
+                    });
+                }
+            }
         }
 
         function getStyleForProgressBar(value) {
