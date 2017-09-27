@@ -12,7 +12,7 @@ class ExecutionTypeTest:
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
-    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta):
+    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta ,window):
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
         output_path = "F:/Hishara/FYP/Final_Year_Project/app/output/ex_type_static_normalize.csv"
@@ -25,7 +25,7 @@ class ExecutionTypeTest:
                                  'order_id']
         data = read_messages
 
-        exe_type = ExecutionTypeStatic(session_file=session_file)
+        exe_type = ExecutionTypeStatic(session_file=session_file, window=window)
 
         return_data = {}
         return_data['new_orders_count'] = 0

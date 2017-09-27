@@ -1,5 +1,7 @@
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
+from app.preprocess.Window.EventWindow import EventWindow
+from app.preprocess.Window.TimeWindow import TimeWindow
 from app.preprocess.dynamic.ExecutionTypeDynamic import ExecutionTypeDynamic
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 from app.validate.preprocess.AllAttributes import PriceVolumeAverage
@@ -33,10 +35,15 @@ def process():
         window_type = data['type']
         window_size = data['window']
 
+        if(window_type=='time'):
+            window= TimeWindow(time_delta=window_size)
+        else:
+            window= EventWindow(no_of_events=window_size)
+
         ex_type_based = ExecutionTypeTest()
         index = ex_type_based.run_execution_type_static(message_file=message_file,
                                                         session_file=session_file, no_of_lines=0,
-                                                        time_delta=420)
+                                                        time_delta=420, window=window)
 
         return str(index)
 

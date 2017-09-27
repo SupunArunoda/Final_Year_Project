@@ -10,7 +10,7 @@ from app.preprocess.Window.TimeWindow import TimeWindow
 class ExecutionTypeStatic:
 
 
-    def __init__(self,session_file):
+    def __init__(self,session_file, window):
 
         self.attributes = DataFrame()
         self.temp_time=0;
@@ -20,7 +20,8 @@ class ExecutionTypeStatic:
         self.session = read_csv(session_file)
         self.regular_list=self.get_regular_time()
 
-        self.window = TimeWindow(time_delta=1200)
+        # self.window = TimeWindow(time_delta=1200)
+        self.window = window
 
 
     def get_regular_time(self):
