@@ -1,7 +1,6 @@
 from app.orderbook.Order import Order
 from pandas import DataFrame, read_csv
 
-from app.preprocess.WindowByEvents.PriceGapStaticByEvents import PriceGapStaticByEvents
 from app.preprocess.static.PriceGapStatic import PriceGapStatic
 
 
@@ -20,7 +19,7 @@ class ChuncksWithEventsPriceGapStaticTest:
                                  'order_id']
         data=read_messages
         print(len(data.index))
-        pricegapstatic=PriceGapStaticByEvents(session_file=session_file,no_of_events=5000)
+#        pricegapstatic=PriceGapStaticByEvents(session_file=session_file,no_of_events=5000)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -41,7 +40,7 @@ class ChuncksWithEventsPriceGapStaticTest:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            self.normalize_data_frame=pricegapstatic.get_regular_gap_chunks(order=order)
+#            self.normalize_data_frame=pricegapstatic.get_regular_gap_chunks(order=order)
             #self.normalize_data_frame=pricegapstatic.get_all_day_gap(order=order)
             #pricegapstatic.get_regular_gap_chunks(order=order,time_delta=1200)
             # self.buy_data=pricegapstatic.get_buy_data()
