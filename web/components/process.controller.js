@@ -44,9 +44,17 @@
                 var local_minimas = response.data.local_minimas;
 
                 angular.forEach(local_minimas, function (value, key) {
+                    var time = response.data.time_index[value];
+                    time = time.split('$$');
+
+                    var starttime = time[1];
+                    var endtime = time[2];
+
                     vm.local_minima_list.push({
                         entropy_value: response.data.entropy_exec_type[value],
                         id: (value + 1),
+                        starttime: starttime,
+                        endtime: endtime
                     });
                 });
 
@@ -85,8 +93,10 @@
         }
 
         function createEntropyGraph(values) {
+
+
             var trace = {
-                x: values.time_index,
+                x: xidx,
                 y: values.entropy_exec_type,
                 mode: 'lines+markers',
                 marker: {
@@ -101,7 +111,14 @@
 
             var layout = {
                 height: '100%',
-                width: '100%'
+                width: '100%',
+                xaxis: {
+                    showline: false,
+                    tickvals: Object.keys(values.entropy_exec_type),
+                    ticktext: '',
+                    showticklabels: false,
+                    showgrid: false,
+                },
             };
 
             Plotly.newPlot('entropy-linechart', data, layout);
