@@ -2,7 +2,7 @@ from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from app.preprocess.dynamic.ExecutionTypeDynamic import ExecutionTypeDynamic
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
-from app.validate.preprocess.PriceVolumeAverageTest import PriceVolumeAverage
+from app.validate.preprocess.AllAttributes import PriceVolumeAverage
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 
 from pandas import read_csv

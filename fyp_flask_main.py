@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, make_response
 from pandas.tseries.offsets import CacheableOffset
 
-from app.PreprocessRoute import preprocess_route
 from app.PreprocessMain import preprocess_main
+from app.ProcessMain import process_main
 from flask_cors import CORS
 
 import pymysql
@@ -10,8 +10,8 @@ import pymysql
 app = Flask(__name__)
 CORS(app)
 
-app.register_blueprint(preprocess_route, url_prefix='/preprocess')
 app.register_blueprint(preprocess_main, url_prefix='/preprocess_main')
+app.register_blueprint(process_main, url_prefix='/process_main')
 
 if __name__ == '__main__':
     app.run(debug=True)
@@ -41,7 +41,4 @@ def before():
 @app.after_request
 def after(req):
     req.direct_passthrough = False
-    # print(req.status)
-    # print(req.headers)
-    # print(req.get_data())
     return req

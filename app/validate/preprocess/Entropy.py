@@ -77,6 +77,7 @@ class Entropy:
                 en.calculate_entropy(chunk)
                 break
 
+
     def calculate_entropy(self, chunk):
         newC, ammendC, cancelC, execC = 0, 0, 0, 0
         sellC, buyC = 0, 0

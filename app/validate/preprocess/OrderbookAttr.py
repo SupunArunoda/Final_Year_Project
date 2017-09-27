@@ -1,7 +1,7 @@
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
-from app.preprocess.static.PriceVolumeAverage import Window
+from app.preprocess.static.PriceVolumeAverage import PriceVolumeAverage
 from pandas import DataFrame,read_csv
 import numpy as np
 
