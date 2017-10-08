@@ -719,7 +719,7 @@ var wysihtml5 = {
             } else if (typeof iframeEl.contentDocument != UNDEF) {
                 return iframeEl.contentDocument.defaultView;
             } else {
-                throw module.createError("getIframeWindow: No Window object found for iframe element");
+                throw module.createError("getIframeWindow: No window object found for iframe element");
             }
         }
 
@@ -741,13 +741,13 @@ var wysihtml5 = {
                     getIframeDocument(obj) : getDocument(obj);
             }
 
-            // Test if the doc parameter appears to be a Window object
+            // Test if the doc parameter appears to be a window object
             else if (isWindow(obj)) {
                 doc = obj.document;
             }
 
             if (!doc) {
-                throw module.createError(methodName + "(): Parameter must be a Window object or DOM node");
+                throw module.createError(methodName + "(): Parameter must be a window object or DOM node");
             }
 
             return doc;

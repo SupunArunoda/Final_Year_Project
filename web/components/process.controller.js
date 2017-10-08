@@ -165,7 +165,7 @@
                     showticklabels: false,
                     showgrid: false,
                 },
-                title: 'Time Window ' + file_number + ' of ' + vm.files_count
+                title: 'Time window ' + file_number + ' of ' + vm.files_count
             };
 
             vm.isGraphLoaderVisible = false;
