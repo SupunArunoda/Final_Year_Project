@@ -32,19 +32,53 @@ def process():
         session_file = './app/data/sessions.csv'
 
         window_type = data['type']
-        window_size = data['window']
+        window_size = int(data['window']) * 60
 
-        if(window_type=='time'):
-            window= TimeWindow(time_delta=window_size)
+        if (window_type == 'time'):
+            window = TimeWindow(time_delta=window_size)
         else:
-            window= EventWindow(no_of_events=window_size)
+            window = EventWindow(no_of_events=window_size)
 
         ex_type_based = ExecutionTypeTest()
         index = ex_type_based.run_execution_type_static(message_file=message_file,
                                                         session_file=session_file, no_of_lines=0,
                                                         time_delta=420, window=window)
 
-        return str(index)
+        return json.dumps(index)
+
+
+@preprocess_main.route('/set_session_information', methods=['GET', 'POST'])
+def set_session_information():
+    if (request.method == 'POST'):
+        if ('sessionsFile' in request.files):
+            file = request.files['sessionsFile']
+
+            print(secure_filename(file.filename))
+
+            file.save('./app/data/sessions.csv')
+            file_path = './app/data/sessions.csv'
+
+            read_messages = read_csv(file_path, header=None)
+            read_messages.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name',
+                                     'order_book_id']
+            data = read_messages
+
+            sessions = data.values[1:]
+
+            return_data = {}
+            return_data['instrument_id'] = sessions[0][0]
+            return_data['session_date'] = sessions[0][1].split(' ')[0]
+
+            session_data = []
+            for i in range(0, len(sessions), 2):
+                # session_duration =
+                session_data.append([sessions[i][3], sessions[i][1], sessions[i + 1][1]])
+
+            return_data['session_data'] = session_data
+            # return_data['session_datas'] = sessions.tolist()
+
+            return json.dumps(return_data)
+            # return 'done'
 
 
 @preprocess_main.route('/get_csv_information', methods=['GET', 'POST'])

@@ -39,36 +39,21 @@
                     <div class="box-body">
                         <div class="row">
                             <div class="col-md-8">
-                                <div id="entropy-linechart"></div>
+                                <div id="entropy-linechart" style="height: 400px"></div>
                             </div>
                             <div class="col-md-4">
-                                <h3 class="box-title">Local Minimum Time Frames</h3>
-                                <dl>
-                                    <div ng-repeat="minima in vm.local_minima_list">
-                                        <dt>{{ minima.id }}</dt>
-                                        <dd>
+                                <h4>Suspicious Time Frames</h4>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr ng-repeat="minima in vm.local_minima_list">
+                                        <td>
+                                            <strong>Timeframe {{ minima.id }}</strong><br/>
                                             {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
                                             <strong>Entropy score:</strong> {{ minima.entropy_value }}
-                                        </dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="col-md-4" ng-show="vm.onEntropyHover == true">
-                                <h3 class="box-title">Timeframe <span ng-bind="vm.time_frame_number"></span></h3>
-                                <dl>
-                                    <dt>Timeframe Start</dt>
-                                    <dd>
-                                        asdjnsd
-                                    </dd>
-                                    <dt>Timeframe End</dt>
-                                    <dd>
-                                        lansdjnsd
-                                    </dd>
-                                    <dt>Entropy Score</dt>
-                                    <dd>
-                                        <span ng-bind="vm.entropy_score"></span>
-                                    </dd>
-                                </dl>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -84,35 +69,61 @@
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-2" style="bottom: 0px; position: relative">
-                                <button type="button" class="btn btn-block btn-primary"
-                                        data-ng-click="vm.getPreviousWindow()">Previous
-                                </button>
-                            </div>
-                            <div class="col-md-8"></div>
-                            <div class="col-md-2" style="bottom: 0px; position: relative">
-                                <button type="button" class="btn btn-block btn-primary"
-                                        data-ng-click="vm.getNextWindow()">Next
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div ng-show="vm.isGraphLoaderVisible == true">
-                                    <div class="col-md-5">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <img class="pull-left" width="80" height="80"
-                                             style="" src=../images/Rolling.gif alt="loading">
-                                    </div>
-                                </div>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-1" style="bottom: 0px; position: relative">
 
-                                <div ng-show="vm.isGraphLoaderVisible == false">
-                                    <div id="price-gap-linechart"></div>
-                                </div>
-                            </div>
-                        </div>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-default pull-right"
+                                                        data-ng-click="vm.getPreviousWindow()">
+                                                    <i class="fa fa-angle-left"></i></button>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        <select class="form-control" data-ng-model="vm.current_file" data-ng-change="vm.changeGraph()">
+                                                            <option value="{{n}}" ng-repeat="n in vm.files_range">Time
+                                                                Frame {{n}}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-default pull-left"
+                                                        data-ng-click="vm.getNextWindow()">
+                                                    <i class="fa fa-angle-right"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1" style="bottom: 0px; position: relative">
+
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 20px">
+                                        <div class="col-md-12">
+                                            <div ng-show="vm.isGraphLoaderVisible == true">
+                                                <div class="col-md-5">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <img class="pull-left" width="80" height="80"
+                                                         style="" src=../images/Rolling.gif alt="loading">
+                                                </div>
+                                            </div>
+
+                                            <div ng-show="vm.isGraphLoaderVisible == false">
+                                                <div id="price-gap-linechart" style="height: 500px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
