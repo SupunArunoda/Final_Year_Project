@@ -4,7 +4,7 @@ import csv
 from dateutil import parser as DUp
 import numpy as np
 
-from app.preprocess.Window.TimeWindow import TimeWindow
+from app.preprocess.window.TimeWindow import TimeWindow
 
 
 class ExecutionTypeStatic:
