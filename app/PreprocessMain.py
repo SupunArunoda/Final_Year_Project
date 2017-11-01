@@ -2,14 +2,13 @@ from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.window.TimeWindow import TimeWindow
-from app.preprocess.dynamic.ExecutionTypeDynamic import ExecutionTypeDynamic
+
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
-from app.validate.preprocess.AllAttributes import PriceVolumeAverage
+
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 
 from pandas import read_csv
 from matplotlib import pyplot as plt
-from mpld3 import fig_to_html
 from flask import Blueprint, request, render_template, redirect, url_for
 import sys
 from werkzeug.utils import secure_filename
