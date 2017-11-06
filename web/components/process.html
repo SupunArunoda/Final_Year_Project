@@ -86,7 +86,8 @@
                                             <div class="col-md-8">
                                                 <div class="form-group">
                                                     <div class="col-md-12">
-                                                        <select class="form-control" data-ng-model="vm.current_file" data-ng-change="vm.changeGraph()">
+                                                        <select class="form-control" data-ng-model="vm.current_file"
+                                                                data-ng-change="vm.changeGraph()">
                                                             <option value="{{n}}" ng-repeat="n in vm.files_range">Time
                                                                 Frame {{n}}
                                                             </option>
@@ -124,6 +125,82 @@
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Orderbook Simulation</h3>
+                    </div>
+                    <div class="box-body">
+                        <div ng-show="vm.isOrderBookLoaded == true">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-3">
+                                        at Timeasdkbasd
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input name="weight" type="range" min="100" max="500" step="10"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 10px">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                        <tr>
+                                            <th style="width: 10px">#</th>
+                                            <th>Buy</th>
+                                            <th>Quantity</th>
+                                            <th style="width: 10px">#</th>
+                                            <th>Sell</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1.</td>
+                                            <td>Update software</td>
+                                            <td>Update software</td>
+                                            <td>1.</td>
+                                            <td>Update software</td>
+                                            <td>Update software</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.</td>
+                                            <td>Clean database</td>
+                                            <td>Clean database</td>
+                                            <td>2.</td>
+                                            <td>Clean database</td>
+                                            <td>Clean database</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3.</td>
+                                            <td>Cron job running</td>
+                                            <td>Cron job running</td>
+                                            <td>3.</td>
+                                            <td>Cron job running</td>
+                                            <td>Cron job running</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4.</td>
+                                            <td>Fix and squish bugs</td>
+                                            <td>Fix and squish bugs</td>
+                                            <td>4.</td>
+                                            <td>Fix and squish bugs</td>
+                                            <td>Fix and squish bugs</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="vm.isOrderBookLoaded == false">
+                            Orderbook Simuating...
+                        </div>
                     </div>
                 </div>
             </div>
