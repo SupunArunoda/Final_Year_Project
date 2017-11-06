@@ -4,20 +4,23 @@ from pandas import read_csv
 from pandas import DataFrame,read_csv
 import numpy as np
 
+from app.preprocess.static.OrderbookAttrStatic import OrderbookAttrStatic
+
+
 class OrderbookAttr:
 
     def __init__(self):
-        self.normalize_data_frame = DataFrame()
+        self.df = DataFrame()
 
-    def run_orderbook(self,message_file,session_file,no_of_lines,time_delta):
+    def run_orderbook_simulation(self,message_file,session_file,no_of_lines, window):
 
         read_messages = read_csv(message_file, header=None)
         read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
+
+        attr=OrderbookAttrStatic(session_file=session_file,data_file=read_messages ,window=window)
         data=read_messages
-        # orderbook=OrderBook(order_data=read_messages,session_file=session_file)
-        orderbook = OrderBook(order_data=read_messages)
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -38,12 +41,11 @@ class OrderbookAttr:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            orderbook.processOrder(order=order)
+            self.df = attr.get_time_frame(order=order)
             if index > no_of_lines:
                 break
-        orderbook.printOrderBook()
+
         # print(df)
-        # df.to_csv("output/orderbook_attr.csv", index=False,
-        #                                  encoding='utf-8')
+        self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_attributes.csv", index=False,encoding='utf-8')
 
 

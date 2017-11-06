@@ -5,6 +5,7 @@ import numpy as np
 from dateutil import parser as DUp
 
 from app.orderbook.OrderBook import OrderBook
+from app.preprocess.window.TimeWindow import TimeWindow
 
 
 class OrderbookSimulation:
@@ -15,12 +16,13 @@ class OrderbookSimulation:
         self.attributes = DataFrame()
         self.temp_time=0;
         self.volume_average_list = []
-        self.detailsList=[0 for _ in range(5)]
+        self.detailsList=[0 for _ in range(7)]
 
         self.session = read_csv(session_file)
         self.regular_list=self.get_regular_time()
         # self.window = TimeWindow(no_of_events=no_of_events)
         self.window = window
+        self.smallWindow = TimeWindow(time_delta=1800)
 
         # read_messages = read_csv(data_file, header=None)
         self.orderbook=OrderBook(order_data=data_file)
@@ -57,7 +59,9 @@ class OrderbookSimulation:
                          'best_bid_avg': self.detailsList[0]/self.detailsList[4],
                          'best_ask_avg': self.detailsList[1]/self.detailsList[4],
                          'top_buy_vol_avg': self.detailsList[2]/self.detailsList[4],
-                         'top_sell_vol_avg': self.detailsList[3]/self.detailsList[4]
+                         'top_sell_vol_avg': self.detailsList[3]/self.detailsList[4],
+                         'top_buy_price_points': self.detailsList[4],
+                         'top_sell_price_points': self.detailsList[5]
                          }, index=[0]), ignore_index=True);
 
                     self.remove_values()
@@ -75,10 +79,12 @@ class OrderbookSimulation:
         self.detailsList[2] += self.details[2]
         self.detailsList[3] += self.details[3]
         self.detailsList[4] += 1
+        self.detailsList[5] = self.details[4]
+        self.detailsList[6] = self.details[5]
 
     def remove_values(self):
         self.volume_average_list = []
-        self.detailsList = [0 for _ in range(5)]
+        self.detailsList = [0 for _ in range(7)]
 
 
 
