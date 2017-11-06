@@ -1,6 +1,5 @@
 from pandas import DataFrame
 
-from app.preprocess.static.OrderbookAttrStatic import OrderbookAttrStatic
 
 
 class OrderBook:
@@ -241,12 +240,16 @@ class OrderBook:
             details.append(self.sellOrders[0])
         else:
             details.append(0)
+
         volume = 0
         count = 0
+        buyPricePoints=''
         for buyOrder in self.buyOrders:
             count += 1
             if (count > 10):
                 break
+            buyPricePoints+= str(buyOrder)
+            buyPricePoints += ','
             for orderId in self.buyOrdersDetails[buyOrder]:
                 order = self.neworders.loc[
                     (self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
@@ -257,10 +260,13 @@ class OrderBook:
 
         volume = 0
         count = 0
+        sellPricePoints=''
         for sellOrder in self.sellOrders:
             count += 1
             if (count > 10):
                 break
+            sellPricePoints += str(sellOrder)
+            sellPricePoints += ','
             for orderId in self.sellOrdersDetails[sellOrder]:
                 order = self.neworders.loc[
                     (self.neworders['order_id'] == orderId) & (self.neworders['execution_type'] == 0)]
@@ -268,5 +274,7 @@ class OrderBook:
                     volume += order['visible_size'].iloc[0]
 
         details.append(volume / 10)
+        details.append(buyPricePoints)
+        details.append(sellPricePoints)
 
         return details
