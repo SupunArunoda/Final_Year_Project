@@ -1,4 +1,3 @@
-from app.model.cluster.Hierarchical import Hierarchical
 from app.model.cluster.KMeans import Kmeans
 from pandas import read_csv
 

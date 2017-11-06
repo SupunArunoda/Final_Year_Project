@@ -1,13 +1,12 @@
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
+
+from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 from pandas import DataFrame,read_csv
 import numpy as np
 
-from app.preprocess.static.OrderbookAttrStatic import OrderbookAttrStatic
-
-
-class OrderbookAttr:
+class OrderbookSimulationTest:
 
     def __init__(self):
         self.df = DataFrame()
@@ -19,7 +18,7 @@ class OrderbookAttr:
                                  'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
                                  'order_id']
 
-        attr=OrderbookAttrStatic(session_file=session_file,data_file=read_messages ,window=window)
+        simulation=OrderbookSimulation(session_file=session_file,data_file=read_messages ,window=window)
         data=read_messages
 
         for index, order_row in data.iterrows():
@@ -41,11 +40,11 @@ class OrderbookAttr:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            self.df = attr.get_time_frame(order=order)
+            simulation.get_time_frame(order=order)
             if index > no_of_lines:
                 break
 
         # print(df)
-        self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_attributes.csv", index=False,encoding='utf-8')
+        # self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation.csv", index=False,encoding='utf-8')
 
 
