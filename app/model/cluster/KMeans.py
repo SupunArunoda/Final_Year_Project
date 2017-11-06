@@ -28,13 +28,13 @@ def calculateScores(clusters, centroids):
     meanScore = np.mean(scores)
     # print(meanScore, ' .... ', std_deviation)
 
-    for i in range(len(scores)):
-        if ((scores[i] > (meanScore - 3 * std_deviation) and scores[i] < (meanScore + 3 * std_deviation))):
-            print(i, ': ', scores[i])
-        else:
-            suspicious.append(i)
+    # for i in range(len(scores)):
+    #     if ((scores[i] > (meanScore - 3 * std_deviation) and scores[i] < (meanScore + 3 * std_deviation))):
+    #         print(i, ': ', scores[i])
+    #     else:
+    #         suspicious.append(i)
 
-    return suspicious
+    return scores
 
 
 def plotPlotly(clusters):
@@ -88,7 +88,7 @@ class Kmeans:
 
             inertia.append(kmeans.inertia_)
 
-        print(inertia)
+        # print(inertia)
 
         # last_rev = inertia[::-1]
         idxs = np.arange(1, len(inertia) + 1)
@@ -118,18 +118,23 @@ class Kmeans:
     def writeToCSV(self, clusters, kmeans, raw_datafile):
         centroids = kmeans.cluster_centers_
         labels = kmeans.labels_
-        suspicious = calculateScores(clusters, centroids)
+        scores = calculateScores(clusters, centroids)
 
         data = DataFrame(raw_datafile)
         data['cluster_group'] = np.nan
-        data['anomaly_state'] = np.nan
+        data['anomaly_score'] = np.nan
+        # data['anomaly_state'] = np.nan
 
         for i in range(len(labels)):
             data['cluster_group'].iloc[i] = labels[i]
-            if labels[i] in suspicious:
-                data['anomaly_state'].iloc[i] = 'Suspicious'
-            else:
-                data['anomaly_state'].iloc[i] = 'Not Suspicious'
 
-        data.to_csv("../output/clustered_output_entropy.csv", index=False, encoding='utf-8')
+            for j in range(len(scores)):
+                if labels[i] == j:
+                    data['anomaly_score'].iloc[i] = scores[j]
+
+
+
+
+        # print(data)
+        data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
         print('Output file saved!')
