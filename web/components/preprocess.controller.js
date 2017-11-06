@@ -16,6 +16,8 @@
         vm.isLoaderVisible = false;
         vm.isProcessLoaderVisible = false;
         vm.isSessionsUploaded = false;
+        vm.orderbookSimulation = false;
+        vm.saveInformation = false;
 
         vm.testFunction = testFunction;
         vm.uploadDataFile = uploadDataFile;
@@ -192,7 +194,8 @@
                     var data = {
                         file_name: file.name,
                         type: vm.type,
-                        window: window
+                        window: window,
+                        save_information: vm.saveInformation
                     };
 
                     webservice.call('/preprocess_main/process', 'post', JSON.stringify(data)).then(function (response) {
@@ -201,10 +204,15 @@
                         console.log(response.data);
 
                         // $location.path('/process/' + response.data.proprocess_index);
-                        $location.path('/process/89');
+                        $location.path('/process/89').search({
+                            orderbook_simulation: vm.orderbookSimulation
+                        });
                     });
                 }
             }
+
+            console.log(vm.orderbookSimulation);
+            console.log(vm.saveInformation);
         }
 
         function getStyleForProgressBar(value) {

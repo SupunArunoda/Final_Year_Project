@@ -5,14 +5,15 @@
         .module('adist')
         .controller('ProcessController', ProcessController);
 
-    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope'];
+    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location'];
 
-    function ProcessController(webservice, $routeParams, $rootScope) {
+    function ProcessController(webservice, $routeParams, $rootScope, $location) {
         var vm = this;
 
         vm.isGraphLoaderVisible = true;
         vm.isResultVisible = false;
         vm.onEntropyHover = false;
+        vm.isOrderBookLoaded = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
@@ -29,7 +30,22 @@
         vm.current_file = 0;
         vm.files_range = [];
 
-        vm.loadData(vm.id);
+        initialize();
+
+        function initialize() {
+            var os = $location.search().orderbook_simulation;
+
+            if (os == "true") {
+                vm.isOrderBookLoaded = true;
+                // webservice.call('/process_main/simulate_orderbook', 'post').then(function () {
+                setTimeout(function () {
+                    alert("Hello");
+                }, 10000);
+                // });
+            }
+
+            vm.loadData(vm.id);
+        }
 
         function loadData(id) {
             var data = {
