@@ -1,7 +1,7 @@
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
-from app.preprocess.static.PriceVolumeAverage import PriceVolumeAverage
+from app.preprocess.static.PriceVolumeAverage import Window
 from pandas import DataFrame, read_csv
 from app.preprocess.window.TimeWindow import TimeWindow
 from app.preprocess.static.ExecutionTypeStatic import ExecutionTypeStatic
@@ -23,7 +23,7 @@ class AllAttribute:
 
         time_window_1 = TimeWindow(time_delta=1200)
         time_window_2 = TimeWindow(time_delta=1200)
-        price_volume = PriceVolumeAverage(session_file=session_file,window=time_window_1)
+        price_volume = Window(session_file=session_file,window=time_window_1)
         exe_type=ExecutionTypeStatic(session_file=session_file,window=time_window_2)
 
         for index, order_row in data.iterrows():
@@ -94,8 +94,6 @@ class AllAttribute:
         std_buy_volume = self.price_data_frame['execute_order_buy_volume'].values.std(ddof=1)
         std_sell_volume = self.price_data_frame['execute_order_sell_volume'].values.std(ddof=1)
 
-        print(mean_buy_price, mean_sell_price, std_buy_price, std_sell_price, mean_buy_volume, mean_sell_volume,
-              std_buy_volume, std_sell_volume)
 
         self.price_data_frame['nom_exe_order_buy_price'] = (self.price_data_frame[
                                                                 'execute_order_buy_price'] - mean_buy_price) / std_buy_price
