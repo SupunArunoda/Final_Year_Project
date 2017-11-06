@@ -40,11 +40,11 @@ class OrderbookSimulationTest:
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
 
-            self.df = simulation.get_time_frame(order=order)
+            simulation.get_time_frame(order=order)
             if index > no_of_lines:
                 break
 
         # print(df)
-        self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation.csv", index=False,encoding='utf-8')
+        # self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation.csv", index=False,encoding='utf-8')
 
 
