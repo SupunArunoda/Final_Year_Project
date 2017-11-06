@@ -1,5 +1,5 @@
 from app.db.PreprocessFile import PreprocessFile
-# from app.db.PreprocessFileController import PreprocessFileController
+from app.db.PreprocessFileController import PreprocessFileController
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv, DataFrame
@@ -12,10 +12,10 @@ class ExecutionTypeTest:
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
-    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta ,window):
+    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta, window):
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-        output_path = "F:/Hishara/FYP/Final_Year_Project/app/output/ex_type_static_normalize.csv"
+        output_path = "./app/output/ex_type_static_normalize.csv"
 
         last_process_start = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         read_messages = read_csv(message_file, header=None)
@@ -28,10 +28,10 @@ class ExecutionTypeTest:
         exe_type = ExecutionTypeStatic(session_file=session_file, window=window)
 
         return_data = {}
-        return_data['new_orders_count'] = 0
-        return_data['ammend_orders_count'] = 0
-        return_data['cancel_orders_count'] = 0
-        return_data['execute_orders_count'] = 0
+        # return_data['new_orders_count'] = 0
+        # return_data['ammend_orders_count'] = 0
+        # return_data['cancel_orders_count'] = 0
+        # return_data['execute_orders_count'] = 0
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -54,14 +54,14 @@ class ExecutionTypeTest:
 
             self.normalize_data_frame = exe_type.get_time_frame(order=order, time_delta=time_delta)
 
-            if order_row['execution_type'] == 0:
-                return_data['new_orders_count'] = return_data['new_orders_count'] + 1
-            if order_row['execution_type'] == 4:
-                return_data['cancel_orders_count'] = return_data['cancel_orders_count'] + 1
-            if order_row['execution_type'] == 5:
-                return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
-            if order_row['execution_type'] == 15:
-                return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
+            # if order_row['execution_type'] == 0:
+            #     return_data['new_orders_count'] = return_data['new_orders_count'] + 1
+            # if order_row['execution_type'] == 4:
+            #     return_data['cancel_orders_count'] = return_data['cancel_orders_count'] + 1
+            # if order_row['execution_type'] == 5:
+            #     return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
+            # if order_row['execution_type'] == 15:
+            #     return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
 
             if index == no_of_lines and no_of_lines != 0:
                 break
@@ -69,16 +69,15 @@ class ExecutionTypeTest:
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = message_file
         output_file = output_path
-        # pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
-        #                     last_process_end=last_process_end, output_file=output_file)
-        # pfc = PreprocessFileController()
-        # return_data['proprocess_index'] = pfc.saveProcessFile(pf)
+        pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
+                            last_process_end=last_process_end, output_file=output_file)
+        pfc = PreprocessFileController()
+        return_data['proprocess_index'] = pfc.saveProcessFile(pf)
 
-        # print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
         self.normalize_data_frame.to_csv(output_path, index=False, encoding='utf-8')
 
-        return_data['total_rows'] = len(data)
+        # return_data['total_rows'] = len(data)
         return return_data
 
     def run_execution_type_dynamic(self, message_file, session_file, no_of_lines, time_delta, time_lag):
