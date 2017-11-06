@@ -29,6 +29,7 @@
     "angular-file-upload": "^2.5.0",
     "ng-file-upload": "^12.2.13",
     "angular-route": "^1.6.6",
-    "d3": "^4.11.0"
+    "d3": "^4.11.0",
+    "amcharts3": "^3.21.6"
   }
 }

@@ -1,5 +1,5 @@
 from app.db.PreprocessFile import PreprocessFile
-# from app.db.PreprocessFileController import PreprocessFileController
+from app.db.PreprocessFileController import PreprocessFileController
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv, DataFrame
@@ -69,12 +69,12 @@ class ExecutionTypeTest:
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = message_file
         output_file = output_path
-        # pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
-        #                     last_process_end=last_process_end, output_file=output_file)
-        # pfc = PreprocessFileController()
-        # return_data['proprocess_index'] = pfc.saveProcessFile(pf)
+        pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
+                            last_process_end=last_process_end, output_file=output_file)
+        pfc = PreprocessFileController()
+        return_data['proprocess_index'] = pfc.saveProcessFile(pf)
 
-        # print(self.normalize_data_frame)
+        print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
         self.normalize_data_frame.to_csv(output_path, index=False, encoding='utf-8')
 

@@ -25,3 +25,15 @@ class PreprocessFileController:
         finally:
             dbc.close()
             return val
+
+    def getMaximumValue(self):
+        dbc = self.getDBConnection()
+        try:
+            with dbc.cursor() as cursor:
+                sql = "SELECT * FROM `preprocess_file` order by `id` desc limit 1"
+                cursor.execute(sql)
+                val = cursor.fetchone()['id']
+                dbc.commit()
+        finally:
+            dbc.close()
+            return val
