@@ -81,31 +81,54 @@ class PriceGapStatic:
         return self.attributes
 
     #Regular time interval consecutive price gap
-    def get_regular_gap_chunks(self,order,row_val):
-        # const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
+    # def get_regular_gap_chunks(self,order,row_val):
+    #     # const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
+    #     temp_trasact_time = DUp.parse(order.transact_time)
+    #     for i in range(0, len(self.regular_list), 2):
+    #         if (temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i + 1]):
+    #             # if (self.temp_time!=0):
+    #             #     time_gap = temp_trasact_time - self.temp_time;
+    #             #     if (time_gap<=const_time_gap):
+    #             if(self.window.isWindowLimitReach(order=order)==False):
+    #                 self.get_calculation_first(order=order)
+    #                 if (self.temp_time==0):
+    #                     self.temp_time = temp_trasact_time
+    #             else:
+    #                 print(self.attributes)
+    #                 self.get_calculation_first(order=order)
+    #                 self.normalize_df()
+    #                 self.count=self.count+1
+    #                 self.write_csv(count=self.count,row_val=row_val)
+    #                 self.temp_time=0
+    #                 #self.first_order = None;
+    #                 self.attributes=DataFrame()
+    #         # elif (self.temp_time==0):
+    #         #     self.temp_time = temp_trasact_time
+    #         #     self.get_calculation_first(order=order)
+    def get_regular_gap_chunks(self, order, time_delta,row_val):
+        const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
         temp_trasact_time = DUp.parse(order.transact_time)
         for i in range(0, len(self.regular_list), 2):
-            if (temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i + 1]):
-                # if (self.temp_time!=0):
-                #     time_gap = temp_trasact_time - self.temp_time;
-                #     if (time_gap<=const_time_gap):
-                if(self.window.isWindowLimitReach(order=order)==False):
-                    self.get_calculation_first(order=order)
-                    if (self.temp_time==0):
+            if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
+                if (self.temp_time != 0):
+                    time_gap = temp_trasact_time - self.temp_time;
+                    if (time_gap <= const_time_gap):
+                        self.get_calculation(order=order)
+                    else:
+                        print(self.attributes)
+                        self.get_calculation(order=order)
+                        self.normalize_df()
+                        self.count = self.count + 1
+                        self.write_csv(count=self.count,row_val=row_val)
+                        self.temp_time = 0
+                        self.first_order = None;
+                        self.attributes = DataFrame()
+                    if (self.temp_time == 0):
                         self.temp_time = temp_trasact_time
-                else:
-                    print(self.attributes)
-                    self.get_calculation_first(order=order)
-                    self.normalize_df()
-                    self.count=self.count+1
-                    self.write_csv(count=self.count,row_val=row_val)
-                    self.temp_time=0
-                    #self.first_order = None;
-                    self.attributes=DataFrame()
-            # elif (self.temp_time==0):
-            #     self.temp_time = temp_trasact_time
-            #     self.get_calculation_first(order=order)
 
+                elif (self.temp_time == 0):
+                    self.temp_time = temp_trasact_time
+                    self.get_calculation(order=order)
 
     def normalize_df(self):
         mean_price_gap=self.attributes['price_gap'].mean()

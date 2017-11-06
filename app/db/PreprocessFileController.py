@@ -10,6 +10,7 @@ class PreprocessFileController:
 
     def saveProcessFile(self, process_file):
         dbc = self.getDBConnection()
+        val=0
         try:
             with dbc.cursor() as cursor:
                 sql = "INSERT INTO preprocess_file (input_filename, uploaded_time, last_process_start, last_process_end, output_filename) VALUES (%s, %s, %s, %s, %s)"
@@ -20,6 +21,7 @@ class PreprocessFileController:
 
                 sql = "SELECT * FROM `preprocess_file` order by `id` desc limit 1"
                 cursor.execute(sql)
+
                 val = cursor.fetchone()['id']
                 dbc.commit()
         finally:
