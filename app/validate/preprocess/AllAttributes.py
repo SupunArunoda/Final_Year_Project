@@ -85,7 +85,7 @@ class AllAttribute:
                                          encoding='utf-8')
         self.price_data_frame.to_csv(output_path+str(row_val)+"_price_vol.csv", index=False,
                                          encoding='utf-8')
-        self.entropy_data_frame.to_csv(output_path + row_val + "_entropy_values.csv", index=False,
+        self.entropy_data_frame.to_csv(output_path+str(row_val)+"_entropy.csv", index=False,
                                      encoding='utf-8')
         # print(self.entropy_data_frame)
         return_data['total_rows'] = len(data)

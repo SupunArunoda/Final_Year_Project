@@ -22,7 +22,7 @@ def get_data():
         return_data['files_count'] = len(fileslist)
         return_data['max_anomalous_file'] = max_anomalous_file
 
-        read_messages = read_csv('app/output/' + str(id) + '_entropy_20.csv', header=None)
+        read_messages = read_csv('app/output/' + str(id) + '_entropy.csv', header=None)
         read_messages.columns = ['entropy_exec_type', 'entropy_side', 'time_index']
         data = read_messages
 
@@ -49,7 +49,7 @@ def select_data():
 
         read_messages = read_csv('app/output/' + str(id) + '_price_gap_regular_' + str(file_number) + '_all.csv',
                                  header=None)
-        read_messages.columns = ['price_gap', 'time_index', 'nom_price_gap']
+        read_messages.columns = ['price_gap', 'time_index', 'nom_price_gap','std_price_gap']
         data = read_messages
 
         return_data = {}

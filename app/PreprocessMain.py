@@ -44,8 +44,8 @@ def process():
 
         if (window_type == 'time'):
             window_size = window_size*60
-        else:
-            window_size = window_size
+        elif(window_type == 'order'):
+            window_size=window_size
 
         all_attributes=AllAttribute()
         index=all_attributes.run(message_file=message_dataframe,session_file=session_dataframe,type=window_type,size=window_size)
