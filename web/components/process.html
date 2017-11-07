@@ -130,21 +130,23 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" ng-show="vm.orderbook_simulation == true">
             <div class="col-md-12">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Orderbook Simulation</h3>
+                        <h3 class="box-title">Orderbook</h3>
                     </div>
                     <div class="box-body">
                         <div ng-show="vm.isOrderBookLoaded == true">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-3">
-                                        at Timeasdkbasd
+                                        at Time {{ vm.current_orderbook_time.time_point }}
                                     </div>
                                     <div class="col-md-9">
-                                        <input name="weight" type="range" min="100" max="500" step="10"/>
+                                        <input data-ng-model="vm.time_point" type="range" min="0"
+                                               data-ng-change="vm.updateOrderBook()"
+                                               max="{{ vm.orderbook_data.time_points_count - 1 }}" step="1"/>
                                     </div>
                                 </div>
                             </div>
@@ -156,42 +158,12 @@
                                         <tr>
                                             <th style="width: 10px">#</th>
                                             <th>Buy</th>
-                                            <th>Quantity</th>
-                                            <th style="width: 10px">#</th>
                                             <th>Sell</th>
-                                            <th>Quantity</th>
                                         </tr>
-                                        <tr>
-                                            <td>1.</td>
-                                            <td>Update software</td>
-                                            <td>Update software</td>
-                                            <td>1.</td>
-                                            <td>Update software</td>
-                                            <td>Update software</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2.</td>
-                                            <td>Clean database</td>
-                                            <td>Clean database</td>
-                                            <td>2.</td>
-                                            <td>Clean database</td>
-                                            <td>Clean database</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3.</td>
-                                            <td>Cron job running</td>
-                                            <td>Cron job running</td>
-                                            <td>3.</td>
-                                            <td>Cron job running</td>
-                                            <td>Cron job running</td>
-                                        </tr>
-                                        <tr>
-                                            <td>4.</td>
-                                            <td>Fix and squish bugs</td>
-                                            <td>Fix and squish bugs</td>
-                                            <td>4.</td>
-                                            <td>Fix and squish bugs</td>
-                                            <td>Fix and squish bugs</td>
+                                        <tr ng-repeat="data in vm.buy_points">
+                                            <td>{{ $index + 1}}.</td>
+                                            <td>{{ vm.buy_points[$index] }}</td>
+                                            <td>{{ vm.sell_points[$index] }}</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -199,7 +171,7 @@
                             </div>
                         </div>
                         <div ng-show="vm.isOrderBookLoaded == false">
-                            Orderbook Simuating...
+                            Orderbook Simulating...
                         </div>
                     </div>
                 </div>

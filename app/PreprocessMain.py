@@ -1,5 +1,8 @@
+from docutils.nodes import target
+
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
+from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.window.TimeWindow import TimeWindow
 
@@ -13,6 +16,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 import sys
 from werkzeug.utils import secure_filename
 import json
+from threading import Thread
 
 # import plotly.plotly as py
 
@@ -20,7 +24,16 @@ import json
 import plotly.graph_objs as go
 from plotly.offline.offline import _plot_html
 
+from app.validate.preprocess.OrderbookSimulationTest import OrderbookSimulationTest
+
 preprocess_main = Blueprint('preprocess_main', __name__, template_folder='templates')
+
+
+def orderbook_thread(message_file, session_file):
+    order_sim = OrderbookSimulationTest()
+    window = TimeWindow(time_delta=1200)
+    order_sim.run_orderbook_simulation(message_file=message_file, session_file=session_file, no_of_lines=10000,
+                                       window=window)
 
 
 @preprocess_main.route('/process', methods=['GET', 'POST'])
@@ -40,6 +53,10 @@ def process():
             window = EventWindow(no_of_events=window_size)
 
         ex_type_based = ExecutionTypeTest()
+
+        if (data['orderbook_simulation'] == True):
+            Thread(target=orderbook_thread, args=[message_file, session_file])
+
         index = ex_type_based.run_execution_type_static(message_file=message_file,
                                                         session_file=session_file, no_of_lines=0,
                                                         time_delta=420, window=window)

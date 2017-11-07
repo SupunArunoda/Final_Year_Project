@@ -52,10 +52,24 @@ def select_data():
         read_messages.columns = ['price_gap', 'time_index', 'nom_price_gap']
         data = read_messages
 
+        price_gap_data = {}
+
+        price_gap_data['price_gap'] = list(data['price_gap'])[1:]
+        price_gap_data['time_index'] = list(data['time_index'])[1:]
+        price_gap_data['nom_price_gap'] = list(data['nom_price_gap'])[1:]
+
         return_data = {}
+        return_data['price_gap_data'] = price_gap_data
 
-        return_data['price_gap'] = list(data['price_gap'])[1:]
-        return_data['time_index'] = list(data['time_index'])[1:]
-        return_data['nom_price_gap'] = list(data['nom_price_gap'])[1:]
+        f = 'app/output/orderbook_simulation_' + str(file_number) + '.csv'
+        if (os.path.exists(f)):
+            read_messages = read_csv(f, header=None)
+            read_messages.columns = ['best_ask', 'best_bid', 'time_index', 'top_buy_price_points',
+                                     'top_sell_price_points']
+            orderbook_data = read_messages.values[1:].tolist()
+        else:
+            orderbook_data = None
 
-        return json.dumps(return_data);
+        return_data['orderbook_data'] = orderbook_data
+
+        return json.dumps(return_data)

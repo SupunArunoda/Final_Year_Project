@@ -195,7 +195,8 @@
                         file_name: file.name,
                         type: vm.type,
                         window: window,
-                        save_information: vm.saveInformation
+                        save_information: vm.saveInformation,
+                        orderbook_simulation: vm.orderbookSimulation
                     };
 
                     webservice.call('/preprocess_main/process', 'post', JSON.stringify(data)).then(function (response) {
@@ -203,7 +204,7 @@
 
                         console.log(response.data);
 
-                        // $location.path('/process/' + response.data.proprocess_index);
+                        // $location.path('/process/' + response.data.preprocess_index);
                         $location.path('/process/89').search({
                             orderbook_simulation: vm.orderbookSimulation
                         });

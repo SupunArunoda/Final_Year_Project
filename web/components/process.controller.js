@@ -14,12 +14,14 @@
         vm.isResultVisible = false;
         vm.onEntropyHover = false;
         vm.isOrderBookLoaded = false;
+        vm.orderbook_simulation = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
         vm.changeGraph = changeGraph;
         vm.getPreviousWindow = getPreviousWindow;
         vm.getNextWindow = getNextWindow;
+        vm.updateOrderBook = updateOrderBook;
 
         console.log("Process Controller");
 
@@ -29,21 +31,19 @@
         vm.local_minima_list = [];
         vm.current_file = 0;
         vm.files_range = [];
+        vm.time_point = 0;
+        vm.current_orderbook_time = '';
+        vm.buy_points = [];
+        vm.sell_points = [];
+
 
         initialize();
 
         function initialize() {
-            var os = $location.search().orderbook_simulation;
 
-            if (os == "true") {
-                vm.isOrderBookLoaded = true;
-                // webservice.call('/process_main/simulate_orderbook', 'post').then(function () {
-                setTimeout(function () {
-                    alert("Hello");
-                }, 10000);
-                // });
+            if ($location.search().orderbook_simulation == "true") {
+                vm.orderbook_simulation = true;
             }
-
             vm.loadData(vm.id);
         }
 
@@ -101,7 +101,8 @@
                 vm.isLoaderVisible = false;
                 vm.isResultVisible = true;
 
-                createAttributeGraph(response.data, file_number);
+                createAttributeGraph(response.data.price_gap_data, file_number);
+                updateOrderbookTable(response.data.orderbook_data)
             });
         }
 
@@ -266,11 +267,46 @@
             vm.isGraphLoaderVisible = false;
         }
 
+        function updateOrderbookTable(values) {
+            console.log(values);
+
+            if (values == null) {
+                vm.isOrderBookLoaded = false;
+            } else {
+                vm.orderbook_data = [];
+
+                angular.forEach(values, function (value, key) {
+                    var bp = value[3].split(",");
+                    var sp = value[4].split(",");
+
+                    vm.orderbook_data.push({
+                        time_point: value[2].split("000$$")[0],
+                        buy_points: bp.slice(0, bp.length - 1),
+                        sell_points: sp.slice(0, bp.length - 1)
+                    });
+                });
+                vm.orderbook_data.time_points_count = Object.keys(vm.orderbook_data).length;
+                vm.current_orderbook_time = vm.orderbook_data[0];
+                vm.buy_points = vm.orderbook_data[0].buy_points;
+                vm.sell_points = vm.orderbook_data[0].sell_points;
+
+                vm.isOrderBookLoaded = true;
+            }
+
+        }
+
         function updateFilesRange(n) {
             vm.files_range = [];
             for (var i = 1; i <= n; i++) {
                 vm.files_range.push(i);
             }
+        }
+
+        function updateOrderBook() {
+            vm.current_orderbook_time = vm.orderbook_data[vm.time_point];
+
+            vm.buy_points = vm.orderbook_data[vm.time_point].buy_points;
+            vm.sell_points = vm.orderbook_data[vm.time_point].sell_points;
         }
     }
 })();
