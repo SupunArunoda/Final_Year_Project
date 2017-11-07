@@ -204,7 +204,7 @@
                         console.log(response.data);
 
                         // $location.path('/process/' + response.data.proprocess_index);
-                        $location.path('/process/89').search({
+                        $location.path('/process/' + response.data.proprocess_index).search({
                             orderbook_simulation: vm.orderbookSimulation
                         });
                     });

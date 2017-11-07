@@ -66,7 +66,7 @@ class AllAttribute:
                 price_gap.get_regular_gap_chunks(order=order,time_delta=size,row_val=row_val)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        input_file = message_file
+        input_file = "app/data/data.csv"
         output_file = output_path
         pf = PreprocessFile(input_file=input_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
                             last_process_end=last_process_end, output_file=output_file)
@@ -75,9 +75,9 @@ class AllAttribute:
 
         self.normalize_price()
         self.normalize_exe_type()
-        self.exe_type_data_frame.to_csv(output_path+row_val+"_exe_type.csv", index=False,
+        self.exe_type_data_frame.to_csv(output_path+str(row_val)+"_exe_type.csv", index=False,
                                          encoding='utf-8')
-        self.price_data_frame.to_csv(output_path+row_val+"_price_vol.csv", index=False,
+        self.price_data_frame.to_csv(output_path+str(row_val)+"_price_vol.csv", index=False,
                                          encoding='utf-8')
         return_data['total_rows'] = len(data)
         return return_data
