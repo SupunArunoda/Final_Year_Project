@@ -9,6 +9,7 @@ from app.preprocess.window.TimeWindow import TimeWindow
 from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.static.ExecutionTypeStatic import ExecutionTypeStatic
 from app.preprocess.static.PriceGapStatic import PriceGapStatic
+from app.preprocess.static.Entropy import Entropy
 import numpy as np
 from time import gmtime, strftime
 
@@ -16,6 +17,7 @@ class AllAttribute:
     def __init__(self):
         self.price_data_frame = DataFrame()
         self.exe_type_data_frame=DataFrame()
+        self.entropy_data_frame=DataFrame()
 
     def run(self, message_file, session_file,type,size):
 
@@ -30,13 +32,16 @@ class AllAttribute:
             price_window=TimeWindow(time_delta=size)
             ex_type_window=TimeWindow(time_delta=size)
             price_gap_window=TimeWindow(time_delta=size)
+            entropy_window=TimeWindow(time_delta=size)
         else:
             price_window = EventWindow(no_of_events=size)
             ex_type_window = EventWindow(no_of_events=size)
             price_gap_window = EventWindow(no_of_events=size)
+            entropy_window = EventWindow(no_of_events=size)
         price_volume = Window(session_file=session_file,window=price_window)
         exe_type=ExecutionTypeStatic(session_file=session_file,window=ex_type_window)
         price_gap=PriceGapStatic(session_file=session_file,window=price_gap_window)
+        entropy = Entropy(session_file=session_file,window=entropy_window)
 
         return_data = {}
         pfc = PreprocessFileController()
@@ -64,6 +69,7 @@ class AllAttribute:
                 self.price_data_frame = price_volume.get_time_frame(order=order)
                 self.exe_type_data_frame=exe_type.get_time_frame(order=order)
                 price_gap.get_regular_gap_chunks(order=order,time_delta=size,row_val=row_val)
+                self.entropy_data_frame = entropy.get_entropy(order=order)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = message_file
@@ -79,6 +85,9 @@ class AllAttribute:
                                          encoding='utf-8')
         self.price_data_frame.to_csv(output_path+row_val+"_price_vol.csv", index=False,
                                          encoding='utf-8')
+        self.entropy_data_frame.to_csv(output_path + row_val + "_entropy_values.csv", index=False,
+                                     encoding='utf-8')
+        # print(self.entropy_data_frame)
         return_data['total_rows'] = len(data)
         return return_data
 
