@@ -12,7 +12,7 @@ class ExecutionTypeTest:
     def __init__(self):
         self.normalize_data_frame = DataFrame()
 
-    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta, window):
+    def run_execution_type_static(self, message_file, session_file, no_of_lines, time_delta ,window):
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
         output_path = "app/output/ex_type_static_normalize.csv"
@@ -32,10 +32,6 @@ class ExecutionTypeTest:
         return_data['ammend_orders_count'] = 0
         return_data['cancel_orders_count'] = 0
         return_data['execute_orders_count'] = 0
-        # return_data['new_orders_count'] = 0
-        # return_data['ammend_orders_count'] = 0
-        # return_data['cancel_orders_count'] = 0
-        # return_data['execute_orders_count'] = 0
 
         for index, order_row in data.iterrows():
             order_id = order_row['order_id']
@@ -66,14 +62,6 @@ class ExecutionTypeTest:
                 return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
             if order_row['execution_type'] == 15:
                 return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
-            # if order_row['execution_type'] == 0:
-            #     return_data['new_orders_count'] = return_data['new_orders_count'] + 1
-            # if order_row['execution_type'] == 4:
-            #     return_data['cancel_orders_count'] = return_data['cancel_orders_count'] + 1
-            # if order_row['execution_type'] == 5:
-            #     return_data['ammend_orders_count'] = return_data['ammend_orders_count'] + 1
-            # if order_row['execution_type'] == 15:
-            #     return_data['execute_orders_count'] = return_data['execute_orders_count'] + 1
 
             if index == no_of_lines and no_of_lines != 0:
                 break
@@ -86,10 +74,11 @@ class ExecutionTypeTest:
         pfc = PreprocessFileController()
         return_data['proprocess_index'] = pfc.saveProcessFile(pf)
 
+        print(self.normalize_data_frame)
         self.normalize_df(writable_df=self.normalize_data_frame)
         self.normalize_data_frame.to_csv(output_path, index=False, encoding='utf-8')
 
-        # return_data['total_rows'] = len(data)
+        return_data['total_rows'] = len(data)
         return return_data
 
     def normalize_df(self, writable_df):

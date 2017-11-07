@@ -1,8 +1,8 @@
+import sys
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 
-from app.preprocess.window.TimeWindow import TimeWindow
-from app.validate.preprocess.FileValidate import FileValidate
+from app.validate.preprocess.AllAttributes import AllAttribute
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 #from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
@@ -14,12 +14,26 @@ import pandas as pd
 #from validate.model.Kmeans import KMeans
 from app.validate.preprocess.OrderbookSimulationTest import OrderbookSimulationTest
 
-message_file = 'D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/data/data.csv'
-session_file='D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/data/sessions.csv'
+message_file = 'F:/Hishara/FYP/Final_Year_Project/app/data/data.csv'
+session_file='F:/Hishara/FYP/Final_Year_Project/app/data/sessions.csv'
 
-filevalidate=FileValidate()
-filevalidate.getDataValidate(data_file=message_file)
-filevalidate.getSessionValidate(session_file=session_file)
+message_dataframe=pd.read_csv(message_file)
+
+session_dataframe= pd.read_csv(session_file, header=None)
+session_dataframe.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name','order_book_id']
+
+all_attributes = AllAttribute()
+index = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type='time',
+                           size=1200)
+
+# filevalidate=FileValidate(message_file=message_file,session_file=session_file)
+# data_prob=filevalidate.getDataValidate()
+# data_sess=filevalidate.getSessionValidate()
+# print(data_prob,data_sess)
+# window=TimeWindow(time_delta=300)
+# allattributes=AllAttribute()
+# allattributes.run(message_file=message_file,session_file=session_file,type="time",size=1200)
+
 # time_framed_file='./output/time_framed_data.csv'
 # regular_file = './data/price_gap_regular_norm.csv'
 
@@ -42,9 +56,9 @@ filevalidate.getSessionValidate(session_file=session_file)
 # orderbook=OrderbookAttr()
 # orderbook.run_orderbook(message_file=message_file,session_file=session_file,no_of_lines=2000,time_delta=420)
 
-ex_type_based=ExecutionTypeTest()
-window=TimeWindow(time_delta=1200)
-ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0, time_delta=1200,window=window)
+# ex_type_based=ExecutionTypeTest()
+# window=TimeWindow(time_delta=1200)
+# ex_type_based.run_execution_type_static(message_file=message_file,session_file=session_file,no_of_lines=0, time_delta=1200,window=window)
 
 
 # order_sim=OrderbookSimulationTest()

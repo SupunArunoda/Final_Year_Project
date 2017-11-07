@@ -10,7 +10,7 @@ from app.preprocess.window.TimeWindow import TimeWindow
 class Window:
 
 
-    def __init__(self,session_file):
+    def __init__(self,session_file,window):
 
         self.attributes = DataFrame()
         self.temp_time=0;
@@ -23,10 +23,10 @@ class Window:
         self.volume_average_list = []
         self.count_order_volume_list = [[0 for _ in range(2)] for _ in range(3)]
 
-        self.session = read_csv(session_file)
+        self.session = session_file
         self.regular_list=self.get_regular_time()
 
-        self.window = TimeWindow(time_delta=1200)
+        self.window = window;
 
 
     def get_regular_time(self):
@@ -39,53 +39,7 @@ class Window:
                 count+=1
         return reg_list
 
-    # def get_time_frame(self,order,time_delta):
-    #     const_time_gap=datetime.timedelta(0, time_delta)#set time window value
-    #     temp_trasact_time=DUp.parse(order.transact_time)
-    #     for i in range(0,len(self.regular_list),2):
-    #         if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
-    #             if(self.temp_time!=0):
-    #                 time_gap=temp_trasact_time-self.temp_time;
-    #                 if(time_gap<=const_time_gap):
-    #                     self.check_order(order=order)
-    #                 else:
-    #                     self.check_order(order=order)
-    #
-    #                     index=str(self.temp_time)+str('$$')+str(order.transact_time)
-    #                     self.volume_average_list.append(index)
-    #                     self.price_average_list.append(index)
-    #                     self.get_average_volume()
-    #                     self.get_average_price()
-    #                     self.attributes = self.attributes.append(DataFrame(
-    #                         {'time_index_volume': self.volume_average_list[0],
-    #                          'new_order_buy_volume': self.volume_average_list[1],
-    #                          'new_order_sell_volume': self.volume_average_list[2],
-    #                          'cancel_order_buy_volume': self.volume_average_list[3],
-    #                          'cancel_order_sell_volume': self.volume_average_list[4],
-    #                          'execute_order_buy_volume': self.volume_average_list[5],
-    #                          'execute_order_sell_volume': self.volume_average_list[6],
-    #
-    #                          'new_order_buy_price': self.price_average_list[1],
-    #                          'new_order_sell_price': self.price_average_list[2],
-    #                          'cancel_order_buy_price': self.price_average_list[3],
-    #                          'cancel_order_sell_price': self.price_average_list[4],
-    #                          'execute_order_buy_price': self.price_average_list[5],
-    #                          'execute_order_sell_price': self.price_average_list[6]
-    #                          }, index=[0]), ignore_index=True);
-    #
-    #                     self.remove_values()
-    #                     self.temp_time=0
-    #                 if(self.temp_time==0):
-    #                     self.temp_time = temp_trasact_time
-    #
-    #             elif(self.temp_time==0):
-    #                 self.temp_time=temp_trasact_time
-    #                 self.check_order(order=order)
-    #
-    #     return self.attributes;
-
-
-    def get_time_frame(self,order,time_delta):
+    def get_time_frame(self,order):
         temp_trasact_time=DUp.parse(order.transact_time)
         for i in range(0,len(self.regular_list),2):
             if(temp_trasact_time>=self.regular_list[i] and temp_trasact_time<=self.regular_list[i+1]):
@@ -101,7 +55,7 @@ class Window:
                     self.get_average_volume()
                     self.get_average_price()
                     self.attributes = self.attributes.append(DataFrame(
-                        {'time_index_volume': self.volume_average_list[0],
+                        {'time_index': self.volume_average_list[0],
                          'new_order_buy_volume': self.volume_average_list[1],
                          'new_order_sell_volume': self.volume_average_list[2],
                          'cancel_order_buy_volume': self.volume_average_list[3],

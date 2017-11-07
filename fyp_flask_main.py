@@ -5,7 +5,7 @@ from app.PreprocessMain import preprocess_main
 from app.ProcessMain import process_main
 from flask_cors import CORS
 
-import pymysql
+# import pymysql
 
 app = Flask(__name__)
 CORS(app)
