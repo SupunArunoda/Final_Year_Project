@@ -68,7 +68,7 @@ class AllAttribute:
             if order.value>0:
                 self.price_data_frame = price_volume.get_time_frame(order=order)
                 self.exe_type_data_frame=exe_type.get_time_frame(order=order)
-                price_gap.get_regular_gap_chunks(order=order,time_delta=size,row_val=row_val)
+                price_gap.get_regular_gap_chunks(order=order,row_val=row_val)
                 self.entropy_data_frame = entropy.get_entropy(order=order)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
