@@ -15,13 +15,10 @@ def get_data():
         data = json.loads(request.data.decode('utf-8'))
         id = data['id']
 
-        # max_anomalous_file = 12
-
         fileslist = fnmatch.filter(os.listdir('app/output/'), str(id) + '_price_gap_regular_*.csv')
 
         return_data = {}
         return_data['files_count'] = len(fileslist)
-        # return_data['max_anomalous_file'] = max_anomalous_file
 
         read_messages = read_csv('app/output/' + str(id) + '_entropy.csv', header=None)
         read_messages.columns = ['entropy_exec_type', 'entropy_side', 'time_index']
@@ -61,7 +58,7 @@ def select_data():
 
         read_messages = read_csv('app/output/' + str(id) + '_price_gap_regular_' + str(file_number) + '_all.csv',
                                  header=None)
-        read_messages.columns = ['end_broker','price_gap','start_broker','time_index', 'nom_price_gap']
+        read_messages.columns = ['end_broker', 'price_gap', 'start_broker', 'time_index', 'nom_price_gap']
         data = read_messages
 
         price_gap_data = {}
@@ -86,3 +83,14 @@ def select_data():
         return_data['orderbook_data'] = orderbook_data
 
         return json.dumps(return_data)
+
+
+@process_main.route('/get_broker_data', methods=['GET', 'POST'])
+def get_broker_data():
+    if (request.method == 'POST'):
+        data = json.loads(request.data.decode('utf-8'))
+        broker_id = data['broker_id']
+
+        print('broker_id: ' + broker_id)
+
+        return 'broker data for: ' + broker_id
