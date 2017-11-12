@@ -119,6 +119,22 @@
                                             <div ng-show="vm.isGraphLoaderVisible == false">
                                                 <div id="price-gap-linechart" style="height: 500px;"></div>
                                             </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-6" id="div-one">
+                                                        Price Gap:
+                                                        {{vm.clicked_price_gap_value}}<br/>
+                                                        From: {{vm.clicked_price_gap_from}} To:
+                                                        {{vm.clicked_price_gap_to}}
+                                                    </div>
+                                                    <div class="col-md-6" id="div-two">
+                                                        <br/>
+                                                        Brokers: {{vm.clicked_first_broker}}
+                                                        {{vm.clicked_second_broker}}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>

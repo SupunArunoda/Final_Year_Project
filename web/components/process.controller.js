@@ -5,9 +5,9 @@
         .module('adist')
         .controller('ProcessController', ProcessController);
 
-    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location'];
+    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location', '$scope'];
 
-    function ProcessController(webservice, $routeParams, $rootScope, $location) {
+    function ProcessController(webservice, $routeParams, $rootScope, $location, $scope) {
         var vm = this;
 
         vm.isGraphLoaderVisible = true;
@@ -15,6 +15,7 @@
         vm.onEntropyHover = false;
         vm.isOrderBookLoaded = false;
         vm.orderbook_simulation = false;
+        vm.price_gap_details_show = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
@@ -36,6 +37,11 @@
         vm.buy_points = [];
         vm.sell_points = [];
 
+        vm.clicked_price_gap_value = 'ss';
+        vm.clicked_price_gap_from = '';
+        vm.clicked_price_gap_to = '';
+        vm.clicked_first_broker = '';
+        vm.clicked_second_broker = '';
 
         initialize();
 
@@ -189,6 +195,7 @@
             var chart = AmCharts.makeChart("price-gap-linechart", {
                 "type": "serial",
                 "theme": "light",
+                "showBalloon": false,
                 "marginRight": 40,
                 "marginLeft": 40,
                 "autoMarginOffset": 20,
@@ -261,10 +268,24 @@
                 "export": {
                     "enabled": true
                 },
-                "dataProvider": dataset
+                "dataProvider": dataset,
+                "listeners": [{
+                    "event": "clickGraphItem",
+                    "method": (function (e) {
+                        vm.clicked_price_gap_value = values.nom_price_gap[e.index];
+                        $scope.$apply();
+                    }).bind(vm)
+                }]
             });
 
+            // chart.addListener("clickGraphItem", priceGapClickEvent().bind(this));
+
             vm.isGraphLoaderVisible = false;
+        }
+
+        function priceGapClickEvent(e) {
+            console.log("asdbhasd");
+            console.log(e);
         }
 
         function updateOrderbookTable(values) {
