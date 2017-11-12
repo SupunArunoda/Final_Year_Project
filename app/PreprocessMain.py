@@ -45,33 +45,30 @@ def process():
         message_file = './app/data/' + data['file_name']
         session_file = './app/data/sessions.csv'
 
-        message_dataframe=read_csv(message_file)
+        message_dataframe = read_csv(message_file)
         print(message_dataframe.columns)
-        #message_dataframe.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time','execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size','order_id']
-        session_dataframe=read_csv(session_file, header=None)
+        # message_dataframe.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time','execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size','order_id']
+        session_dataframe = read_csv(session_file, header=None)
         print(session_dataframe.columns)
-        session_dataframe.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name','order_book_id']
+        session_dataframe.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name',
+                                     'order_book_id']
 
         window_type = data['type']
         window_size = int(data['window'])
 
         if (window_type == 'time'):
-            window_size = window_size*60
-        elif(window_type == 'order'):
-            window_size=window_size
+            window_size = window_size * 60
+        elif (window_type == 'order'):
+            window_size = window_size
 
-        ex_type_based = ExecutionTypeTest()
+        print(data['orderbook_simulation'])
 
         if (data['orderbook_simulation'] == True):
             Thread(target=orderbook_thread, args=[message_file, session_file])
 
-
-        all_attributes=AllAttribute()
-        index=all_attributes.run(message_file=message_dataframe,session_file=session_dataframe,type=window_type,size=window_size)
-        # ex_type_based = ExecutionTypeTest()
-        # index = ex_type_based.run_execution_type_static(message_file=message_file,
-        #                                                 session_file=session_file, no_of_lines=0,
-        #                                                 time_delta=420, window=window)
+        all_attributes = AllAttribute()
+        index = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
+                                   size=window_size)
 
         return json.dumps(index)
 
@@ -87,10 +84,10 @@ def set_session_information():
             file.save('./app/data/sessions.csv')
             file_path = './app/data/sessions.csv'
 
-            read_session = read_csv(file_path,header=None)
+            read_session = read_csv(file_path, header=None)
             print(read_session)
             read_session.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name',
-                                     'order_book_id']
+                                    'order_book_id']
             data = read_session
 
             sessions = data.values[1:]
