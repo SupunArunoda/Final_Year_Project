@@ -22,6 +22,8 @@ class PriceGapStatic:
         self.temp_time=0
         self.count=0
 
+        self.first_broker=None;
+        self.start_time=0
         self.anomaly_first_point=DUp.parse("2016-04-29 13:02:00")
         self.anomaly_second_point = DUp.parse("2016-04-29 13:22:00")
 
@@ -81,7 +83,6 @@ class PriceGapStatic:
         return self.attributes
 
     def get_regular_gap_chunks(self, order,row_val):
-        # const_time_gap = datetime.timedelta(0, time_delta)  # set time window value
         temp_trasact_time = DUp.parse(order.transact_time)
         for i in range(0, len(self.regular_list), 2):
             if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
@@ -105,11 +106,6 @@ class PriceGapStatic:
         mean_price_gap=self.attributes['price_gap'].mean()
         std_price_gap=self.attributes['price_gap'].values.std(ddof=1)
         self.attributes['nom_price_gap']=(self.attributes['price_gap']-mean_price_gap)/std_price_gap
-        self.attributes['std_price_gap'] = std_price_gap
-
-        # mean_time_gap = self.attributes['time_gap'].mean()
-        # std_time_gap = self.attributes['time_gap'].values.std(ddof=1)
-        # self.attributes['nom_time_gap'] = (self.attributes['time_gap'] - mean_time_gap) / std_time_gap
 
     def write_csv(self,count,row_val):
         self.attributes.to_csv("app/output/"+str(row_val)+"_price_gap_regular_"+str(count)+"_all.csv", index=False, encoding='utf-8')
@@ -121,6 +117,8 @@ class PriceGapStatic:
                     self.first_order=order.executed_value
                 else:
                     self.first_order = order.value
+                self.first_broker = order.broker_id
+                self.start_time = order.transact_time
             else:
                 if(order.execution_type==15):
                     price_gap = order.executed_value - self.first_order
@@ -128,10 +126,16 @@ class PriceGapStatic:
                 else:
                     price_gap = order.value - self.first_order
                     self.first_order = order.value
+                end_broker = order.broker_id
+                start_broker = self.first_broker
+                self.first_broker = order.broker_id
                 self.attributes = self.attributes.append(DataFrame({
-                'time_index': order.transact_time,
-                'price_gap': price_gap
+                'time_index': self.start_time+"$$"+order.transact_time,
+                'price_gap': price_gap,
+                    'start_broker':start_broker,
+                    'end_broker':end_broker
                     }, index=[0]), ignore_index=True);
+                self.start_time = order.transact_time
 
     def get_calculation_first(self, order):
         if (order.value > 0):
