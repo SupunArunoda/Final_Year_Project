@@ -5,9 +5,11 @@
         .module('adist')
         .controller('ProcessController', ProcessController);
 
-    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location'];
+    ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location', '$scope'];
 
-    function ProcessController(webservice, $routeParams, $rootScope, $location) {
+    function ProcessController(webservice, $routeParams, $rootScope, $location, $scope) {
+        console.log("Process Controller");
+
         var vm = this;
 
         vm.isGraphLoaderVisible = true;
@@ -15,6 +17,8 @@
         vm.onEntropyHover = false;
         vm.isOrderBookLoaded = false;
         vm.orderbook_simulation = false;
+        vm.price_gap_details_show = false;
+        vm.broker_details_show = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
@@ -22,6 +26,7 @@
         vm.getPreviousWindow = getPreviousWindow;
         vm.getNextWindow = getNextWindow;
         vm.updateOrderBook = updateOrderBook;
+        vm.showBrokerModel = showBrokerModel;
 
         console.log("Process Controller");
 
@@ -36,6 +41,13 @@
         vm.buy_points = [];
         vm.sell_points = [];
 
+        vm.clicked_price_gap_value = '';
+        vm.clicked_price_gap_from = '';
+        vm.clicked_price_gap_to = '';
+        vm.clicked_start_broker = '';
+        vm.clicked_end_broker = '';
+
+        vm.current_selected_broker = '';
 
         initialize();
 
@@ -89,6 +101,7 @@
 
         function selectData(file_number) {
             vm.isGraphLoaderVisible = true;
+            vm.price_gap_details_show = false;
 
             var data = {
                 id: vm.id,
@@ -103,6 +116,7 @@
 
                 createAttributeGraph(response.data.price_gap_data, file_number);
                 updateOrderbookTable(response.data.orderbook_data)
+
             });
         }
 
@@ -189,6 +203,7 @@
             var chart = AmCharts.makeChart("price-gap-linechart", {
                 "type": "serial",
                 "theme": "light",
+                "showBalloon": "false",
                 "marginRight": 40,
                 "marginLeft": 40,
                 "autoMarginOffset": 20,
@@ -261,10 +276,32 @@
                 "export": {
                     "enabled": true
                 },
-                "dataProvider": dataset
+                "dataProvider": dataset,
+                "listeners": [{
+                    "event": "clickGraphItem",
+                    "method": (function (e) {
+                        vm.clicked_price_gap_value = values.nom_price_gap[e.index];
+                        vm.clicked_start_broker = values.start_broker[e.index];
+                        vm.clicked_end_broker = values.end_broker[e.index];
+
+                        var clicked_price_gap_time = values.time_index[e.index].split("$$");
+                        vm.clicked_price_gap_from = clicked_price_gap_time[0];
+                        vm.clicked_price_gap_to = clicked_price_gap_time[1];
+
+                        vm.price_gap_details_show = true;
+                        $scope.$apply();
+                    }).bind(vm)
+                }]
             });
 
+            // chart.addListener("clickGraphItem", priceGapClickEvent().bind(this));
+
             vm.isGraphLoaderVisible = false;
+        }
+
+        function priceGapClickEvent(e) {
+            console.log("asdbhasd");
+            console.log(e);
         }
 
         function updateOrderbookTable(values) {
@@ -307,6 +344,28 @@
 
             vm.buy_points = vm.orderbook_data[vm.time_point].buy_points;
             vm.sell_points = vm.orderbook_data[vm.time_point].sell_points;
+        }
+
+        function showBrokerModel(broker_id) {
+            console.log(broker_id);
+
+            $('#broker-model').modal({
+                backdrop: 'static'
+            }).on('shown.bs.modal', function () {
+                vm.current_selected_broker = broker_id;
+                vm.broker_details_show = false;
+
+                var data = {
+                    broker_id: broker_id
+                };
+
+                webservice.call('/process_main/get_broker_data', 'post', JSON.stringify(data)).then(function (response) {
+                    console.log(response.data);
+
+
+                });
+                $scope.$apply();
+            }).show();
         }
     }
 })();
