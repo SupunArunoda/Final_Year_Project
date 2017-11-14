@@ -62,8 +62,8 @@ def process():
 
         ex_type_based = ExecutionTypeTest()
 
-        if (data['orderbook_simulation'] == True):
-            Thread(target=orderbook_thread, args=[message_file, session_file])
+        # if (data['orderbook_simulation'] == True):
+        #     Thread(target=orderbook_thread, args=[message_file, session_file])
 
 
         all_attributes=AllAttribute()
