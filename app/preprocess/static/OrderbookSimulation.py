@@ -69,7 +69,7 @@ class OrderbookSimulation:
 
                 else:
                     self.fileCounter += 1
-                    self.attributes.to_csv("./app/output/orderbook_simulation_" + str(self.fileCounter) + ".csv",
+                    self.attributes.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation_" + str(self.fileCounter) + ".csv",
                                            index=False,
                                            encoding='utf-8')
 
@@ -78,8 +78,8 @@ class OrderbookSimulation:
         return self.attributes;
 
     def check_order(self, order):
-        self.detailsList[0] += self.details[0]
-        self.detailsList[1] += self.details[1]
+        self.detailsList[0] = self.details[0]
+        self.detailsList[1] = self.details[1]
         self.detailsList[2] += self.details[2]
         self.detailsList[3] += self.details[3]
         self.detailsList[4] += 1

@@ -11,12 +11,12 @@ class OrderbookSimulationTest:
     def __init__(self):
         self.df = DataFrame()
 
-    def run_orderbook_simulation(self,message_file,session_file,no_of_lines, window):
+    def run_orderbook_simulation(self,message_file,session_file, window):
 
-        read_messages = read_csv(message_file, header=None)
-        read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
-                                 'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
-                                 'order_id']
+        read_messages = read_csv(message_file)
+        # read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
+        #                          'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
+        #                          'order_id']
 
         simulation=OrderbookSimulation(session_file=session_file,data_file=read_messages ,window=window)
         data=read_messages
@@ -41,8 +41,8 @@ class OrderbookSimulationTest:
                           , broker_id=broker_id, instrument_id=instrument_id)
 
             simulation.get_time_frame(order=order)
-            if index > no_of_lines:
-                break
+            # if index > no_of_lines:
+            #     break
 
         # print(df)
         # self.df.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation.csv", index=False,encoding='utf-8')

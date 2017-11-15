@@ -10,7 +10,7 @@ from dateutil import parser as DUp
 class PriceGapStatic:
 
 
-    def __init__(self,session_file,window):
+    def     __init__(self,session_file,window):
 
         self.attributes = DataFrame()
         self.first_order=None;
@@ -110,7 +110,7 @@ class PriceGapStatic:
     def write_csv(self,count,row_val):
         self.attributes.to_csv("app/output/"+str(row_val)+"_price_gap_regular_"+str(count)+"_all.csv", index=False, encoding='utf-8')
 
-    def get_calculation(self,order):
+    def  get_calculation(self,order):
         if(order.value>0):
             if (self.first_order==None):
                 if(order.execution_type==15):

@@ -1,6 +1,7 @@
 import sys
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
+from app.preprocess.window.TimeWindow import TimeWindow
 
 from app.validate.preprocess.AllAttributes import AllAttribute
 from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
@@ -22,9 +23,13 @@ message_dataframe=pd.read_csv(message_file)
 session_dataframe= pd.read_csv(session_file, header=None)
 session_dataframe.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name','order_book_id']
 
-all_attributes = AllAttribute()
-index = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type='time',
-                           size=1200)
+# all_attributes = AllAttribute()
+# index = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type='time',
+#                            size=1200)
+
+order_sim=OrderbookSimulationTest()
+window=TimeWindow(time_delta=1200)
+order_sim.run_orderbook_simulation(message_file=message_file,session_file=session_file,window=window)
 
 # filevalidate=FileValidate(message_file=message_file,session_file=session_file)
 # data_prob=filevalidate.getDataValidate()
