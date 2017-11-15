@@ -5,6 +5,7 @@ from app.orderbook.OrderBook import OrderBook
 from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.window.TimeWindow import TimeWindow
+from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 
 from app.validate.preprocess.OrderbookAttr import OrderbookAttr
 
@@ -58,6 +59,7 @@ def process():
 
         window_type = data['type']
         window_size = int(data['window'])
+        is_order_book=data['orderbook_simulation']
 
         if (window_type == 'time'):
             window_size = window_size * 60
@@ -67,12 +69,12 @@ def process():
         print(data['orderbook_simulation'])
         print(type(data['orderbook_simulation']))
 
-        if (data['orderbook_simulation'] == True):
-            Thread(target=orderbook_thread, args=[message_file, session_file,window_size,window_type])
+        # if (data['orderbook_simulation'] == True):
+        #     Thread(target=orderbook_thread, args=[message_file, session_file,window_size,window_type])
 
         all_attributes = AllAttribute()
         return_data = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
-                                   size=window_size)
+                                   size=window_size,is_order_book=is_order_book)
 
         # return_data= 3
         return json.dumps(return_data)

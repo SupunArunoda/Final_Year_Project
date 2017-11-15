@@ -10,6 +10,7 @@ from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.static.ExecutionTypeStatic import ExecutionTypeStatic
 from app.preprocess.static.PriceGapStatic import PriceGapStatic
 from app.preprocess.static.Entropy import Entropy
+from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 import numpy as np
 from time import gmtime, strftime
 
@@ -19,7 +20,7 @@ class AllAttribute:
         self.exe_type_data_frame=DataFrame()
         self.entropy_data_frame=DataFrame()
 
-    def run(self, message_file, session_file,type,size):
+    def run(self, message_file, session_file,type,size,is_order_book):
 
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         output_path = "app/output/"
@@ -42,6 +43,13 @@ class AllAttribute:
         exe_type=ExecutionTypeStatic(session_file=session_file,window=ex_type_window)
         price_gap=PriceGapStatic(session_file=session_file,window=price_gap_window)
         entropy = Entropy(session_file=session_file,window=entropy_window)
+
+        if(is_order_book and type=="time"):
+            order_book=TimeWindow(time_delta=size)
+        elif(is_order_book and type=="order"):
+            order_book =EventWindow(no_of_events=size)
+        if(is_order_book):
+            simulation = OrderbookSimulation(session_file=session_file, window=order_book)
 
         return_data = {}
         pfc = PreprocessFileController()
@@ -70,6 +78,7 @@ class AllAttribute:
                 self.exe_type_data_frame=exe_type.get_time_frame(order=order)
                 price_gap.get_regular_gap_chunks(order=order,row_val=row_val)
                 self.entropy_data_frame = entropy.get_entropy(order=order)
+                simulation.get_time_frame(order=order,row_val=row_val)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = "app/data/data.csv"

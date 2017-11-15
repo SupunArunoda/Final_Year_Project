@@ -9,7 +9,7 @@ from app.preprocess.window.TimeWindow import TimeWindow
 
 
 class OrderbookSimulation:
-    def __init__(self, session_file, data_file, window):
+    def __init__(self, session_file, window):
 
         self.attributes = DataFrame()
         self.fileCounter = 0
@@ -17,14 +17,14 @@ class OrderbookSimulation:
         self.volume_average_list = []
         self.detailsList = [0 for _ in range(7)]
 
-        self.session = read_csv(session_file)
+        self.session = session_file
         self.regular_list = self.get_regular_time()
         # self.window = TimeWindow(no_of_events=no_of_events)
         self.window = window
         self.smallWindow = TimeWindow(time_delta=30)
 
         # read_messages = read_csv(data_file, header=None)
-        self.orderbook = OrderBook(order_data=data_file)
+        self.orderbook = OrderBook()
         self.details = []
 
     def get_regular_time(self):
@@ -37,7 +37,7 @@ class OrderbookSimulation:
                 count += 1
         return reg_list
 
-    def get_time_frame(self, order):
+    def get_time_frame(self, order,row_val):
         self.details = self.orderbook.processOrder(order=order)
         # const_time_gap=datetime.timedelta(0, time_delta)#set time window value
         temp_trasact_time = DUp.parse(order.transact_time)
@@ -69,7 +69,7 @@ class OrderbookSimulation:
 
                 else:
                     self.fileCounter += 1
-                    self.attributes.to_csv("F:/Hishara/FYP/Final_Year_Project/app/output/orderbook_simulation_" + str(self.fileCounter) + ".csv",
+                    self.attributes.to_csv("app/output/"+str(row_val)+"_orderbook_simulation_" + str(self.fileCounter) + ".csv",
                                            index=False,
                                            encoding='utf-8')
 
