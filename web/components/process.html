@@ -19,7 +19,8 @@
                             <div class="col-md-6">
                             </div>
                             <div class="col-md-4">
-                                <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif alt="loading">
+                                <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif
+                                     alt="loading">
                             </div>
                         </div>
                     </div>
@@ -110,7 +111,8 @@
                                                 <div class="col-md-6">
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif alt="loading">
+                                                    <img class="pull-left" width="35" height="35"
+                                                         src=../images/Pulsing%20Loader.gif alt="loading">
                                                 </div>
                                             </div>
 
@@ -211,11 +213,31 @@
                         <div class="col-md-6">
                         </div>
                         <div class="col-md-4">
-                            <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif alt="loading">
+                            <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif
+                                 alt="loading">
                         </div>
                     </div>
-                    <div class="row" ng-show="vm.broker_details_show == true">
-                        Information Loading...
+                    <div ng-show="vm.broker_details_show == true">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    Total Number of trades: {{vm.broker_orders_count}}<br/>
+                                    <br/>
+                                    New orders: {{vm.broker_new_orders_count}}<br/>
+                                    Cancelled orders: {{vm.broker_cancel_orders_count}}<br/>
+                                    Ammended orders: {{vm.broker_ammend_orders_count}}<br/>
+                                    Executed orders: {{vm.broker_execute_orders_count}}<br/>
+                                </div>
+                                <div class="col-md-9">
+                                    <div id="broker-order-count-piechart" style="height: 200px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="broker-order-placement-graph" style="height: 400px"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

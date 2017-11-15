@@ -15,6 +15,7 @@ app.register_blueprint(process_main, url_prefix='/process_main')
 
 if __name__ == '__main__':
     app.run(debug=True)
+    print('ADIST Server Started...')
 
 
 @app.route('/')

@@ -30,11 +30,14 @@ from app.validate.preprocess.OrderbookSimulationTest import OrderbookSimulationT
 preprocess_main = Blueprint('preprocess_main', __name__, template_folder='templates')
 
 
-def orderbook_thread(message_file, session_file):
+def orderbook_thread(message_file, session_file,size,type):
     order_sim = OrderbookSimulationTest()
-    window = TimeWindow(time_delta=1200)
-    order_sim.run_orderbook_simulation(message_file=message_file, session_file=session_file, no_of_lines=10000,
-                                       window=window)
+    if (type == "time"):
+        order_book_window = TimeWindow(time_delta=size)
+    else:
+        order_book_window = EventWindow(no_of_events=size)
+    order_sim.run_orderbook_simulation(message_file=message_file, session_file=session_file,
+                                       window=order_book_window)
 
 
 @preprocess_main.route('/process', methods=['GET', 'POST'])
@@ -62,15 +65,17 @@ def process():
             window_size = window_size
 
         print(data['orderbook_simulation'])
+        print(type(data['orderbook_simulation']))
 
         if (data['orderbook_simulation'] == True):
-            Thread(target=orderbook_thread, args=[message_file, session_file])
+            Thread(target=orderbook_thread, args=[message_file, session_file,window_size,window_type])
 
         all_attributes = AllAttribute()
-        index = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
+        return_data = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
                                    size=window_size)
 
-        return json.dumps(index)
+        # return_data= 3
+        return json.dumps(return_data)
 
 
 @preprocess_main.route('/set_session_information', methods=['GET', 'POST'])
