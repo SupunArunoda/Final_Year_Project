@@ -91,6 +91,31 @@ def get_broker_data():
         data = json.loads(request.data.decode('utf-8'))
         broker_id = data['broker_id']
 
-        print('broker_id: ' + broker_id)
+        dataframe = read_csv('./app/data/data.csv')
 
-        return 'broker data for: ' + broker_id
+        data = dataframe.loc[dataframe['broker_id'] == broker_id]
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        print(data)
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+
+        return_data = {}
+        return_data['order_count'] = len(data)
+
+        return_data['orders'] = data.values[:].tolist()
+
+        order_types = {}
+        order_types['new'] = data.loc[data['execution_type'] == 0].values[:].tolist()
+        order_types['cancel'] = data.loc[data['execution_type'] == 4].values[:].tolist()
+        order_types['ammend'] = data.loc[data['execution_type'] == 5].values[:].tolist()
+        order_types['execute'] = data.loc[data['execution_type'] == 15].values[:].tolist()
+
+        order_types_count = {}
+        order_types_count['new'] = len(order_types['new'])
+        order_types_count['cancel'] = len(order_types['cancel'])
+        order_types_count['ammend'] = len(order_types['ammend'])
+        order_types_count['execute'] = len(order_types['execute'])
+
+        return_data['order_types'] = order_types
+        return_data['order_types_count'] = order_types_count
+
+        return json.dumps(return_data)
