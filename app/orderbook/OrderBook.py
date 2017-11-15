@@ -12,11 +12,9 @@ class OrderBook:
     sellOrdersDetails = {}
     indx = 0
 
-    def __init__(self, order_data):
-        self.order_d = order_data
-        columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
-                   'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
-        self.neworders = DataFrame(columns=columns)
+    def __init__(self):
+
+
         self.ordersObjectDetails = {}
         # self.window=OrderbookAttrStatic(session_file=session_file)
 
