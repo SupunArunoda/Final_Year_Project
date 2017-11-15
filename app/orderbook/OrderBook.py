@@ -13,8 +13,6 @@ class OrderBook:
     indx = 0
 
     def __init__(self):
-
-
         self.ordersObjectDetails = {}
         # self.window=OrderbookAttrStatic(session_file=session_file)
 
