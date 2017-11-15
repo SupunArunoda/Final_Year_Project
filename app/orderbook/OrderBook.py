@@ -13,10 +13,10 @@ class OrderBook:
     indx = 0
 
     def __init__(self, order_data):
-        self.order_d = order_data
-        columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
-                   'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
-        self.neworders = DataFrame(columns=columns)
+        # self.order_d = order_data
+        # columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time', 'execution_type',
+        #            'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size', 'order_id']
+        # self.neworders = DataFrame(columns=columns)
         self.ordersObjectDetails = {}
         # self.window=OrderbookAttrStatic(session_file=session_file)
 
@@ -33,10 +33,9 @@ class OrderBook:
         self.indx += 1
         if (order.value > 0):
 
-            # if len(self.buyOrders)>0 and len(self.sellOrders)>0 and self.indx>500:
-            #     if self.buyOrders[0] > self.sellOrders[0]:
-            #         print("new")
-            # time function here
+            # if self.indx>257:
+            #     # if self.buyOrders[0] > self.sellOrders[0]:
+            #     print("new")
 
             if order.execution_type == 0:
                 self.addNewOrder(order)
