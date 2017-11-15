@@ -19,6 +19,7 @@ class PriceGapStatic:
         self.first_sell_order = None;
         self.sell_attributes = DataFrame()
         self.buy_attributes = DataFrame()
+        self.all_attributes=DataFrame()
         self.temp_time=0
         self.count=0
 
@@ -83,11 +84,26 @@ class PriceGapStatic:
         return self.attributes
 
     def get_regular_gap_chunks(self, order,row_val):
+
         temp_trasact_time = DUp.parse(order.transact_time)
         for i in range(0, len(self.regular_list), 2):
             if (temp_trasact_time >= self.regular_list[i] and temp_trasact_time <= self.regular_list[i + 1]):
                 if (self.window.isWindowLimitReach(order=order) == False):
                     self.get_calculation(order=order)
+                    self.all_attributes = self.all_attributes.append(DataFrame(
+                        {'order_id': order.order_id,
+                         'visible_size': order.visible_size,
+                         'side': order.side,
+                         'total_qty': order.total_qty,
+                         'executed_qty': order.executed_qty,
+                         'order_qty': order.order_qty,
+                         'execution_type': order.execution_type,
+                         'transact_time': order.transact_time,
+                         'value': order.value,
+                         'executed_value': order.executed_value,
+                         'broker_id': order.broker_id,
+                         'instrument_id': order.instrument_id,
+                         }, index=[0]), ignore_index=True);
                     if (self.temp_time == 0):
                         self.temp_time = temp_trasact_time
                 else:
@@ -109,6 +125,8 @@ class PriceGapStatic:
 
     def write_csv(self,count,row_val):
         self.attributes.to_csv("app/output/"+str(row_val)+"_price_gap_regular_"+str(count)+"_all.csv", index=False, encoding='utf-8')
+        self.all_attributes.to_csv("app/output/" + str(row_val) + "_all_attributes_" + str(count) + ".csv",
+                               index=False, encoding='utf-8')
 
     def  get_calculation(self,order):
         if(order.value>0):
