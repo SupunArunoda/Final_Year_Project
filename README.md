@@ -30,3 +30,13 @@ Our approach is an automated system which only rely on stock market end of the d
 will be fetched into different machine learning techniques and identify which are the time frames
 with manipulative behavior. Apart from that, this tool supports visualization techniques to further
 analyze and identify whether the given frame can be a fraudulent time frame or not.
+
+### Members
+Supun Arunoda  
+Buddhi Vikasitha  
+Hishara Yasas  
+Nilanga Virajith  
+
+Supervisor - Dr. Dilum Bandara
+
+Department of Computer Science & Engineering, University of Moratuwa
