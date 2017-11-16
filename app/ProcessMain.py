@@ -121,11 +121,54 @@ def get_broker_data():
 
 
 @process_main.route('/get_timeframe_data', methods=['GET', 'POST'])
-def get_broker_data():
+def get_timeframe_data():
+    return_data = {}
+    allOrder = []
+    newOrder = []
+    ammendOrder = []
+    cancelOrder = []
+    executedOrder = []
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
-        file_id = data['file_id']
         id = data['id']
+        file_number = data['file_id']
 
+        read_messages = read_csv('app/output/' + str(id) + '_all_attributes_' + str(file_number) + '.csv',
+                                 header=None)
+        read_messages.columns = ['broker_id', 'executed_qty', 'executed_value', 'execution_type', 'instrument_id',
+                                 'order_id', 'order_qty', 'side', 'total_qty', 'transact_time', 'value', 'visible_size']
+        data = read_messages
 
-        # get timeframe data in file id in given id
+        order_types = {}
+        order_types['new'] = data.loc[data['execution_type'] == 0].values[:].tolist()
+        order_types['cancel'] = data.loc[data['execution_type'] == 4].values[:].tolist()
+        order_types['ammend'] = data.loc[data['execution_type'] == 5].values[:].tolist()
+        order_types['execute'] = data.loc[data['execution_type'] == 15].values[:].tolist()
+
+        order_types_count = {}
+        order_types_count['new'] = len(order_types['new'])
+        order_types_count['cancel'] = len(order_types['cancel'])
+        order_types_count['ammend'] = len(order_types['ammend'])
+        order_types_count['execute'] = len(order_types['execute'])
+
+        brokers = data['broker_id'].unique()
+
+        broker_details = {}
+
+        for i in range(len(brokers)):
+            allOrder.append(len(data.loc[data['broker_id'] == brokers[i]].values[:].tolist()))
+            newOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 0].values[:].tolist()))
+            cancelOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 4].values[:].tolist()))
+            ammendOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 5].values[:].tolist()))
+            executedOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 15].values[:].tolist()))
+
+        broker_details['broker_id'] = brokers['broker_id']
+        broker_details['all'] = allOrder
+        broker_details['new'] = newOrder
+        broker_details['cancel'] = cancelOrder
+        broker_details['ammend'] = ammendOrder
+        broker_details['execute'] = executedOrder
+
+        print(broker_details)
+
+        return json.dump(order_types_count)
