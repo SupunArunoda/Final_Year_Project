@@ -90,13 +90,12 @@ def get_broker_data():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
         broker_id = data['broker_id']
+        current_file = data['file_id']
+        id = data['id']
 
-        dataframe = read_csv('./app/data/data.csv')
+        dataframe = read_csv('./app/output/' + str(id) + '_all_attributes_' + str(current_file) + '.csv')
 
         data = dataframe.loc[dataframe['broker_id'] == broker_id]
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        print(data)
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
         return_data = {}
         return_data['order_count'] = len(data)
@@ -119,3 +118,14 @@ def get_broker_data():
         return_data['order_types_count'] = order_types_count
 
         return json.dumps(return_data)
+
+
+@process_main.route('/get_timeframe_data', methods=['GET', 'POST'])
+def get_broker_data():
+    if (request.method == 'POST'):
+        data = json.loads(request.data.decode('utf-8'))
+        file_id = data['file_id']
+        id = data['id']
+
+
+        # get timeframe data in file id in given id

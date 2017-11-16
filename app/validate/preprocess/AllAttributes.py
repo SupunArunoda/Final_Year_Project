@@ -78,7 +78,8 @@ class AllAttribute:
                 self.exe_type_data_frame=exe_type.get_time_frame(order=order)
                 price_gap.get_regular_gap_chunks(order=order,row_val=row_val)
                 self.entropy_data_frame = entropy.get_entropy(order=order)
-                simulation.get_time_frame(order=order,row_val=row_val)
+                if(is_order_book):
+                    simulation.get_time_frame(order=order,row_val=row_val)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         input_file = "app/data/data.csv"
