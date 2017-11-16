@@ -19,6 +19,7 @@
         vm.orderbook_simulation = false;
         vm.price_gap_details_show = false;
         vm.broker_details_show = false;
+        vm.timeframe_details_show = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
@@ -49,6 +50,7 @@
 
         vm.current_selected_broker = '';
         vm.broker_orders_count = '';
+        vm.current_selected_timeframe = '';
 
         initialize();
 
@@ -78,10 +80,10 @@
 
                 angular.forEach(local_minimas, function (value, key) {
                     var time = response.data.time_index[value];
-                    time = time.split('$$');
+                    time = time.split('000$$');
 
-                    var starttime = time[1];
-                    var endtime = time[2];
+                    var starttime = time[0];
+                    var endtime = time[1];
 
                     vm.local_minima_list.push({
                         entropy_value: response.data.entropy_exec_type[value],
@@ -183,12 +185,35 @@
                     "offset": 15,
                     "scrollbarHeight": 5
                 },
-
                 "chartCursor": {
                     "pan": true,
                     "cursorAlpha": 0,
                     "valueLineAlpha": 0
-                }
+                },
+                "listeners": [{
+                    "event": "clickGraphItem",
+                    "method": (function (e) {
+
+                        $('#timeframe-modal').modal({
+                            backdrop: 'static'
+                        }).on('shown.bs.modal', function () {
+                            vm.timeframe_details_show = false;
+                            vm.current_selected_timeframe = e.item.dataContext.ax;
+
+                            var data = {
+                                id: vm.id,
+                                file_id: vm.current_selected_timeframe,
+                            };
+
+                            webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
+
+                            });
+
+                            $scope.$apply();
+                        });
+
+                    }).bind(vm)
+                }]
             });
         }
 
@@ -356,14 +381,16 @@
             vm.broker_ammend_orders_count = '';
             vm.broker_execute_orders_count = '';
 
-            $('#broker-model').modal({
+            $('#broker-modal').modal({
                 backdrop: 'static'
             }).on('shown.bs.modal', function () {
                 vm.current_selected_broker = broker_id;
                 vm.broker_details_show = false;
 
                 var data = {
-                    broker_id: broker_id
+                    broker_id: broker_id,
+                    file_id: vm.current_file,
+                    id: vm.id
                 };
 
                 webservice.call('/process_main/get_broker_data', 'post', JSON.stringify(data)).then(function (response) {
@@ -408,15 +435,15 @@
 
                     for (var i = 0; i < response.data.order_count; i++) {
                         var temp = {
-                            date: response.data.orders[i][4],
+                            date: response.data.orders[i][9],
                         };
-                        if (response.data.orders[i][5] == 0) {
+                        if (response.data.orders[i][3] == 0) {
                             temp.value1 = 1
-                        } else if (response.data.orders[i][5] == 4) {
+                        } else if (response.data.orders[i][3] == 4) {
                             temp.value2 = 2
-                        } else if (response.data.orders[i][5] == 5) {
+                        } else if (response.data.orders[i][3] == 5) {
                             temp.value3 = 3
-                        } else if (response.data.orders[i][5] == 15) {
+                        } else if (response.data.orders[i][3] == 15) {
                             temp.value4 = 4
                         }
                         dataset.push(temp);
@@ -432,10 +459,11 @@
                             "cornerRadius": 6
                         },
                         "valueAxes": [{
-                            "axisAlpha": 0
+                            "axisAlpha": 0,
+                            "labelsEnabled": false
                         }],
                         "graphs": [{
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
+                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>NEW</span></b>",
                             "bullet": "round",
                             "bulletSize": 2,
                             "connect": false,
@@ -444,7 +472,7 @@
                             "negativeLineColor": "#487dac",
                             "valueField": "value1"
                         }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
+                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>CANCEL</span></b>",
                             "bullet": "round",
                             "bulletSize": 2,
                             "connect": false,
@@ -453,7 +481,7 @@
                             "negativeLineColor": "#ac0023",
                             "valueField": "value2"
                         }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
+                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>AMMEND</span></b>",
                             "bullet": "round",
                             "bulletSize": 2,
                             "connect": false,
@@ -462,7 +490,7 @@
                             "negativeLineColor": "#ac0023",
                             "valueField": "value3"
                         }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
+                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>EXECUTE</span></b>",
                             "bullet": "round",
                             "bulletSize": 2,
                             "connect": false,
