@@ -152,7 +152,7 @@ def get_timeframe_data():
         order_types_count['execute'] = len(order_types['execute'])
 
         brokers = data['broker_id'].unique()
-        print(brokers)
+
         broker_details = {}
 
         for i in range(len(brokers)):
@@ -163,7 +163,7 @@ def get_timeframe_data():
             ammendOrder.append(len(temp.loc[temp[3] == 5].values[:].tolist()))
             executedOrder.append(len(temp.loc[temp[3] == 15].values[:].tolist()))
 
-        broker_details['broker_id'] = brokers.values
+        broker_details['broker_id'] = brokers.values[:].tolist()
         broker_details['all'] = allOrder
         broker_details['new'] = newOrder
         broker_details['cancel'] = cancelOrder
