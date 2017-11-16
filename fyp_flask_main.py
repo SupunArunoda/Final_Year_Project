@@ -4,7 +4,6 @@ from pandas.tseries.offsets import CacheableOffset
 from app.PreprocessMain import preprocess_main
 from app.ProcessMain import process_main
 from flask_cors import CORS
-import pymysql
 
 # import pymysql
 
@@ -24,14 +23,14 @@ def show():
     return render_template('index.html')
 
 
-# @app.route('/testRoute', methods=['GET', 'POST'])
-# def testFunc():
-#     if (request.method == 'POST'):
-#         print('post method')
-#
-#         print(request.data)
-#
-#     return 'this is the result'
+@app.route('/testRoute', methods=['GET', 'POST'])
+def testFunc():
+    if (request.method == 'POST'):
+        print('post method')
+
+        print(request.data)
+
+    return 'this is the result'
 
 
 

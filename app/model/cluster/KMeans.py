@@ -2,11 +2,10 @@ from sklearn.cluster import KMeans
 import numpy as np
 from scipy.spatial import distance
 import plotly.plotly as py
-import csv
 
 # py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
-from pandas import DataFrame, read_csv
+from pandas import DataFrame
 from matplotlib import pyplot as plt
 
 
@@ -111,10 +110,8 @@ class Kmeans:
         clusters = {}
         for i in range(k):
             # select only data observations with cluster label == i
-            ds = X.ix[(labels == i)]
+            ds = X[np.where(labels == i)]
             clusters[i] = ds
-
-
 
         return [clusters, kmeans]
 
@@ -135,15 +132,9 @@ class Kmeans:
                 if labels[i] == j:
                     data['anomaly_score'].iloc[i] = scores[j]
 
-        print(data)
-        # data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
+
+
+
+        # print(data)
+        data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
         print('Output file saved!')
-
-
-df = read_csv('E:/Nilanga/Final_Year_Project/app/output/2_price_vol.csv')
-
-data = df[['execute_order_buy_price','execute_order_buy_volume','execute_order_sell_price','cancel_order_sell_volume']]
-
-kmeans = Kmeans()
-[clusters_, kmeans_] = kmeans.cluster(data)
-kmeans.writeToCSV(clusters_, kmeans_, data)
