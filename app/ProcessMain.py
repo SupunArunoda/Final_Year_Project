@@ -121,7 +121,7 @@ def get_broker_data():
 
 
 @process_main.route('/get_timeframe_data', methods=['GET', 'POST'])
-def get_broker_data():
+def get_timeframe_data():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
         file_id = data['file_id']
@@ -129,3 +129,5 @@ def get_broker_data():
 
 
         # get timeframe data in file id in given id
+
+        return "test"
