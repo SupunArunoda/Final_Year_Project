@@ -1,4 +1,4 @@
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 import json, fnmatch, os
 from flask import Blueprint, request
 import sys
@@ -152,23 +152,26 @@ def get_timeframe_data():
         order_types_count['execute'] = len(order_types['execute'])
 
         brokers = data['broker_id'].unique()
-
+        print(brokers)
         broker_details = {}
 
         for i in range(len(brokers)):
-            allOrder.append(len(data.loc[data['broker_id'] == brokers[i]].values[:].tolist()))
-            newOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 0].values[:].tolist()))
-            cancelOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 4].values[:].tolist()))
-            ammendOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 5].values[:].tolist()))
-            executedOrder.append(len(data.loc[data['broker_id'] == brokers[i] and data.loc['execution_type'] == 15].values[:].tolist()))
+            temp = DataFrame(data.loc[data['broker_id'] == brokers[i]].values[:])
+            allOrder.append(len(temp))
+            newOrder.append(len(temp.loc[temp[3] == 0].values[:].tolist()))
+            cancelOrder.append(len(temp.loc[temp[3] == 4].values[:].tolist()))
+            ammendOrder.append(len(temp.loc[temp[3] == 5].values[:].tolist()))
+            executedOrder.append(len(temp.loc[temp[3] == 15].values[:].tolist()))
 
-        broker_details['broker_id'] = brokers['broker_id']
+        broker_details['broker_id'] = brokers.values
         broker_details['all'] = allOrder
         broker_details['new'] = newOrder
         broker_details['cancel'] = cancelOrder
         broker_details['ammend'] = ammendOrder
         broker_details['execute'] = executedOrder
 
+        # broker_details.
+
         print(broker_details)
 
-        return json.dump(order_types_count)
+        return json.dumps(order_types_count)

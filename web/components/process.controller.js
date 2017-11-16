@@ -206,7 +206,7 @@
                             };
 
                             webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
-
+                                console.log(response);
                             });
 
                             $scope.$apply();
