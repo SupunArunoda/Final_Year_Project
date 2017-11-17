@@ -1,4 +1,4 @@
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 import json, fnmatch, os
 from flask import Blueprint, request
 import sys
@@ -124,10 +124,63 @@ def get_broker_data():
 def get_timeframe_data():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
-        file_id = data['file_id']
         id = data['id']
+        file_number = data['file_id']
 
+        read_messages = read_csv('app/output/' + str(id) + '_all_attributes_' + str(file_number) + '.csv',
+                                 header=None)
+        read_messages.columns = ['broker_id', 'executed_qty', 'executed_value', 'execution_type', 'instrument_id',
+                                 'order_id', 'order_qty', 'side', 'total_qty', 'transact_time', 'value', 'visible_size']
 
-        # get timeframe data in file id in given id
+        print('app/output/' + str(id) + '_all_attributes_' + str(file_number) + '.csv')
+        data = read_messages
 
-        return "test"
+        order_types = {}
+        order_types['new'] = data.loc[data['execution_type'] == '0'].values[:].tolist()
+        order_types['cancel'] = data.loc[data['execution_type'] == '4'].values[:].tolist()
+        order_types['ammend'] = data.loc[data['execution_type'] == '5'].values[:].tolist()
+        order_types['execute'] = data.loc[data['execution_type'] == '15'].values[:].tolist()
+
+        return_data = {}
+        allOrder = []
+        newOrder = []
+        ammendOrder = []
+        cancelOrder = []
+        executedOrder = []
+        broker_details = DataFrame()
+
+        return_data['new'] = len(order_types['new'])
+        return_data['cancel'] = len(order_types['cancel'])
+        return_data['ammend'] = len(order_types['ammend'])
+        return_data['execute'] = len(order_types['execute'])
+
+        brokers = data['broker_id'].unique()
+
+        for i in range(1,len(brokers)):
+            temp = DataFrame(data.loc[data['broker_id'] == brokers[i]].values[:])
+            allOrder.append(len(temp))
+            newOrder.append(len(temp.loc[temp[3] == 0].values[:].tolist()))
+            cancelOrder.append(len(temp.loc[temp[3] == 4].values[:].tolist()))
+            ammendOrder.append(len(temp.loc[temp[3] == 5].values[:].tolist()))
+            executedOrder.append(len(temp.loc[temp[3] == 15].values[:].tolist()))
+
+        broker_details['broker_id'] = brokers.tolist()[1:]
+        broker_details['all'] = allOrder
+        broker_details['new'] = newOrder
+        broker_details['cancel'] = cancelOrder
+        broker_details['ammend'] = ammendOrder
+        broker_details['execute'] = executedOrder
+
+        sortedNew = broker_details.sort_values(['new'],  ascending=[False])
+        sortedCancel = broker_details.sort_values(['cancel'], ascending=[False])
+        sortedAmmend = broker_details.sort_values(['ammend'], ascending=[False])
+        sortedExecute = broker_details.sort_values(['execute'], ascending=[False])
+        sortedAll = broker_details.sort_values(['all'], ascending=[False])
+
+        return_data['sortedNew'] = list(sortedNew['broker_id'])
+        return_data['sortedCancel'] = list(sortedCancel['broker_id'])
+        return_data['sortedAmmend'] = list(sortedAmmend['broker_id'])
+        return_data['sortedExecute'] = list(sortedExecute['broker_id'])
+        return_data['sortedAll'] = list(sortedAll['broker_id'])
+
+        return json.dumps(return_data)
