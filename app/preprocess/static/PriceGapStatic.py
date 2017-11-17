@@ -127,7 +127,7 @@ class PriceGapStatic:
         self.attributes.to_csv("app/output/"+str(row_val)+"_price_gap_regular_"+str(count)+"_all.csv", index=False, encoding='utf-8')
         self.all_attributes.to_csv("app/output/" + str(row_val) + "_all_attributes_" + str(count) + ".csv",
                                index=False, encoding='utf-8')
-        self.all_attributes = DataFrame()
+        self.all_attributes=DataFrame()
 
     def  get_calculation(self,order):
         if(order.value>0):

@@ -2,9 +2,11 @@ from pandas import DataFrame, read_csv
 from app.orderbook.Order import Order
 from app.preprocess.window.EventWindow import EventWindow
 from dateutil import parser as DUp
+import random
 
 
 class Generation:
+
 
     def __init__(self, session_file, window):
         self.temp_time = 0
@@ -18,7 +20,9 @@ class Generation:
         self.window = window
         self.chunk = []
         self.count=0
+        self.path = "D:/Acadamic/Final Year Research/Project/Final_Year_Project"
         # print(self.regular_list)
+
 
     def get_regular_time(self):
         count=0;
@@ -61,9 +65,37 @@ class Generation:
 
 
     def write_csv(self, count):
-        self.all_attributes.to_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/synthetic_data/all_attributes_" + str(count) + ".csv",
+        self.all_attributes.to_csv(self.path+"/app/output/synthetic_data/all_attributes_" + str(count) + ".csv",
                                    index=False, encoding='utf-8')
         self.all_attributes = DataFrame()
+
+def mapping(percentage,no_of_lines_anomaly,file_count):
+    temp_rnad = random.randint(1, file_count);
+    rand_data=read_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/synthetic_data/all_attributes_" + str(temp_rnad) + ".csv")
+    anomlay_data=read_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/synthetic_data/all_attributes_" + str(7) + ".csv")
+    no_lines=int(percentage*no_of_lines_anomaly)#no of lines in percentage
+    rand_gen_for_anomaly=random.randint(1,no_of_lines_anomaly/no_lines)#to get where to add anomaly
+    rand_gen_for_normal=random.randint(1,no_of_lines_anomaly/no_lines)
+    #print(str("rnadom numbers"),rand_gen_for_normal,rand_gen_for_anomaly)
+    start_point_anomaly=(rand_gen_for_anomaly-1)*no_lines
+    end_point_anomaly = (rand_gen_for_anomaly) * no_lines
+    start_point_normal = (rand_gen_for_normal - 1) * no_lines
+    end_point_normal = (rand_gen_for_normal) * no_lines
+    print(start_point_anomaly,end_point_anomaly,start_point_normal,end_point_anomaly,temp_rnad)
+
+
+    for i in range(no_lines-1):
+        print(anomlay_data.ix[start_point_anomaly+i]['transact_time'])
+
+
+
+
+
+
+
+
+
+
 
 def run():
     data = read_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/data/data.csv")
@@ -91,5 +123,9 @@ def run():
         if order.value > 0:
             gen.get_regular_gap_chunks(order=order)
 
+#mapping(percentage=0.2,no_of_lines_anomaly=5000,file_count=10)
+
 run()
+
+
 
