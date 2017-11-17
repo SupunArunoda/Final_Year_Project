@@ -23,17 +23,6 @@ def show():
     return render_template('index.html')
 
 
-@app.route('/testRoute', methods=['GET', 'POST'])
-def testFunc():
-    if (request.method == 'POST'):
-        print('post method')
-
-        print(request.data)
-
-    return 'this is the result'
-
-
-
 @app.before_request
 def before():
     pass

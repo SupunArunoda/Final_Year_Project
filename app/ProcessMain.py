@@ -1,4 +1,4 @@
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 import json, fnmatch, os
 from flask import Blueprint, request
 import sys
@@ -90,13 +90,12 @@ def get_broker_data():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
         broker_id = data['broker_id']
+        current_file = data['file_id']
+        id = data['id']
 
-        dataframe = read_csv('./app/data/data.csv')
+        dataframe = read_csv('./app/output/' + str(id) + '_all_attributes_' + str(current_file) + '.csv')
 
         data = dataframe.loc[dataframe['broker_id'] == broker_id]
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-        print(data)
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
         return_data = {}
         return_data['order_count'] = len(data)
@@ -117,5 +116,65 @@ def get_broker_data():
 
         return_data['order_types'] = order_types
         return_data['order_types_count'] = order_types_count
+
+        return json.dumps(return_data)
+
+
+@process_main.route('/get_timeframe_data', methods=['GET', 'POST'])
+def get_timeframe_data():
+    if (request.method == 'POST'):
+        data = json.loads(request.data.decode('utf-8'))
+        id = data['id']
+        file_number = data['file_id']
+
+        read_messages = read_csv('app/output/' + str(id) + '_all_attributes_' + str(file_number) + '.csv',
+                                 header=None)
+        read_messages.columns = ['broker_id', 'executed_qty', 'executed_value', 'execution_type', 'instrument_id',
+                                 'order_id', 'order_qty', 'side', 'total_qty', 'transact_time', 'value', 'visible_size']
+
+        data = read_messages
+
+        return_data = {}
+        allOrder = []
+        newOrder = []
+        ammendOrder = []
+        cancelOrder = []
+        executedOrder = []
+        broker_details = DataFrame()
+
+        return_data['new'] = len(data.loc[(data['execution_type'] == '0') | (data['execution_type'] == 0)].values[:].tolist())
+        return_data['cancel'] = len(data.loc[(data['execution_type'] == '4')  | (data['execution_type'] == 4)].values[:].tolist())
+        return_data['ammend'] = len(data.loc[(data['execution_type'] == '5')  | (data['execution_type'] == 5)].values[:].tolist())
+        return_data['execute'] = len(data.loc[(data['execution_type'] == '15')  | (data['execution_type'] == 15)].values[:].tolist())
+        return_data['all'] = return_data['new'] + return_data['cancel'] + return_data['ammend']+ return_data['execute']
+
+        brokers = data['broker_id'].unique()
+
+        for i in range(1,len(brokers)):
+            temp = DataFrame(data.loc[data['broker_id'] == brokers[i]].values[:])
+            allOrder.append(len(temp))
+            newOrder.append(len(temp.loc[temp[3] == 0].values[:].tolist()))
+            cancelOrder.append(len(temp.loc[temp[3] == 4].values[:].tolist()))
+            ammendOrder.append(len(temp.loc[temp[3] == 5].values[:].tolist()))
+            executedOrder.append(len(temp.loc[temp[3] == 15].values[:].tolist()))
+
+        broker_details['broker_id'] = brokers.tolist()[1:]
+        broker_details['all'] = allOrder
+        broker_details['new'] = newOrder
+        broker_details['cancel'] = cancelOrder
+        broker_details['ammend'] = ammendOrder
+        broker_details['execute'] = executedOrder
+
+        sortedNew = broker_details.sort_values(['new'],  ascending=[False])
+        sortedCancel = broker_details.sort_values(['cancel'], ascending=[False])
+        sortedAmmend = broker_details.sort_values(['ammend'], ascending=[False])
+        sortedExecute = broker_details.sort_values(['execute'], ascending=[False])
+        sortedAll = broker_details.sort_values(['all'], ascending=[False])
+
+        return_data['sortedNew'] = list(sortedNew['broker_id'])
+        return_data['sortedCancel'] = list(sortedCancel['broker_id'])
+        return_data['sortedAmmend'] = list(sortedAmmend['broker_id'])
+        return_data['sortedExecute'] = list(sortedExecute['broker_id'])
+        return_data['sortedAll'] = list(sortedAll['broker_id'])
 
         return json.dumps(return_data)

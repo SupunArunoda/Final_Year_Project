@@ -32,29 +32,41 @@
     <section class="content" ng-show="vm.isResultVisible == true">
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Entropy Variance</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div id="entropy-linechart" style="height: 400px"></div>
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class=""><a data-target="#tab_1" data-toggle="tab" aria-expanded="true" style="cursor: pointer">Entropy Variance</a>
+                        </li>
+                        <li class="active"><a data-target="#tab_2" data-toggle="tab" aria-expanded="false" style="cursor: pointer">Clustering Result</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="tab_1">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div id="entropy-linechart" style="height: 400px"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h4>Suspicious Time Frames</h4>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                            <tr ng-repeat="minima in vm.local_minima_list">
+                                                <td>
+                                                    <strong>Timeframe {{ minima.id }}</strong><br/>
+                                                    {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
+                                                    <strong>Entropy score:</strong> {{ minima.entropy_value }}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <h4>Suspicious Time Frames</h4>
-                                <table class="table table-bordered">
-                                    <tbody>
-                                    <tr ng-repeat="minima in vm.local_minima_list">
-                                        <td>
-                                            <strong>Timeframe {{ minima.id }}</strong><br/>
-                                            {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
-                                            <strong>Entropy score:</strong> {{ minima.entropy_value }}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        </div>
+                        <div class="tab-pane active" id="tab_2">
+
+                            Cluster Graph
+
                         </div>
                     </div>
                 </div>
@@ -65,7 +77,7 @@
             <div class="col-md-12">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Attribute Variance</h3>
+                        <h3 class="box-title">Price Gap Variance</h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
@@ -200,7 +212,7 @@
         </div>
     </section>
 
-    <div class="modal fade" id="broker-model" role="dialog">
+    <div class="modal fade" id="broker-modal" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -235,9 +247,38 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div id="broker-order-placement-graph" style="height: 400px"></div>
+                                <div id="broker-order-placement-graph" style="height: 200px"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-rightt" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="timeframe-modal" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title"><strong>Timeframe:</strong> {{vm.selected_timeframe}} <strong>From:</strong>
+                        {{ vm.selected_timeframe_start }} <strong>To:</strong> {{ vm.selected_timeframe_end }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" ng-show="vm.timeframe_details_show == false">
+                        <div class="col-md-6">
+                        </div>
+                        <div class="col-md-4">
+                            <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif
+                                 alt="loading">
+                        </div>
+                    </div>
+                    <div ng-show="vm.timeframe_details_show == true">
+                        Data shown
                     </div>
                 </div>
                 <div class="modal-footer">

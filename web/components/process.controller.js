@@ -19,6 +19,7 @@
         vm.orderbook_simulation = false;
         vm.price_gap_details_show = false;
         vm.broker_details_show = false;
+        vm.timeframe_details_show = false;
 
         vm.loadData = loadData;
         vm.selectData = selectData;
@@ -49,6 +50,9 @@
 
         vm.current_selected_broker = '';
         vm.broker_orders_count = '';
+        vm.selected_timeframe = '';
+        vm.selected_timeframe_start = '';
+        vm.selected_timeframe_end = '';
 
         initialize();
 
@@ -68,6 +72,22 @@
             webservice.call('/process_main/get_data', 'post', JSON.stringify(data)).then(function (response) {
                 console.log(response.data);
 
+                vm.timeframes_list = [];
+                for (var i = 0; i < response.data.files_count; i++) {
+                    var time = response.data.time_index[i];
+                    time = time.split('000$$');
+
+                    var starttime = time[0];
+                    var endtime = time[1];
+
+                    vm.timeframes_list.push({
+                        timeframe_index: i + 1,
+                        timeframe_entropy_value: response.data.entropy_exec_type[i],
+                        timeframe_start: starttime,
+                        timeframe_end: endtime
+                    });
+                }
+
                 createEntropyGraph(response.data);
 
                 vm.files_count = parseInt(response.data.files_count);
@@ -78,10 +98,10 @@
 
                 angular.forEach(local_minimas, function (value, key) {
                     var time = response.data.time_index[value];
-                    time = time.split('$$');
+                    time = time.split('000$$');
 
-                    var starttime = time[1];
-                    var endtime = time[2];
+                    var starttime = time[0];
+                    var endtime = time[1];
 
                     vm.local_minima_list.push({
                         entropy_value: response.data.entropy_exec_type[value],
@@ -156,7 +176,7 @@
                     "fixedPosition": true
                 },
                 "graphs": [{
-                    "balloonText": "<div style='margin:5px;'><b>[[x]]</b><br>y:<b>[[y]]</b></div>",
+                    "balloonText": "<div style='margin:5px;'><b>Timeframe [[x]]</b><br><b>[[y]]</b></div>",
                     "bullet": "diamond",
                     "maxBulletSize": 25,
                     "lineAlpha": 0.8,
@@ -183,12 +203,38 @@
                     "offset": 15,
                     "scrollbarHeight": 5
                 },
-
                 "chartCursor": {
                     "pan": true,
                     "cursorAlpha": 0,
                     "valueLineAlpha": 0
-                }
+                },
+                "listeners": [{
+                    "event": "clickGraphItem",
+                    "method": (function (e) {
+                        $('#timeframe-modal').modal({
+                            backdrop: 'static',
+                            keyboard: true,
+                            show: true
+                        });
+
+                        vm.timeframe_details_show = false;
+                        vm.selected_timeframe = e.item.dataContext.ax;
+
+                        vm.selected_timeframe_start = vm.timeframes_list[vm.selected_timeframe - 1].timeframe_start;
+                        vm.selected_timeframe_end = vm.timeframes_list[vm.selected_timeframe - 1].timeframe_end;
+
+                        var data = {
+                            id: vm.id,
+                            file_id: vm.selected_timeframe
+                        };
+
+                        webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
+                            console.log(response.data);
+                        });
+
+                        $scope.$apply();
+                    }).bind(vm)
+                }]
             });
         }
 
@@ -356,145 +402,150 @@
             vm.broker_ammend_orders_count = '';
             vm.broker_execute_orders_count = '';
 
-            $('#broker-model').modal({
-                backdrop: 'static'
-            }).on('shown.bs.modal', function () {
-                vm.current_selected_broker = broker_id;
-                vm.broker_details_show = false;
+            $('#broker-modal').modal({
+                backdrop: 'static',
+                keyboard: true,
+                show: true
+            });
+            vm.current_selected_broker = broker_id;
+            vm.broker_details_show = false;
 
-                var data = {
-                    broker_id: broker_id
-                };
+            var data = {
+                broker_id: broker_id,
+                file_id: vm.current_file,
+                id: vm.id
+            };
 
-                webservice.call('/process_main/get_broker_data', 'post', JSON.stringify(data)).then(function (response) {
-                    console.log(response.data);
+            webservice.call('/process_main/get_broker_data', 'post', JSON.stringify(data)).then(function (response) {
+                console.log(response.data);
 
-                    vm.broker_orders_count = response.data.order_count;
-                    vm.broker_new_orders_count = response.data.order_types_count.new;
-                    vm.broker_cancel_orders_count = response.data.order_types_count.cancel;
-                    vm.broker_ammend_orders_count = response.data.order_types_count.ammend;
-                    vm.broker_execute_orders_count = response.data.order_types_count.execute;
+                vm.broker_orders_count = response.data.order_count;
+                vm.broker_new_orders_count = response.data.order_types_count.new;
+                vm.broker_cancel_orders_count = response.data.order_types_count.cancel;
+                vm.broker_ammend_orders_count = response.data.order_types_count.ammend;
+                vm.broker_execute_orders_count = response.data.order_types_count.execute;
 
-                    var dataset = [{
-                        "type": "New Orders",
-                        "count": response.data.order_types_count.new
-                    }, {
-                        "type": "Cancelled Orders",
-                        "count": response.data.order_types_count.cancel
-                    }, {
-                        "type": "Ammended Orders",
-                        "count": response.data.order_types_count.ammend
-                    }, {
-                        "type": "Executed Orders",
-                        "count": response.data.order_types_count.execute
-                    }];
+                var dataset = [{
+                    "type": "New Orders",
+                    "count": response.data.order_types_count.new
+                }, {
+                    "type": "Cancelled Orders",
+                    "count": response.data.order_types_count.cancel
+                }, {
+                    "type": "Ammended Orders",
+                    "count": response.data.order_types_count.ammend
+                }, {
+                    "type": "Executed Orders",
+                    "count": response.data.order_types_count.execute
+                }];
 
-                    var chart = AmCharts.makeChart("broker-order-count-piechart", {
-                        "type": "pie",
-                        "theme": "light",
-                        "dataProvider": dataset,
-                        "startDuration": 0,
-                        "valueField": "count",
-                        "titleField": "type",
-                        "balloon": {
-                            "fixedPosition": true
-                        },
-                        "export": {
-                            "enabled": true
-                        }
-                    });
-
-                    var dataset = [];
-
-                    for (var i = 0; i < response.data.order_count; i++) {
-                        var temp = {
-                            date: response.data.orders[i][4],
-                        };
-                        if (response.data.orders[i][5] == 0) {
-                            temp.value1 = 1
-                        } else if (response.data.orders[i][5] == 4) {
-                            temp.value2 = 2
-                        } else if (response.data.orders[i][5] == 5) {
-                            temp.value3 = 3
-                        } else if (response.data.orders[i][5] == 15) {
-                            temp.value4 = 4
-                        }
-                        dataset.push(temp);
+                var chart = AmCharts.makeChart("broker-order-count-piechart", {
+                    "type": "pie",
+                    "theme": "light",
+                    "dataProvider": dataset,
+                    "startDuration": 0,
+                    "valueField": "count",
+                    "titleField": "type",
+                    "balloon": {
+                        "fixedPosition": true
+                    },
+                    "export": {
+                        "enabled": true
                     }
-
-                    var chart = AmCharts.makeChart("broker-order-placement-graph", {
-                        "type": "serial",
-                        "theme": "light",
-                        "marginRight": 70,
-                        "autoMarginOffset": 20,
-                        "dataProvider": dataset,
-                        "balloon": {
-                            "cornerRadius": 6
-                        },
-                        "valueAxes": [{
-                            "axisAlpha": 0
-                        }],
-                        "graphs": [{
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
-                            "bullet": "round",
-                            "bulletSize": 2,
-                            "connect": false,
-                            "lineColor": "#d2742a",
-                            "lineThickness": 1,
-                            "negativeLineColor": "#487dac",
-                            "valueField": "value1"
-                        }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
-                            "bullet": "round",
-                            "bulletSize": 2,
-                            "connect": false,
-                            "lineColor": "#3734d2",
-                            "lineThickness": 1,
-                            "negativeLineColor": "#ac0023",
-                            "valueField": "value2"
-                        }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
-                            "bullet": "round",
-                            "bulletSize": 2,
-                            "connect": false,
-                            "lineColor": "#d258d2",
-                            "lineThickness": 1,
-                            "negativeLineColor": "#ac0023",
-                            "valueField": "value3"
-                        }, {
-                            "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[value]] C</span></b>",
-                            "bullet": "round",
-                            "bulletSize": 2,
-                            "connect": false,
-                            "lineColor": "#7fd21b",
-                            "lineThickness": 1,
-                            "negativeLineColor": "#ac0023",
-                            "valueField": "value4"
-                        }],
-                        "chartCursor": {
-                            "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN:SS",
-                            "cursorAlpha": 0.1,
-                            "cursorColor": "#000000",
-                            "fullWidth": true,
-                            "graphBulletSize": 2
-                        },
-                        "chartScrollbar": {},
-                        "dataDateFormat": "YYYY-MM-DD HH:NN:SS",
-                        "categoryField": "date",
-                        "categoryAxis": {
-                            "minPeriod": "YYYY-MM-DD HH:NN:SS",
-                            "parseDates": false,
-                            "minorGridEnabled": true
-                        },
-                        "export": {
-                            "enabled": true
-                        }
-                    });
-
-                    vm.broker_details_show = true;
                 });
-                $scope.$apply();
-            }).show();
+
+                var dataset = [];
+
+                for (var i = 0; i < response.data.order_count; i++) {
+                    var temp = {
+                        date: response.data.orders[i][9],
+                    };
+                    if (response.data.orders[i][3] == 0) {
+                        temp.value1 = 1
+                    } else if (response.data.orders[i][3] == 4) {
+                        temp.value2 = 2
+                    } else if (response.data.orders[i][3] == 5) {
+                        temp.value3 = 3
+                    } else if (response.data.orders[i][3] == 15) {
+                        temp.value4 = 4
+                    }
+                    dataset.push(temp);
+                }
+
+                var chart = AmCharts.makeChart("broker-order-placement-graph", {
+                    "type": "serial",
+                    "theme": "light",
+                    "marginRight": 70,
+                    "autoMarginOffset": 20,
+                    "dataProvider": dataset,
+                    "balloon": {
+                        "cornerRadius": 6
+                    },
+                    "valueAxes": [{
+                        "axisAlpha": 0,
+                        "labelsEnabled": false
+                    }],
+                    "graphs": [{
+                        "balloonText": "[[category]]<br><b><span style='font-size:14px;'>NEW</span></b>",
+                        "bullet": "round",
+                        "bulletSize": 2,
+                        "connect": false,
+                        "lineColor": "#d2742a",
+                        "lineThickness": 1,
+                        "negativeLineColor": "#487dac",
+                        "valueField": "value1"
+                    }, {
+                        "balloonText": "[[category]]<br><b><span style='font-size:14px;'>CANCEL</span></b>",
+                        "bullet": "round",
+                        "bulletSize": 2,
+                        "connect": false,
+                        "lineColor": "#3734d2",
+                        "lineThickness": 1,
+                        "negativeLineColor": "#ac0023",
+                        "valueField": "value2"
+                    }, {
+                        "balloonText": "[[category]]<br><b><span style='font-size:14px;'>AMMEND</span></b>",
+                        "bullet": "round",
+                        "bulletSize": 2,
+                        "connect": false,
+                        "lineColor": "#d258d2",
+                        "lineThickness": 1,
+                        "negativeLineColor": "#ac0023",
+                        "valueField": "value3"
+                    }, {
+                        "balloonText": "[[category]]<br><b><span style='font-size:14px;'>EXECUTE</span></b>",
+                        "bullet": "round",
+                        "bulletSize": 2,
+                        "connect": false,
+                        "lineColor": "#7fd21b",
+                        "lineThickness": 1,
+                        "negativeLineColor": "#ac0023",
+                        "valueField": "value4"
+                    }],
+                    "chartCursor": {
+                        "categoryBalloonDateFormat": "YYYY-MM-DD HH:NN:SS",
+                        "cursorAlpha": 0.1,
+                        "cursorColor": "#000000",
+                        "fullWidth": true,
+                        "graphBulletSize": 2
+                    },
+                    "chartScrollbar": {},
+                    "dataDateFormat": "YYYY-MM-DD HH:NN:SS",
+                    "categoryField": "date",
+                    "categoryAxis": {
+                        "minPeriod": "YYYY-MM-DD HH:NN:SS",
+                        "parseDates": false,
+                        "minorGridEnabled": true
+                    },
+                    "export": {
+                        "enabled": true
+                    }
+                });
+
+                vm.broker_details_show = true;
+
+                // $scope.$apply();
+            });
         }
     }
 })();
