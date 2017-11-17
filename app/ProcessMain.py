@@ -132,14 +132,7 @@ def get_timeframe_data():
         read_messages.columns = ['broker_id', 'executed_qty', 'executed_value', 'execution_type', 'instrument_id',
                                  'order_id', 'order_qty', 'side', 'total_qty', 'transact_time', 'value', 'visible_size']
 
-        print('app/output/' + str(id) + '_all_attributes_' + str(file_number) + '.csv')
         data = read_messages
-
-        order_types = {}
-        order_types['new'] = data.loc[data['execution_type'] == '0'].values[:].tolist()
-        order_types['cancel'] = data.loc[data['execution_type'] == '4'].values[:].tolist()
-        order_types['ammend'] = data.loc[data['execution_type'] == '5'].values[:].tolist()
-        order_types['execute'] = data.loc[data['execution_type'] == '15'].values[:].tolist()
 
         return_data = {}
         allOrder = []
@@ -149,10 +142,11 @@ def get_timeframe_data():
         executedOrder = []
         broker_details = DataFrame()
 
-        return_data['new'] = len(order_types['new'])
-        return_data['cancel'] = len(order_types['cancel'])
-        return_data['ammend'] = len(order_types['ammend'])
-        return_data['execute'] = len(order_types['execute'])
+        return_data['new'] = len(data.loc[data['execution_type'] == '0'].values[:].tolist())
+        return_data['cancel'] = len(data.loc[data['execution_type'] == '4'].values[:].tolist())
+        return_data['ammend'] = len(data.loc[data['execution_type'] == '5'].values[:].tolist())
+        return_data['execute'] = len(data.loc[data['execution_type'] == '15'].values[:].tolist())
+        return_data['all'] = len(data.values[:].tolist())
 
         brokers = data['broker_id'].unique()
 
