@@ -146,7 +146,7 @@ def get_timeframe_data():
         return_data['cancel'] = len(data.loc[data['execution_type'] == '4'].values[:].tolist())
         return_data['ammend'] = len(data.loc[data['execution_type'] == '5'].values[:].tolist())
         return_data['execute'] = len(data.loc[data['execution_type'] == '15'].values[:].tolist())
-        return_data['all'] = len(data.values[:].tolist())
+        return_data['all'] = return_data['new'] + return_data['cancel'] + return_data['ammend']+ return_data['execute']
 
         brokers = data['broker_id'].unique()
 
