@@ -78,39 +78,57 @@ def mapping(percentage,no_of_lines_anomaly,file_count):
     rand_gen_for_normal=random.randint(1,no_of_lines_anomaly/no_lines)
     #print(str("rnadom numbers"),rand_gen_for_normal,rand_gen_for_anomaly)
     start_point_anomaly=0#(rand_gen_for_anomaly-1)*no_lines
-    end_point_anomaly = (rand_gen_for_anomaly) * no_lines
+    end_point_anomaly = 1000#(rand_gen_for_anomaly) * no_lines
     start_point_normal = 0#(rand_gen_for_normal - 1) * no_lines
     end_point_normal = (rand_gen_for_normal) * no_lines
     print(start_point_anomaly,end_point_anomaly,start_point_normal,end_point_normal,temp_rnad)
 
+    i=0
+    new_df=DataFrame()
+    for index, order_row in normal_data.iterrows():
+        if(index>start_point_anomaly and index<end_point_anomaly):
+            #order_id = anomlay_data.ix[start_point_anomaly + (i)]['order_id']
+            #broker_id = anomlay_data.ix[start_point_anomaly + (i)]['broker_id']
+            value = anomlay_data.ix[start_point_anomaly + (i)]['value']
+            visible_size = anomlay_data.ix[start_point_anomaly + (i)]['visible_size']
+            side = anomlay_data.ix[start_point_anomaly + (i)]['side']
+            total_qty = anomlay_data.ix[start_point_anomaly + (i)]['total_qty']
+            executed_qty = anomlay_data.ix[start_point_anomaly + (i)]['executed_qty']
+            order_qty = anomlay_data.ix[start_point_anomaly + (i)]['order_qty']
+            execution_type = anomlay_data.ix[start_point_anomaly + (i)]['execution_type']
+            executed_value = anomlay_data.ix[start_point_anomaly + (i)]['executed_value']
+            #instrument_id = anomlay_data.ix[start_point_anomaly + (i)]['instrument_id']
+            new_df = new_df.append(DataFrame(
+                {'order_id': order_row['order_id'],
+                 'visible_size': visible_size,
+                 'side': side,
+                 'total_qty': total_qty,
+                 'executed_qty': executed_qty,
+                 'order_qty': order_qty,
+                 'execution_type': execution_type,
+                 'transact_time': order_row['transact_time'],
+                 'value': value,
+                 'executed_value': executed_value,
+                 'broker_id': order_row['broker_id'],
+                 'instrument_id': order_row['instrument_id'],
+                 }, index=[0]), ignore_index=True);
+        else:
+            new_df = new_df.append(DataFrame(
+                {'order_id': order_row['order_id'],
+                 'visible_size': order_row['visible_size'],
+                 'side': order_row['side'],
+                 'total_qty': order_row['total_qty'],
+                 'executed_qty': order_row['executed_qty'],
+                 'order_qty': order_row['order_qty'],
+                 'execution_type': order_row['execution_type'],
+                 'transact_time': order_row['transact_time'],
+                 'value': order_row['value'],
+                 'executed_value': order_row['executed_value'],
+                 'broker_id': order_row['broker_id'],
+                 'instrument_id': order_row['instrument_id'],
+                 }, index=[0]), ignore_index=True);
 
-    for i in range(no_lines-1):
-        order_id=anomlay_data.ix[start_point_anomaly+(i)]['order_id']
-
-        broker_id=anomlay_data.ix[start_point_anomaly+(i)]['broker_id']
-        value=anomlay_data.ix[start_point_anomaly+(i)]['value']
-        visible_size = anomlay_data.ix[start_point_anomaly + (i)]['visible_size']
-        side = anomlay_data.ix[start_point_anomaly + (i)]['side']
-        total_qty = anomlay_data.ix[start_point_anomaly + (i)]['total_qty']
-        executed_qty = anomlay_data.ix[start_point_anomaly + (i)]['executed_qty']
-        order_qty = anomlay_data.ix[start_point_anomaly + (i)]['order_qty']
-        execution_type = anomlay_data.ix[start_point_anomaly + (i)]['execution_type']
-        executed_value = anomlay_data.ix[start_point_anomaly + (i)]['executed_value']
-        instrument_id = anomlay_data.ix[start_point_anomaly + (i)]['instrument_id']
-
-        temp_order_id = normal_data.ix[start_point_normal + (i)]['order_id']
-        print(order_id,temp_order_id)
-        normal_data.loc[normal_data['order_id']==temp_order_id,'broker_id']=broker_id
-        normal_data.loc[normal_data['order_id']==temp_order_id,'value'] = value
-        normal_data.loc[normal_data['order_id']==temp_order_id,'visible_size'] = visible_size
-        normal_data.loc[normal_data['order_id']==temp_order_id,'side'] = side
-        normal_data.loc[normal_data['order_id']==temp_order_id,'total_qty'] = total_qty
-        normal_data.loc[normal_data['order_id']==temp_order_id,'executed_qty'] = executed_qty
-        normal_data.loc[normal_data['order_id']==temp_order_id,'order_qty'] = order_qty
-        normal_data.loc[normal_data['order_id']==temp_order_id,'execution_type'] = execution_type
-        normal_data.loc[normal_data['order_id']==temp_order_id,'executed_value'] = executed_value
-        normal_data.loc[normal_data['order_id']==temp_order_id,'instrument_id'] = instrument_id
-    normal_data.to_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/synthetic_data/all_attributes_inject_7.csv",
+        new_df.to_csv("D:/Acadamic/Final Year Research/Project/Final_Year_Project/app/output/synthetic_data/all_attributes_inject_7.csv",
                                index=False, encoding='utf-8')
 
 
