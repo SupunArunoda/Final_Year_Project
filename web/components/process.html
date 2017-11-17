@@ -32,29 +32,41 @@
     <section class="content" ng-show="vm.isResultVisible == true">
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Entropy Variance</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div id="entropy-linechart" style="height: 400px"></div>
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class=""><a data-target="#tab_1" data-toggle="tab" aria-expanded="true" style="cursor: pointer">Entropy Variance</a>
+                        </li>
+                        <li class="active"><a data-target="#tab_2" data-toggle="tab" aria-expanded="false" style="cursor: pointer">Clustering Result</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="tab_1">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div id="entropy-linechart" style="height: 400px"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h4>Suspicious Time Frames</h4>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                            <tr ng-repeat="minima in vm.local_minima_list">
+                                                <td>
+                                                    <strong>Timeframe {{ minima.id }}</strong><br/>
+                                                    {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
+                                                    <strong>Entropy score:</strong> {{ minima.entropy_value }}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <h4>Suspicious Time Frames</h4>
-                                <table class="table table-bordered">
-                                    <tbody>
-                                    <tr ng-repeat="minima in vm.local_minima_list">
-                                        <td>
-                                            <strong>Timeframe {{ minima.id }}</strong><br/>
-                                            {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
-                                            <strong>Entropy score:</strong> {{ minima.entropy_value }}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        </div>
+                        <div class="tab-pane active" id="tab_2">
+
+                            Cluster Graph
+
                         </div>
                     </div>
                 </div>
@@ -65,7 +77,7 @@
             <div class="col-md-12">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Attribute Variance</h3>
+                        <h3 class="box-title">Price Gap Variance</h3>
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
