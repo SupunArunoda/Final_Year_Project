@@ -176,7 +176,7 @@
                     "fixedPosition": true
                 },
                 "graphs": [{
-                    "balloonText": "<div style='margin:5px;'><b>[[x]]</b><br>y:<b>[[y]]</b></div>",
+                    "balloonText": "<div style='margin:5px;'><b>Timeframe [[x]]</b><br><b>[[y]]</b></div>",
                     "bullet": "diamond",
                     "maxBulletSize": 25,
                     "lineAlpha": 0.8,
@@ -211,7 +211,11 @@
                 "listeners": [{
                     "event": "clickGraphItem",
                     "method": (function (e) {
-                        $('#timeframe-modal').modal('show');
+                        $('#timeframe-modal').modal({
+                            backdrop: 'static',
+                            keyboard: true,
+                            show: true
+                        });
 
                         vm.timeframe_details_show = false;
                         vm.selected_timeframe = e.item.dataContext.ax;
@@ -398,7 +402,11 @@
             vm.broker_ammend_orders_count = '';
             vm.broker_execute_orders_count = '';
 
-            $('#broker-modal').modal('show');
+            $('#broker-modal').modal({
+                backdrop: 'static',
+                keyboard: true,
+                show: true
+            });
             vm.current_selected_broker = broker_id;
             vm.broker_details_show = false;
 

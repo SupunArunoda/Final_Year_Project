@@ -113,6 +113,11 @@
                     }
                 });
 
+            }).catch(function (err) {
+                alert("Server Error!");
+
+                vm.isSessionsUploaded = false;
+                vm.isSessionUploadLoaderVisible = false;
             });
         }
 
