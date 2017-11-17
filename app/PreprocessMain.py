@@ -69,6 +69,8 @@ def process():
         print(data['orderbook_simulation'])
         print(type(data['orderbook_simulation']))
 
+        # if (data['orderbook_simulation'] == True):
+        #     Thread(target=orderbook_thread, args=[message_file, session_file,window_size,window_type])
 
         all_attributes = AllAttribute()
         return_data = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,

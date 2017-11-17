@@ -17,7 +17,7 @@ class OrderbookSimulation:
         self.volume_average_list = []
         self.detailsList = [0 for _ in range(7)]
 
-        self.session = read_csv(session_file)
+        self.session = session_file
         self.regular_list = self.get_regular_time()
         # self.window = TimeWindow(no_of_events=no_of_events)
         self.window = window
@@ -69,7 +69,7 @@ class OrderbookSimulation:
 
                 else:
                     self.fileCounter += 1
-                    self.attributes.to_csv("/app/output/"+str(row_val)+"_orderbook_simulation_" + str(self.fileCounter) + ".csv",
+                    self.attributes.to_csv("app/output/"+str(row_val)+"_orderbook_simulation_" + str(self.fileCounter) + ".csv",
                                            index=False,
                                            encoding='utf-8')
 
