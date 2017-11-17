@@ -54,6 +54,12 @@
         vm.selected_timeframe_start = '';
         vm.selected_timeframe_end = '';
 
+        vm.timeframe_orders_count = '';
+        vm.timeframe_new_orders_count = '';
+        vm.timeframe_cancel_orders_count = '';
+        vm.timeframe_ammend_orders_count = '';
+        vm.timeframe_execute_orders_count = '';
+
         initialize();
 
         function initialize() {
@@ -230,6 +236,49 @@
 
                         webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
                             console.log(response.data);
+
+                            vm.timeframe_orders_count = response.data.all;
+                            vm.timeframe_new_orders_count = response.data.new;
+                            vm.timeframe_cancel_orders_count = response.data.cancel;
+                            vm.timeframe_ammend_orders_count = response.data.ammend;
+                            vm.timeframe_execute_orders_count = response.data.execute;
+
+                            vm.timeframe_traders_details_all = response.data.sortedAll;
+                            vm.timeframe_traders_details_new = response.data.sortedNew;
+                            vm.timeframe_traders_details_execute = response.data.sortedExecute;
+                            vm.timeframe_traders_details_cancel = response.data.sortedCancel;
+                            vm.timeframe_traders_details_ammend = response.data.sortedAmmend;
+
+                            var dataset = [{
+                                "type": "New Orders",
+                                "count": response.data.new
+                            }, {
+                                "type": "Cancelled Orders",
+                                "count": response.data.cancel
+                            }, {
+                                "type": "Ammended Orders",
+                                "count": response.data.ammend
+                            }, {
+                                "type": "Executed Orders",
+                                "count": response.data.execute
+                            }];
+
+                            var chart = AmCharts.makeChart("timeframe-order-count-piechart", {
+                                "type": "pie",
+                                "theme": "light",
+                                "dataProvider": dataset,
+                                "startDuration": 0,
+                                "valueField": "count",
+                                "titleField": "type",
+                                "balloon": {
+                                    "fixedPosition": true
+                                },
+                                "export": {
+                                    "enabled": true
+                                }
+                            });
+
+                            vm.timeframe_details_show = true;
                         });
 
                         $scope.$apply();
@@ -393,7 +442,7 @@
             vm.sell_points = vm.orderbook_data[vm.time_point].sell_points;
         }
 
-        function showBrokerModel(broker_id) {
+        function showBrokerModel(broker_id, file_id) {
             console.log(broker_id);
             vm.broker_details_show = false;
             vm.broker_orders_count = '';
@@ -412,7 +461,7 @@
 
             var data = {
                 broker_id: broker_id,
-                file_id: vm.current_file,
+                file_id: file_id,
                 id: vm.id
             };
 

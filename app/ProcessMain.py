@@ -142,21 +142,26 @@ def get_timeframe_data():
         executedOrder = []
         broker_details = DataFrame()
 
-        return_data['new'] = len(data.loc[(data['execution_type'] == '0') | (data['execution_type'] == 0)].values[:].tolist())
-        return_data['cancel'] = len(data.loc[(data['execution_type'] == '4')  | (data['execution_type'] == 4)].values[:].tolist())
-        return_data['ammend'] = len(data.loc[(data['execution_type'] == '5')  | (data['execution_type'] == 5)].values[:].tolist())
-        return_data['execute'] = len(data.loc[(data['execution_type'] == '15')  | (data['execution_type'] == 15)].values[:].tolist())
-        return_data['all'] = return_data['new'] + return_data['cancel'] + return_data['ammend']+ return_data['execute']
+        return_data['new'] = len(
+            data.loc[(data['execution_type'] == '0') | (data['execution_type'] == 0)].values[:].tolist())
+        return_data['cancel'] = len(
+            data.loc[(data['execution_type'] == '4') | (data['execution_type'] == 4)].values[:].tolist())
+        return_data['ammend'] = len(
+            data.loc[(data['execution_type'] == '5') | (data['execution_type'] == 5)].values[:].tolist())
+        return_data['execute'] = len(
+            data.loc[(data['execution_type'] == '15') | (data['execution_type'] == 15)].values[:].tolist())
+        return_data['all'] = return_data['new'] + return_data['cancel'] + return_data['ammend'] + return_data['execute']
 
         brokers = data['broker_id'].unique()
 
-        for i in range(1,len(brokers)):
+        for i in range(1, len(brokers)):
             temp = DataFrame(data.loc[data['broker_id'] == brokers[i]].values[:])
+
             allOrder.append(len(temp))
-            newOrder.append(len(temp.loc[temp[3] == 0].values[:].tolist()))
-            cancelOrder.append(len(temp.loc[temp[3] == 4].values[:].tolist()))
-            ammendOrder.append(len(temp.loc[temp[3] == 5].values[:].tolist()))
-            executedOrder.append(len(temp.loc[temp[3] == 15].values[:].tolist()))
+            newOrder.append(len(temp.loc[(temp[3] == '0') | (temp[3] == 0)].values[:].tolist()))
+            cancelOrder.append(len(temp.loc[(temp[3] == '4') | (temp[3] == 4)].values[:].tolist()))
+            ammendOrder.append(len(temp.loc[(temp[3] == '5') | (temp[3] == 5)].values[:].tolist()))
+            executedOrder.append(len(temp.loc[(temp[3] == '15') | (temp[3] == 15)].values[:].tolist()))
 
         broker_details['broker_id'] = brokers.tolist()[1:]
         broker_details['all'] = allOrder
@@ -165,7 +170,7 @@ def get_timeframe_data():
         broker_details['ammend'] = ammendOrder
         broker_details['execute'] = executedOrder
 
-        sortedNew = broker_details.sort_values(['new'],  ascending=[False])
+        sortedNew = broker_details.sort_values(['new'], ascending=[False])
         sortedCancel = broker_details.sort_values(['cancel'], ascending=[False])
         sortedAmmend = broker_details.sort_values(['ammend'], ascending=[False])
         sortedExecute = broker_details.sort_values(['execute'], ascending=[False])
@@ -176,7 +181,5 @@ def get_timeframe_data():
         return_data['sortedAmmend'] = list(sortedAmmend['broker_id'])
         return_data['sortedExecute'] = list(sortedExecute['broker_id'])
         return_data['sortedAll'] = list(sortedAll['broker_id'])
-
-        print(return_data['sortedAmmend'])
 
         return json.dumps(return_data)

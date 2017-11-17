@@ -34,9 +34,11 @@
             <div class="col-md-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class=""><a data-target="#tab_1" data-toggle="tab" aria-expanded="true" style="cursor: pointer">Entropy Variance</a>
+                        <li class=""><a data-target="#tab_1" data-toggle="tab" aria-expanded="true"
+                                        style="cursor: pointer">Entropy Variance</a>
                         </li>
-                        <li class="active"><a data-target="#tab_2" data-toggle="tab" aria-expanded="false" style="cursor: pointer">Clustering Result</a>
+                        <li class="active"><a data-target="#tab_2" data-toggle="tab" aria-expanded="false"
+                                              style="cursor: pointer">Clustering Result</a>
                         </li>
                     </ul>
                     <div class="tab-content">
@@ -144,11 +146,10 @@
                                                     <div class="col-md-6">
                                                         <br/>
                                                         <strong>Brokers:</strong> <a style="cursor: pointer"
-                                                                                     data-backdrop="static"
-                                                                                     data-ng-click="vm.showBrokerModel(vm.clicked_start_broker)">{{vm.clicked_start_broker}}</a>
+                                                                                     data-ng-click="vm.showBrokerModel(vm.clicked_start_broker, vm.current_file)">{{vm.clicked_start_broker}}</a>
                                                         <strong>and</strong>
-                                                        <a style="cursor: pointer" data-backdrop="static"
-                                                           data-ng-click="vm.showBrokerModel(vm.clicked_end_broker)">{{vm.clicked_end_broker}}</a>
+                                                        <a style="cursor: pointer"
+                                                           data-ng-click="vm.showBrokerModel(vm.clicked_end_broker, vm.current_file)">{{vm.clicked_end_broker}}</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -212,6 +213,88 @@
         </div>
     </section>
 
+    <div class="modal fade" id="timeframe-modal" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title"><strong>Timeframe:</strong> {{vm.selected_timeframe}} <strong>From:</strong>
+                        {{ vm.selected_timeframe_start }} <strong>To:</strong> {{ vm.selected_timeframe_end }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" ng-show="vm.timeframe_details_show == false">
+                        <div class="col-md-6">
+                        </div>
+                        <div class="col-md-4">
+                            <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif
+                                 alt="loading">
+                        </div>
+                    </div>
+                    <div ng-show="vm.timeframe_details_show == true">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    Total Number of trades: {{ vm.timeframe_orders_count }}<br/>
+                                    <br/>
+                                    New orders: {{ vm.timeframe_new_orders_count }}<br/>
+                                    Cancelled orders: {{ vm.timeframe_cancel_orders_count }}<br/>
+                                    Ammended orders: {{ vm.timeframe_ammend_orders_count }}<br/>
+                                    Executed orders: {{ vm.timeframe_execute_orders_count }}<br/>
+                                </div>
+                                <div class="col-md-9">
+                                    <div id="timeframe-order-count-piechart" style="height: 200px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    <tr>
+                                        <th style="width: 10px">#</th>
+                                        <th>All Trades</th>
+                                        <th>New Trades</th>
+                                        <th>Cancelled Trades</th>
+                                        <th>Ammended Trades</th>
+                                        <th>Executed Trades</th>
+                                    </tr>
+                                    <tr ng-repeat="n in [0,1,2,3,4] track by $index">
+                                        <td>{{$index+1}}.</td>
+                                        <td>
+                                            <a data-ng-click="vm.showBrokerModel(vm.timeframe_traders_details_all[$index], vm.selected_timeframe)"
+                                               style="cursor: pointer" data-dismiss="timeframe-modal">{{vm.timeframe_traders_details_all[$index]}}</a>
+                                        </td>
+                                        <td>
+                                            <a data-ng-click="vm.showBrokerModel(vm.timeframe_traders_details_new[$index], vm.selected_timeframe)"
+                                               style="cursor: pointer" data-target="timeframe-modal">{{vm.timeframe_traders_details_new[$index]}}</a>
+                                        </td>
+                                        <td>
+                                            <a data-ng-click="vm.showBrokerModel(vm.timeframe_traders_details_cancel[$index], vm.selected_timeframe)"
+                                               style="cursor: pointer">{{vm.timeframe_traders_details_cancel[$index]}}</a>
+                                        </td>
+                                        <td>
+                                            <a data-ng-click="vm.showBrokerModel(vm.timeframe_traders_details_ammend[$index], vm.selected_timeframe)"
+                                               style="cursor: pointer">{{vm.timeframe_traders_details_ammend[$index]}}</a>
+                                        </td>
+                                        <td>
+                                            <a data-ng-click="vm.showBrokerModel(vm.timeframe_traders_details_execute[$index], vm.selected_timeframe)"
+                                               style="cursor: pointer">{{vm.timeframe_traders_details_execute[$index]}}</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-rightt" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="broker-modal" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -250,35 +333,6 @@
                                 <div id="broker-order-placement-graph" style="height: 200px"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-rightt" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="timeframe-modal" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title"><strong>Timeframe:</strong> {{vm.selected_timeframe}} <strong>From:</strong>
-                        {{ vm.selected_timeframe_start }} <strong>To:</strong> {{ vm.selected_timeframe_end }}</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row" ng-show="vm.timeframe_details_show == false">
-                        <div class="col-md-6">
-                        </div>
-                        <div class="col-md-4">
-                            <img class="pull-left" width="35" height="35" src=../images/Pulsing%20Loader.gif
-                                 alt="loading">
-                        </div>
-                    </div>
-                    <div ng-show="vm.timeframe_details_show == true">
-                        Data shown
                     </div>
                 </div>
                 <div class="modal-footer">
