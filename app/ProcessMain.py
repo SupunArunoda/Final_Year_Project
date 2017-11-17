@@ -177,4 +177,6 @@ def get_timeframe_data():
         return_data['sortedExecute'] = list(sortedExecute['broker_id'])
         return_data['sortedAll'] = list(sortedAll['broker_id'])
 
+        print(return_data['sortedAmmend'])
+
         return json.dumps(return_data)
