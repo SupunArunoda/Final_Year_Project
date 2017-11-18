@@ -87,8 +87,8 @@ def set_session_information():
 
             print(secure_filename(file.filename))
 
-            file.save('./app/data/sessions.csv')
-            file_path = './app/data/sessions.csv'
+            file.save('./app/data/'+secure_filename(file.filename))
+            file_path = './app/data/'+secure_filename(file.filename)
 
             read_session = read_csv(file_path, header=None)
             print(read_session)
