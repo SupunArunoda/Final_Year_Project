@@ -5,7 +5,7 @@ import plotly.plotly as py
 
 # py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
 import plotly.graph_objs as go
-from pandas import DataFrame
+from pandas import DataFrame, read_csv
 from matplotlib import pyplot as plt
 
 
@@ -80,7 +80,7 @@ def plotPlotly(clusters):
 class Kmeans:
     def cluster(self, data):
         X = data
-
+        print(len(X))
         inertia = []
         for k in range(2, len(X) + 1):
             kmeans = KMeans(n_clusters=k)
@@ -110,7 +110,7 @@ class Kmeans:
         clusters = {}
         for i in range(k):
             # select only data observations with cluster label == i
-            ds = X[np.where(labels == i)]
+            ds = X[labels == i]
             clusters[i] = ds
 
         return [clusters, kmeans]
@@ -122,6 +122,7 @@ class Kmeans:
 
         data = DataFrame(raw_datafile)
         data['cluster_group'] = np.nan
+        data['index'] = np.nan
         data['anomaly_score'] = np.nan
         # data['anomaly_state'] = np.nan
 
@@ -130,11 +131,36 @@ class Kmeans:
 
             for j in range(len(scores)):
                 if labels[i] == j:
+                    data['index'] = j
                     data['anomaly_score'].iloc[i] = scores[j]
 
+        # data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
+        print(data)
+        return data[['index','anomaly_score']]
 
+# read_data = read_csv('E:/Nilanga/Final_Year_Project/app/output/2_price_vol.csv', header=None)
+# read_data.columns = ['cancel_order_buy_price', 'cancel_order_buy_volume', 'cancel_order_sell_price',
+#                      'cancel_order_sell_volume', 'execute_order_buy_price', 'execute_order_buy_volume',
+#                      'execute_order_sell_price', 'execute_order_sell_volume', 'new_order_buy_price',
+#                      'new_order_buy_volume', 'new_order_sell_price', 'new_order_sell_volume', 'time_index',
+#                      'nom_exe_order_buy_price', 'nom_exe_order_sell_price', 'nom_exe_order_buy_volume',
+#                      'nom_exe_order_sell_volume']
+# data_c = read_data
+# X = data_c[['execute_order_buy_price', 'execute_order_buy_volume',
+#             'execute_order_sell_price', 'execute_order_sell_volume']]
+# X = X.values
+#
+# print(X)
+#
+# kmean = Kmeans()
+#
+# [clusters, kmeans] = kmean.cluster(X)
+#
+# kmeans.writeToCSV(clusters=clusters, kmeans=kmeans, raw_datafile=X)
 
-
-        # print(data)
-        data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
-        print('Output file saved!')
+# df = read_csv('E:/Nilanga/105_price_vol.csv')
+# data = df[['nom_exe_order_buy_price','nom_exe_order_sell_price','execute_order_sell_price','cancel_order_sell_volume']]
+#
+# kmeans = Kmeans()
+# [clusters_, kmeans_] = kmeans.cluster(data)
+# kmeans.writeToCSV(clusters_, kmeans_, data)

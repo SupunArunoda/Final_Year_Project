@@ -75,7 +75,6 @@ def process():
         all_attributes = AllAttribute()
         return_data = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
                                    size=window_size,is_order_book=is_order_book)
-
         # return_data= 3
         return json.dumps(return_data)
 

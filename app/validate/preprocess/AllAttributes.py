@@ -1,3 +1,4 @@
+from app.model.cluster.KMeans import Kmeans
 from app.orderbook.Order import Order
 from app.orderbook.OrderBook import OrderBook
 from pandas import read_csv
@@ -98,6 +99,18 @@ class AllAttribute:
         self.entropy_data_frame.to_csv(output_path+str(row_val)+"_entropy.csv", index=False,
                                      encoding='utf-8')
         # print(self.entropy_data_frame)
+
+        #cluster call
+        read_data = self.price_data_frame
+        read_data = read_data[['execute_order_buy_price', 'execute_order_buy_volume', 'execute_order_sell_price',
+                               'execute_order_sell_volume']]
+        kmean = Kmeans()
+        [clusters, kmeans] = kmean.cluster(read_data)
+        cluster_data = kmean.writeToCSV(clusters=clusters, kmeans=kmeans, raw_datafile=read_data)
+
+        cluster_data.to_csv(output_path + str(row_val)+"_anomaly_scores.csv", index=False,
+                                     encoding='utf-8')
+
         return_data['total_rows'] = len(data)
         return return_data
 

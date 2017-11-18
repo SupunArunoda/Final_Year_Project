@@ -6,6 +6,8 @@ import sys
 import numpy as np
 from scipy.signal import argrelextrema
 
+from app.model.cluster.KMeans import Kmeans
+
 process_main = Blueprint('process_main', __name__, template_folder='templates')
 
 
@@ -24,8 +26,15 @@ def get_data():
         read_messages.columns = ['entropy_exec_type', 'entropy_side', 'time_index']
         data = read_messages
 
+        # cluster call
+        read_cluster = read_csv('app/output/' + str(id) + '_anomaly_scores.csv')
+        print('aaaaaaaaaaaaa')
+        print(read_cluster)
+
         return_data['entropy_exec_type'] = list(data['entropy_exec_type'])[1:]
         return_data['time_index'] = list(data['time_index'])[1:]
+        # return_data['cluster_index'] = list(cluster_data['index'])
+        return_data['anomaly_score'] = list(read_cluster['anomaly_score'])
 
         x = data.values[:, 0][1:]
         x = [float(i) for i in x]

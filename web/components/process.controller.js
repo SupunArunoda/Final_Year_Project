@@ -78,7 +78,12 @@
             webservice.call('/process_main/get_data', 'post', JSON.stringify(data)).then(function (response) {
                 console.log(response.data);
 
+                var max_anomaly_score = response.data.anomaly_score.reduce(function (a, b) {
+                    return Math.max(a, b);
+                });
+
                 vm.timeframes_list = [];
+                vm.max_anomalous_list = [];
                 for (var i = 0; i < response.data.files_count; i++) {
                     var time = response.data.time_index[i];
                     time = time.split('000$$');
@@ -88,13 +93,23 @@
 
                     vm.timeframes_list.push({
                         timeframe_index: i + 1,
-                        timeframe_entropy_value: response.data.entropy_exec_type[i],
+                        timeframe_entropy_value: response.data.anomaly_score[i],
                         timeframe_start: starttime,
                         timeframe_end: endtime
                     });
+
+                    if (response.data.anomaly_score[i] == max_anomaly_score.toString()) {
+                        vm.max_anomalous_list.push({
+                            timeframe_index: i + 1,
+                            timeframe_anomaly_score: response.data.anomaly_score[i],
+                            timeframe_start: starttime,
+                            timeframe_end: endtime
+                        });
+                    }
                 }
 
                 createEntropyGraph(response.data);
+                createClusteringGraph(response.data)
 
                 vm.files_count = parseInt(response.data.files_count);
                 vm.current_file = parseInt(response.data.max_anomalous_file);
@@ -170,6 +185,134 @@
             }
 
             var chart = AmCharts.makeChart("entropy-linechart", {
+                "type": "xy",
+                "theme": "light",
+                "marginRight": 80,
+                "dataDateFormat": "YYYY-MM-DD",
+                "startDuration": 0,
+                "trendLines": [],
+                "balloon": {
+                    "adjustBorderColor": false,
+                    "shadowAlpha": 0,
+                    "fixedPosition": true
+                },
+                "graphs": [{
+                    "balloonText": "<div style='margin:5px;'><b>Timeframe [[x]]</b><br><b>[[y]]</b></div>",
+                    "bullet": "diamond",
+                    "maxBulletSize": 25,
+                    "lineAlpha": 0.8,
+                    "lineThickness": 2,
+                    "lineColor": "#b0de09",
+                    "fillAlphas": 0,
+                    "xField": "ax",
+                    "yField": "ay",
+                    "valueField": "aValue"
+                }],
+                "valueAxes": [{
+                    "id": "ValueAxis-1",
+                    "axisAlpha": 0
+                }],
+                "allLabels": [],
+                "titles": [],
+                "dataProvider": dataset,
+
+                "export": {
+                    "enabled": true
+                },
+
+                "chartScrollbar": {
+                    "offset": 15,
+                    "scrollbarHeight": 5
+                },
+                "chartCursor": {
+                    "pan": true,
+                    "cursorAlpha": 0,
+                    "valueLineAlpha": 0
+                },
+                "listeners": [{
+                    "event": "clickGraphItem",
+                    "method": (function (e) {
+                        $('#timeframe-modal').modal({
+                            backdrop: 'static',
+                            keyboard: true,
+                            show: true
+                        });
+
+                        vm.timeframe_details_show = false;
+                        vm.selected_timeframe = e.item.dataContext.ax;
+
+                        vm.selected_timeframe_start = vm.timeframes_list[vm.selected_timeframe - 1].timeframe_start;
+                        vm.selected_timeframe_end = vm.timeframes_list[vm.selected_timeframe - 1].timeframe_end;
+
+                        var data = {
+                            id: vm.id,
+                            file_id: vm.selected_timeframe
+                        };
+
+                        webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
+                            console.log(response.data);
+
+                            vm.timeframe_orders_count = response.data.all;
+                            vm.timeframe_new_orders_count = response.data.new;
+                            vm.timeframe_cancel_orders_count = response.data.cancel;
+                            vm.timeframe_ammend_orders_count = response.data.ammend;
+                            vm.timeframe_execute_orders_count = response.data.execute;
+
+                            vm.timeframe_traders_details_all = response.data.sortedAll;
+                            vm.timeframe_traders_details_new = response.data.sortedNew;
+                            vm.timeframe_traders_details_execute = response.data.sortedExecute;
+                            vm.timeframe_traders_details_cancel = response.data.sortedCancel;
+                            vm.timeframe_traders_details_ammend = response.data.sortedAmmend;
+
+                            var dataset = [{
+                                "type": "New Orders",
+                                "count": response.data.new
+                            }, {
+                                "type": "Cancelled Orders",
+                                "count": response.data.cancel
+                            }, {
+                                "type": "Ammended Orders",
+                                "count": response.data.ammend
+                            }, {
+                                "type": "Executed Orders",
+                                "count": response.data.execute
+                            }];
+
+                            var chart = AmCharts.makeChart("timeframe-order-count-piechart", {
+                                "type": "pie",
+                                "theme": "light",
+                                "dataProvider": dataset,
+                                "startDuration": 0,
+                                "valueField": "count",
+                                "titleField": "type",
+                                "balloon": {
+                                    "fixedPosition": true
+                                },
+                                "export": {
+                                    "enabled": true
+                                }
+                            });
+
+                            vm.timeframe_details_show = true;
+                        });
+
+                        $scope.$apply();
+                    }).bind(vm)
+                }]
+            });
+        }
+
+        function createClusteringGraph(values) {
+            var dataset = [];
+
+            for (var i = 0; i < Object.keys(values.time_index).length; i++) {
+                dataset.push({
+                    ax: (i + 1),
+                    ay: values.anomaly_score[i]
+                });
+            }
+
+            var chart = AmCharts.makeChart("clustering-linechart", {
                 "type": "xy",
                 "theme": "light",
                 "marginRight": 80,
