@@ -194,7 +194,7 @@
                 } else {
                     vm.isProcessLoaderVisible = true;
 
-                    var file = fileservice[0];
+                    var file = fileservice[1];
 
                     var data = {
                         file_name: file.name,

@@ -42,29 +42,6 @@
                         </li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane" id="tab_1">
-                            <div class="box-body">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div id="entropy-linechart" style="height: 400px"></div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h4>Suspicious Time Frames</h4>
-                                        <table class="table table-bordered">
-                                            <tbody>
-                                            <tr ng-repeat="minima in vm.local_minima_list">
-                                                <td>
-                                                    <strong>Timeframe {{ minima.id }}</strong><br/>
-                                                    {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
-                                                    <strong>Entropy score:</strong> {{ minima.entropy_value }}
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="tab-pane active" id="tab_2">
                             <div class="box-body">
                                 <div class="row">
@@ -80,6 +57,29 @@
                                                     <strong>Timeframe {{ id.timeframe_index }}</strong><br/>
                                                     {{ id.timeframe_start }} <strong>to</strong> {{ id.timeframe_end }}<br/>
                                                     <strong>Anomaly score:</strong> {{ id.timeframe_anomaly_score }}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab_1">
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div id="entropy-linechart" style="height: 400px"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h4>Suspicious Time Frames</h4>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                            <tr ng-repeat="minima in vm.local_minima_list">
+                                                <td>
+                                                    <strong>Timeframe {{ minima.id }}</strong><br/>
+                                                    {{ minima.starttime }} <strong>to</strong> {{ minima.endtime }}<br/>
+                                                    <strong>Entropy score:</strong> {{ minima.entropy_value }}
                                                 </td>
                                             </tr>
                                             </tbody>
