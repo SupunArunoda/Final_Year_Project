@@ -135,8 +135,8 @@ class Kmeans:
                     data['anomaly_score'].iloc[i] = scores[j]
 
         # data.to_csv("../output/clustered_output.csv", index=False, encoding='utf-8')
-        print('Output file saved!')
-        return data
+        print(data)
+        return data[['index','anomaly_score']]
 
 # read_data = read_csv('E:/Nilanga/Final_Year_Project/app/output/2_price_vol.csv', header=None)
 # read_data.columns = ['cancel_order_buy_price', 'cancel_order_buy_volume', 'cancel_order_sell_price',
