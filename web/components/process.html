@@ -66,9 +66,27 @@
                             </div>
                         </div>
                         <div class="tab-pane active" id="tab_2">
-
-                            Cluster Graph
-
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div id="clustering-linechart" style="height: 400px"></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h4>Suspicious Time Frames</h4>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                            <tr ng-repeat="id in vm.max_anomalous_list">
+                                                <td>
+                                                    <strong>Timeframe {{ id.timeframe_index }}</strong><br/>
+                                                    {{ id.timeframe_start }} <strong>to</strong> {{ id.timeframe_end }}<br/>
+                                                    <strong>Anomaly score:</strong> {{ id.timeframe_anomaly_score }}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
