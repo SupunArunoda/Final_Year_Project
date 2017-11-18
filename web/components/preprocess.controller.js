@@ -194,10 +194,12 @@
                 } else {
                     vm.isProcessLoaderVisible = true;
 
-                    var file = fileservice[1];
+                    var sessionfile = fileservice[0];
+                    var datafile = fileservice[1];
 
                     var data = {
-                        file_name: file.name,
+                        session_filename: sessionfile.name,
+                        data_filename: datafile.name,
                         type: vm.type,
                         window: window,
                         save_information: vm.saveInformation,
@@ -211,6 +213,7 @@
 
                         // $location.path('/process/' + response.data.proprocess_index);
                         $location.path('/process/' + response.data.proprocess_index).search({
+                            // $location.path('/process/101').search({
                             orderbook_simulation: vm.orderbookSimulation
                         });
                     });

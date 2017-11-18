@@ -31,7 +31,7 @@ from app.validate.preprocess.OrderbookSimulationTest import OrderbookSimulationT
 preprocess_main = Blueprint('preprocess_main', __name__, template_folder='templates')
 
 
-def orderbook_thread(message_file, session_file,size,type):
+def orderbook_thread(message_file, session_file, size, type):
     order_sim = OrderbookSimulationTest()
     if (type == "time"):
         order_book_window = TimeWindow(time_delta=size)
@@ -46,36 +46,23 @@ def process():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
 
-        message_file = './app/data/' + data['file_name']
-        session_file = './app/data/sessions.csv'
-
-        message_dataframe = read_csv(message_file)
-        print(message_dataframe.columns)
-        # message_dataframe.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time','execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size','order_id']
-        session_dataframe = read_csv(session_file, header=None)
-        print(session_dataframe.columns)
-        session_dataframe.columns = ['instrument_id', 'transact_time', 'session_status', 'session_name',
-                                     'order_book_id']
+        message_file = './app/data/' + data['data_filename']
+        session_file = './app/data/' + data['session_filename']
 
         window_type = data['type']
         window_size = int(data['window'])
-        is_order_book=data['orderbook_simulation']
+        is_order_book = data['orderbook_simulation']
 
         if (window_type == 'time'):
             window_size = window_size * 60
         elif (window_type == 'order'):
             window_size = window_size
 
-        print(data['orderbook_simulation'])
-        print(type(data['orderbook_simulation']))
-
-        # if (data['orderbook_simulation'] == True):
-        #     Thread(target=orderbook_thread, args=[message_file, session_file,window_size,window_type])
-
         all_attributes = AllAttribute()
-        return_data = all_attributes.run(message_file=message_dataframe, session_file=session_dataframe, type=window_type,
-                                   size=window_size,is_order_book=is_order_book)
-        # return_data= 3
+        return_data = all_attributes.run(message_file=message_file, session_file=session_file,
+                                         type=window_type,
+                                         size=window_size, is_order_book=is_order_book)
+
         return json.dumps(return_data)
 
 
@@ -87,8 +74,8 @@ def set_session_information():
 
             print(secure_filename(file.filename))
 
-            file.save('./app/data/'+secure_filename(file.filename))
-            file_path = './app/data/'+secure_filename(file.filename)
+            file.save('./app/data/' + secure_filename(file.filename))
+            file_path = './app/data/' + secure_filename(file.filename)
 
             read_session = read_csv(file_path, header=None)
             print(read_session)
@@ -104,14 +91,11 @@ def set_session_information():
 
             session_data = []
             for i in range(0, len(sessions), 2):
-                # session_duration =
                 session_data.append([sessions[i][3], sessions[i][1], sessions[i + 1][1]])
 
             return_data['session_data'] = session_data
-            # return_data['session_datas'] = sessions.tolist()
 
             return json.dumps(return_data)
-            # return 'done'
 
 
 @preprocess_main.route('/get_csv_information', methods=['GET', 'POST'])
@@ -128,9 +112,6 @@ def get_csv_information():
             print(file_path)
 
             read_messages = read_csv(file_path)
-            # read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
-            #                          'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
-            #                          'order_id']
             data = read_messages
 
             return_data = {}

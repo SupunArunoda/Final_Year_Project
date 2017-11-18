@@ -64,7 +64,9 @@
 
         function initialize() {
 
-            if ($location.search().orderbook_simulation == "true") {
+            if ($location.search().orderbook_simulation == "false") {
+                vm.orderbook_simulation = false;
+            } else {
                 vm.orderbook_simulation = true;
             }
             vm.loadData(vm.id);
