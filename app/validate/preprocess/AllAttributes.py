@@ -28,7 +28,7 @@ class AllAttribute:
 
         # read_messages = read_csv(message_file, header=None)
         # read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time','execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size','order_id']
-        data = read_csv("app/data/data.csv")
+        data = message_file
         if(type=="time"):
             price_window=TimeWindow(time_delta=size)
             ex_type_window=TimeWindow(time_delta=size)
