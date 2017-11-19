@@ -22,10 +22,13 @@ class AllAttribute:
         self.exe_type_data_frame = DataFrame()
         self.entropy_data_frame = DataFrame()
 
-    def run(self, message_file, session_file, type, size, is_order_book):
+    def run(self, message_filename, session_filename, type, size, is_order_book):
 
         uploaded_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        output_path = "app/output/" + message_file
+
+        message_file = "app/data/" + message_filename
+        session_file = "app/data/" + session_filename
+
         last_process_start = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
         data = read_csv(message_file)
@@ -87,9 +90,9 @@ class AllAttribute:
                     simulation.get_time_frame(order=order, row_val=row_val)
 
         last_process_end = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        output_file = output_path
+        output_path = "app/output/"
         pf = PreprocessFile(input_file=message_file, uploaded_time=uploaded_time, last_process_start=last_process_start,
-                            last_process_end=last_process_end, output_file=output_file)
+                            last_process_end=last_process_end, output_file="app/output/" + message_filename)
 
         return_data['proprocess_index'] = pfc.saveProcessFile(pf)
 

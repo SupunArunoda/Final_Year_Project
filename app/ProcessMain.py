@@ -1,3 +1,5 @@
+from time import gmtime, strftime
+
 from pandas import read_csv, DataFrame
 import json, fnmatch, os
 from flask import Blueprint, request
@@ -14,6 +16,7 @@ process_main = Blueprint('process_main', __name__, template_folder='templates')
 @process_main.route('/get_data', methods=['GET', 'POST'])
 def get_data():
     if (request.method == 'POST'):
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
         data = json.loads(request.data.decode('utf-8'))
         id = data['id']
 
@@ -28,8 +31,8 @@ def get_data():
 
         # cluster call
         read_cluster = read_csv('app/output/' + str(id) + '_anomaly_scores.csv')
-        print('aaaaaaaaaaaaa')
-        print(read_cluster)
+
+        # print(read_cluster)
 
         return_data['entropy_exec_type'] = list(data['entropy_exec_type'])[1:]
         return_data['time_index'] = list(data['time_index'])[1:]

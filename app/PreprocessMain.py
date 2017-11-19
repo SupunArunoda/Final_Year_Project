@@ -46,9 +46,6 @@ def process():
     if (request.method == 'POST'):
         data = json.loads(request.data.decode('utf-8'))
 
-        message_file = './app/data/' + data['data_filename']
-        session_file = './app/data/' + data['session_filename']
-
         window_type = data['type']
         window_size = int(data['window'])
         is_order_book = data['orderbook_simulation']
@@ -59,7 +56,7 @@ def process():
             window_size = window_size
 
         all_attributes = AllAttribute()
-        return_data = all_attributes.run(message_file=message_file, session_file=session_file,
+        return_data = all_attributes.run(message_filename=data['data_filename'], session_filename=data['session_filename'],
                                          type=window_type,
                                          size=window_size, is_order_book=is_order_book)
 
