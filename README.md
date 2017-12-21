@@ -31,6 +31,23 @@ will be fetched into different machine learning techniques and identify which ar
 with manipulative behavior. Apart from that, this tool supports visualization techniques to further
 analyze and identify whether the given frame can be a fraudulent time frame or not.
 
+###Installation
+This project uses a Python server and an AngularJS client. The server code is in the /app directory.
+The client code is in the /web directory.
+
+#####Running from console
+1. Run command `SET FLASK_APP=fyp_flask_main.py`
+2. Run command `SET FLASK_DEBUG=1`
+3. Run command `python -m flask run`
+4. Navigate to /web directory and run command `http-server -u localhost -p 8000`
+
+#####Running from Jetbrains PyCharm
+1. Run file `fyp_flask_main.py`
+2. Navigate to the /web directory using the IDE's terminal and run command `http-server -u localhost -p 8000`
+
+Make sure you have all the necessary imported dependancies and `bower install` run before proceeding.
+Also you'll have to install `http-server` by `npm`.
+
 ### Members
 Supun Arunoda  
 Buddhi Vikasitha  
