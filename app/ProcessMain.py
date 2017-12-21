@@ -83,7 +83,7 @@ def select_data():
         return_data = {}
         return_data['price_gap_data'] = price_gap_data
 
-        f = 'app/output/orderbook_simulation_' + str(file_number) + '.csv'
+        f = 'app/output/' + str(id) + '_orderbook_simulation_' + str(file_number) + '.csv'
         if (os.path.exists(f)):
             read_messages = read_csv(f, header=None)
             read_messages.columns = ['best_ask', 'best_bid', 'time_index', 'top_buy_price_points',

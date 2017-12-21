@@ -5,6 +5,11 @@
         .module('adist')
         .controller('PreprocessController', PreprocessController);
 
+    /*
+        Preprocess Controller
+        Operations related to the uploading of files, showing statistics and preprocessing data.
+         */
+
     PreprocessController.$inject = ['webservice', 'fileservice', '$location'];
 
     function PreprocessController(webservice, fileservice, $location) {
@@ -48,8 +53,6 @@
             fileFormData.append('sessionsFile', fileservice[0]);
 
             webservice.call('/preprocess_main/set_session_information', 'post', fileFormData).then(function (response) {
-                console.log(response.data);
-
                 vm.isSessionsUploaded = true;
                 vm.isSessionUploadLoaderVisible = false;
 
@@ -66,8 +69,6 @@
                         "task": value[0]
                     });
                 });
-
-                console.log(dataset);
 
                 var chart = AmCharts.makeChart("sessions-ganttchart", {
                     "type": "gantt",
@@ -128,8 +129,6 @@
             fileFormData.append('inputFile', fileservice[Object.keys(fileservice).length - 1]);
 
             webservice.call('/preprocess_main/get_csv_information', 'post', fileFormData).then(function (response) {
-                console.log(response.data);
-
                 vm.isResultVisible = true;
                 vm.isDataUploadLoaderVisible = false;
 
@@ -209,27 +208,17 @@
                     webservice.call('/preprocess_main/process', 'post', JSON.stringify(data)).then(function (response) {
                         vm.isProcessLoaderVisible = false;
 
-                        console.log(response.data);
-
-                        // $location.path('/process/' + response.data.proprocess_index);
                         $location.path('/process/' + response.data.proprocess_index).search({
-                            // $location.path('/process/101').search({
                             orderbook_simulation: vm.orderbookSimulation
                         });
                     });
                 }
             }
-
-            console.log(vm.orderbookSimulation);
-            console.log(vm.saveInformation);
         }
 
         function getStyleForProgressBar(value) {
             return {"width": value + '%'}
         }
 
-        function testFunction() {
-            console.log(vm.type);
-        }
     }
 })();

@@ -17,16 +17,10 @@
                     controller: 'ProcessController',
                     controllerAs: 'vm'
                 })
-                .when('/test', {
-                    templateUrl: 'components/test.html',
-                    controller: 'TestController',
-                    controllerAs: 'vm'
-                })
 
                 // By default it will open /
                 .otherwise({redirectTo: '/'});
 
-            // $locationProvider.html5Mode(true);
             $locationProvider.hashPrefix('');
         });
 })();

@@ -5,6 +5,11 @@
         .module('adist')
         .controller('ProcessController', ProcessController);
 
+    /*
+        Process Controller
+        Operations related to the showing processed information for the data files.
+         */
+
     ProcessController.$inject = ['webservice', '$routeParams', '$rootScope', '$location', '$scope'];
 
     function ProcessController(webservice, $routeParams, $rootScope, $location, $scope) {
@@ -28,8 +33,6 @@
         vm.getNextWindow = getNextWindow;
         vm.updateOrderBook = updateOrderBook;
         vm.showBrokerModel = showBrokerModel;
-
-        console.log("Process Controller");
 
         vm.id = $routeParams.id;
         vm.time_frame_number = 13;
@@ -63,12 +66,6 @@
         initialize();
 
         function initialize() {
-
-            if ($location.search().orderbook_simulation == "false") {
-                vm.orderbook_simulation = false;
-            } else {
-                vm.orderbook_simulation = true;
-            }
             vm.loadData(vm.id);
         }
 
@@ -78,8 +75,6 @@
             };
 
             webservice.call('/process_main/get_data', 'post', JSON.stringify(data)).then(function (response) {
-                console.log(response.data);
-
                 var max_anomaly_score = response.data.anomaly_score.reduce(function (a, b) {
                     return Math.max(a, b);
                 });
@@ -139,7 +134,6 @@
         }
 
         function changeGraph() {
-            console.log("Curent file is: " + vm.current_file);
             selectData(vm.current_file);
         }
 
@@ -153,8 +147,6 @@
             };
 
             webservice.call('/process_main/select_data', 'post', JSON.stringify(data)).then(function (response) {
-                console.log(response.data);
-
                 vm.isLoaderVisible = false;
                 vm.isResultVisible = true;
 
@@ -252,8 +244,6 @@
                         };
 
                         webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
-                            console.log(response.data);
-
                             vm.timeframe_orders_count = response.data.all;
                             vm.timeframe_new_orders_count = response.data.new;
                             vm.timeframe_cancel_orders_count = response.data.cancel;
@@ -380,8 +370,6 @@
                         };
 
                         webservice.call('/process_main/get_timeframe_data', 'post', JSON.stringify(data)).then(function (response) {
-                            console.log(response.data);
-
                             vm.timeframe_orders_count = response.data.all;
                             vm.timeframe_new_orders_count = response.data.new;
                             vm.timeframe_cancel_orders_count = response.data.cancel;
@@ -535,19 +523,10 @@
                 }]
             });
 
-            // chart.addListener("clickGraphItem", priceGapClickEvent().bind(this));
-
             vm.isGraphLoaderVisible = false;
         }
 
-        function priceGapClickEvent(e) {
-            console.log("asdbhasd");
-            console.log(e);
-        }
-
         function updateOrderbookTable(values) {
-            console.log(values);
-
             if (values == null) {
                 vm.isOrderBookLoaded = false;
             } else {
@@ -588,7 +567,6 @@
         }
 
         function showBrokerModel(broker_id, file_id) {
-            console.log(broker_id);
             vm.broker_details_show = false;
             vm.broker_orders_count = '';
             vm.broker_new_orders_count = '';
@@ -611,8 +589,6 @@
             };
 
             webservice.call('/process_main/get_broker_data', 'post', JSON.stringify(data)).then(function (response) {
-                console.log(response.data);
-
                 vm.broker_orders_count = response.data.order_count;
                 vm.broker_new_orders_count = response.data.order_types_count.new;
                 vm.broker_cancel_orders_count = response.data.order_types_count.cancel;
@@ -737,8 +713,6 @@
                 });
 
                 vm.broker_details_show = true;
-
-                // $scope.$apply();
             });
         }
     }

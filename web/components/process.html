@@ -182,14 +182,15 @@
             </div>
         </div>
 
-        <div class="row" ng-show="vm.orderbook_simulation == true">
+        <div class="row">
+        <!--<div class="row" ng-show="vm.orderbook_simulation == true">-->
             <div class="col-md-12">
                 <div class="box box-info">
                     <div class="box-header with-border">
                         <h3 class="box-title">Orderbook</h3>
                     </div>
                     <div class="box-body">
-                        <div ng-show="vm.isOrderBookLoaded == true">
+                        <!--<div ng-show="vm.isOrderBookLoaded == true">-->
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-3">
@@ -221,10 +222,6 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                        <div ng-show="vm.isOrderBookLoaded == false">
-                            Orderbook Simulating...
-                        </div>
                     </div>
                 </div>
             </div>
