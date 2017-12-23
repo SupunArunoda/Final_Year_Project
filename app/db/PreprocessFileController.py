@@ -8,6 +8,7 @@ class PreprocessFileController:
 
         return dbc
 
+    #save the processing information to File
     def saveProcessFile(self, process_file):
         dbc = self.getDBConnection()
         val=0
@@ -28,6 +29,7 @@ class PreprocessFileController:
             dbc.close()
             return val
 
+    #get maximum value from database table
     def getMaximumValue(self):
         dbc = self.getDBConnection()
         try:

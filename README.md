@@ -35,6 +35,9 @@ analyze and identify whether the given frame can be a fraudulent time frame or n
 This project uses a Python server and an AngularJS client. The server code is in the /app directory.
 The client code is in the /web directory.
 
+##### Setup MySQL database
+Make sure to import adist.sql(Final_Year_Project/adist.sql) database to MySQL server.
+
 ##### Running from console
 1. Run command `SET FLASK_APP=fyp_flask_main.py`
 2. Run command `SET FLASK_DEBUG=1`
@@ -45,7 +48,7 @@ The client code is in the /web directory.
 1. Run file `fyp_flask_main.py`
 2. Navigate to the /web directory using the IDE's terminal and run command `http-server -u localhost -p 8000`
 
-Make sure you have all the necessary imported dependancies and `bower install` run before proceeding.
+Make sure you have all the necessary imported dependencies and `bower install` run before proceeding.
 Also you'll have to install `http-server` by `npm`.
 
 ### Members

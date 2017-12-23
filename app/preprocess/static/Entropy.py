@@ -6,7 +6,7 @@ import math
 
 from app.orderbook.Order import Order
 
-
+#Entropy clauclation for order by events
 class Entropy:
     def __init__(self, session_file, window):
         self.temp_time = 0
@@ -22,6 +22,7 @@ class Entropy:
         self.chunk = []
         # print(self.regular_list)
 
+    #get only regular time list
     def get_regular_time(self):
         count = 0;
         reg_list = []

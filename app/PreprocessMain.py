@@ -1,30 +1,15 @@
-from docutils.nodes import target
 
-from app.orderbook.Order import Order
-from app.orderbook.OrderBook import OrderBook
-from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 from app.preprocess.window.EventWindow import EventWindow
 from app.preprocess.window.TimeWindow import TimeWindow
-from app.preprocess.static.OrderbookSimulation import OrderbookSimulation
 
-from app.validate.preprocess.OrderbookAttr import OrderbookAttr
-
-from app.validate.preprocess.ExecutionTypeTest import ExecutionTypeTest
 from app.validate.preprocess.AllAttributes import AllAttribute
 
 from pandas import read_csv
-from matplotlib import pyplot as plt
 from flask import Blueprint, request, render_template, redirect, url_for
-import sys
+
 from werkzeug.utils import secure_filename
 import json
-from threading import Thread
 
-# import plotly.plotly as py
-
-# py.sign_in('buddhiv', 'YoGay7yhvJSTDCyg0UbP')
-import plotly.graph_objs as go
-from plotly.offline.offline import _plot_html
 
 from app.validate.preprocess.OrderbookSimulationTest import OrderbookSimulationTest
 

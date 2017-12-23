@@ -16,6 +16,7 @@ import numpy as np
 from time import gmtime, strftime
 
 
+#get the all relavant attributes to fetch for models
 class AllAttribute:
     def __init__(self):
         self.price_data_frame = DataFrame()
@@ -81,7 +82,7 @@ class AllAttribute:
                           , order_qty=order_qty, execution_type=execution_type, transact_time=transact_time,
                           value=value, executed_value=executed_value
                           , broker_id=broker_id, instrument_id=instrument_id)
-            if order.value > 0:
+            if order.value > 0:#remove market orders
                 self.price_data_frame = price_volume.get_time_frame(order=order)
                 self.exe_type_data_frame = exe_type.get_time_frame(order=order)
                 price_gap.get_regular_gap_chunks(order=order, row_val=row_val)
@@ -104,9 +105,8 @@ class AllAttribute:
                                      encoding='utf-8')
         self.entropy_data_frame.to_csv(output_path + str(row_val) + "_entropy.csv", index=False,
                                        encoding='utf-8')
-        # print(self.entropy_data_frame)
 
-        # cluster call
+
         read_data = self.price_data_frame
         read_data = read_data[['execute_order_buy_price', 'execute_order_buy_volume', 'execute_order_sell_price',
                                'execute_order_sell_volume']]
@@ -120,6 +120,7 @@ class AllAttribute:
         return_data['total_rows'] = len(data)
         return return_data
 
+    #normalize executed price and volume
     def normalize_price(self):
         mean_buy_price = self.price_data_frame['execute_order_buy_price'].mean()
         mean_sell_price = self.price_data_frame['execute_order_sell_price'].mean()
@@ -143,6 +144,7 @@ class AllAttribute:
         self.price_data_frame['nom_exe_order_sell_volume'] = (self.price_data_frame[
                                                                   'execute_order_sell_volume'] - mean_sell_volume) / std_sell_volume
 
+    #normalize the execution types
     def normalize_exe_type(self):
         mean_buy_execute = self.exe_type_data_frame['execute_order_buy_average'].mean()
         mean_sell_execute = self.exe_type_data_frame['execute_order_sell_average'].mean()

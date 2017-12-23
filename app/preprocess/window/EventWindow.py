@@ -1,6 +1,6 @@
 from app.preprocess.window.Window import Window
 
-
+#Analyze with window by events
 class EventWindow(Window):
 
     def __init__(self , no_of_events):

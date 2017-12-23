@@ -20,9 +20,6 @@ class ExecutionTypeTest:
         last_process_start = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         read_messages = read_csv(message_file)
 
-        # read_messages.columns = ['instrument_id', 'broker_id', 'executed_value', 'value', 'transact_time',
-        #                          'execution_type', 'order_qty', 'executed_qty', 'total_qty', 'side', 'visible_size',
-        #                          'order_id']
         data = read_messages
 
         exe_type = ExecutionTypeStatic(session_file=session_file, window=window)

@@ -1,3 +1,4 @@
+#window to check time or order window limit range
 class Window:
     def __init__(self , no_of_events):
         self.eventCount = 0

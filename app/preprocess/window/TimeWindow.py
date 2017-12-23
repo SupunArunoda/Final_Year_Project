@@ -2,6 +2,7 @@ from app.preprocess.window.Window import Window
 import datetime
 from dateutil import parser as DUp
 
+#Analyze the time window
 class TimeWindow:
     def __init__(self , time_delta):
         self.eventCount=0

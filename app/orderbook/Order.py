@@ -1,5 +1,6 @@
 import datetime
 
+#initialize the order class
 class Order:
     order_id = 0
     visible_size = 0
